@@ -1,0 +1,3 @@
+[submodule "thirdparty/Slab"]
+	path = thirdparty/Slab
+	url = https://github.com/coding-jackalope/Slab
