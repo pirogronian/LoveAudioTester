@@ -42,11 +42,9 @@ function love.update(dt)
                           NoOutline = true}) then
         if Slab.BeginTree("Filepaths") then
             for name, path in pairs(FilepathArray) do
-                if Slab.BeginTree(name, { IsLeaf = true, IsSelected = path.isSelected }) then
-                    if Slab.IsControlClicked() then
-                        print("Leaf clicked:", name);
-                        path.isSelected = not path.isSelected;
-                    end
+                Slab.BeginTree(name, { IsLeaf = true, IsSelected = path.isSelected });
+                if Slab.IsControlClicked() then
+                    path.isSelected = not path.isSelected;
                 end
             end
             Slab.EndTree();
