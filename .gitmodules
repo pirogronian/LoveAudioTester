@@ -1,6 +1,6 @@
 [submodule "thirdparty/Slab"]
 	path = thirdparty/Slab
-	url = https://github.com/coding-jackalope/Slab
+	url = https://github.com/pirogronian/Slab
 [submodule "thirdparty/bitser"]
 	path = thirdparty/bitser
 	url = https://github.com/gvx/bitser
