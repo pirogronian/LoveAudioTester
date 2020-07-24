@@ -1,6 +1,8 @@
 
 Slab = require('thirdparty/Slab');
 
+FilepathArray = {};
+
 function love.load(args)
     Slab.Initialize(args);
     SlabQuit = love.quit;
@@ -20,6 +22,12 @@ function love.update(dt)
             end
             Slab.EndMenu();
         end
+        if Slab.BeginMenu("Filepaths") then
+            if Slab.MenuItem("Add") then
+                openFilepathDialog = true;
+            end
+            Slab.EndMenu();
+        end
         MMBW, MMBH = Slab.GetControlSize();
         Slab.EndMainMenuBar();
     end
@@ -32,15 +40,22 @@ function love.update(dt)
                           ContentW = windowW,
                           ContentH = windowH - MMBH,
                           NoOutline = true}) then
-        if Slab.BeginTree("AudioData") then
-            Slab.BeginTree("sample 1", { IsLeaf = true });
-            Slab.BeginTree("sample 2", { IsLeaf = true });
-            Slab.BeginTree("sample 3", { IsLeaf = true });
-            Slab.BeginTree("sample 4", { IsLeaf = true });
+        if Slab.BeginTree("Filepaths") then
+            for name, path in pairs(FilepathArray) do
+                if Slab.BeginTree(name, { IsLeaf = true, IsSelected = path.isSelected }) then
+                    if Slab.IsControlClicked() then
+                        print("Leaf clicked:", name);
+                        path.isSelected = not path.isSelected;
+                    end
+                end
+            end
             Slab.EndTree();
         end
     end
-    Slab.EndWindow()
+    Slab.EndWindow();
+
+    AddFilepathDialog();
+    FnameidExistsDialog();
 
     if quitDialog then
         local result = Slab.MessageBox("Are You sure?", "Are You sure to quit program?", { Buttons = { "Yes", "No" }});
@@ -65,4 +80,29 @@ function onquit()
     end
     quitDialog = true;
     return true;
+end
+
+function AddFilepathDialog()
+    if openFilepathDialog then
+        local result = Slab.FileDialog({ Type = "openfile" })
+        if result.Button == "OK" then
+            for key, fpath in pairs(result.Files) do
+                if FilepathArray[fpath] ~= nil then
+                    fnameidExistsDialog = true;
+                else
+                    FilepathArray[fpath] = { isSelected = false };
+                end
+            end
+        end
+        if result.Button ~= "" then openFilepathDialog = false; end
+    end
+end
+
+function FnameidExistsDialog()
+    if fnameidExistsDialog then
+        local result = Slab.MessageBox("Existing item!", "This item already exists!", { Buttons = { "OK" } });
+        if result ~= "" then
+            fnameidExistsDialog = false;
+        end
+    end
 end
