@@ -7,11 +7,15 @@ require('SortableContainer');
 
 require('SortGUI');
 
+require('DeleteConfirmator');
+
 StandardId = SortableAttribute("id", "Id");
 PathAttr = SortableAttribute("path", "Path");
 FilepathContainer = SortableContainer("fpathcontainer", "Filepath list");
 
 FilepathContainer:addAttribute(PathAttr)
+
+dpConfirmator = DeleteConfirmator(FilepathContainer, "filepaths");
 
 function love.load(args)
     Slab.Initialize(args);
@@ -33,10 +37,13 @@ function love.update(dt)
             Slab.EndMenu();
         end
         if Slab.BeginMenu("Filepaths") then
+            SortMenu(FilepathContainer);
             if Slab.MenuItem("Add") then
                 openFilepathDialog = true;
             end
-            SortMenu(FilepathContainer);
+            if Slab.MenuItem("Delete") then
+                dpConfirmator.active = true;
+            end
             Slab.EndMenu();
         end
         MMBW, MMBH = Slab.GetControlSize();
@@ -57,6 +64,7 @@ function love.update(dt)
 
     AddFilepathDialog();
     FnameidExistsDialog();
+    dpConfirmator:update();
 
     if quitDialog then
         local result = Slab.MessageBox("Are You sure?", "Are You sure to quit program?", { Buttons = { "Yes", "No" }});

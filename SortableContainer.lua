@@ -38,7 +38,7 @@ function SortableContainer:addAttribute(attr)
     end
 end
 
-function SortableContainer:delAttribute(id)
+function SortableContainer:deleteAttribute(id)
     table.remove(self.attributes, id);
     table.remove(self.indexes, id);
 end
@@ -51,7 +51,7 @@ function SortableContainer:getIndex(id)
     return index;
 end
 
-function SortableContainer:getAttr(id)
+function SortableContainer:getAttribute(id)
     local attr = self.attributes[id];
     if type(attr) ~= 'table' then
         error(self.class.name..": attribute \""..id.."\" not found in attributes.");
@@ -73,17 +73,23 @@ function SortableContainer:addItem(item, selected)
     end
 end
 
-function SortableContainer:delItem(id)
+function SortableContainer:deleteItem(id)
     for attrid, index in pairs(self.indexes) do
         for sid, item in ipairs(index) do
             if item.item.id == id then
                 table.remove(index, sid);
-                return;
+                break;
             end
         end
     end
-    table.remove(self.selected, id);
-    table.remove(self.ids, id);
+    self.selected[id] = nil;
+    self.ids[id] = nil;
+end
+
+function SortableContainer:deleteSelected()
+    for id, unused in pairs(self.selected) do
+        self:deleteItem(id);
+    end
 end
 
 function SortableContainer:select(id)
@@ -99,11 +105,25 @@ function SortableContainer:isSelected(id)
 end
 
 function SortableContainer:toggleSelection(id)
-    self.selected[id] = not self.selected[id];
+    if self:isSelected(id) then
+        self:deselect(id);
+    else
+        self:select(id);
+    end
+end
+
+function SortableContainer:selectedNumber()
+    local count = 0;
+    for key, value in pairs(self.selected) do
+        if value == true then
+            count = count + 1;
+        end
+    end
+    return count;
 end
 
 function SortableContainer:sort(attrid, dir)
-    local attr = self:getAttr(attrid);
+    local attr = self:getAttribute(attrid);
     local comp = nil;
     if dir == "asc" then
         comp = attr.sortAsc;
@@ -115,7 +135,7 @@ function SortableContainer:sort(attrid, dir)
     self.currentAttr = attrid;
 end
 
-function SortableContainer:dumpAttrs()
+function SortableContainer:dumpAttributes()
     print("Attributes ("..table.getn(self.attributes).."):");
     for id, attr in pairs(self.attributes) do
         attr:dump();
@@ -132,4 +152,11 @@ function SortableContainer:dumpIndex(id)
     local index = self:getIndex(id);
     print("Index ("..table.getn(index)..":");
     self.dumpIndexArray(index);
+end
+
+function SortableContainer:dumpSelection()
+    print("Selected ("..self:selectedNumber().."):");
+    for id, val in pairs(self.selected) do
+        print("  ["..id.."] =>", val);
+    end
 end
