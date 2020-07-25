@@ -1,7 +1,17 @@
 
+MiddleClass = require ('thirdparty/middleclass/middleclass');
+
 Slab = require('thirdparty/Slab');
 
-FilepathArray = {};
+require('SortableContainer');
+
+require('SortGUI');
+
+StandardId = SortableAttribute("id", "Id");
+PathAttr = SortableAttribute("path", "Path");
+FilepathContainer = SortableContainer("fpathcontainer", "Filepath list");
+
+FilepathContainer:addAttribute(PathAttr)
 
 function love.load(args)
     Slab.Initialize(args);
@@ -26,6 +36,7 @@ function love.update(dt)
             if Slab.MenuItem("Add") then
                 openFilepathDialog = true;
             end
+            SortMenu(FilepathContainer);
             Slab.EndMenu();
         end
         MMBW, MMBH = Slab.GetControlSize();
@@ -40,15 +51,7 @@ function love.update(dt)
                           ContentW = windowW,
                           ContentH = windowH - MMBH,
                           NoOutline = true}) then
-        if Slab.BeginTree("Filepaths") then
-            for name, path in pairs(FilepathArray) do
-                Slab.BeginTree(name, { IsLeaf = true, IsSelected = path.isSelected });
-                if Slab.IsControlClicked() then
-                    path.isSelected = not path.isSelected;
-                end
-            end
-            Slab.EndTree();
-        end
+        SortedTree(FilepathContainer);
     end
     Slab.EndWindow();
 
@@ -85,10 +88,11 @@ function AddFilepathDialog()
         local result = Slab.FileDialog({ Type = "openfile" })
         if result.Button == "OK" then
             for key, fpath in pairs(result.Files) do
-                if FilepathArray[fpath] ~= nil then
+                local item = { id = fpath, attributes = { path = fpath } };
+                if FilepathContainer.ids[item.id] ~= nil then
                     fnameidExistsDialog = true;
                 else
-                    FilepathArray[fpath] = { isSelected = false };
+                    FilepathContainer:addItem(item);
                 end
             end
         end
