@@ -51,9 +51,13 @@ function love.update(dt)
     end
 
     if Slab.BeginWindow("MainWindow", 
-                        { AutoSizeWindow = false, 
-                          X = 0, Y = MMBH, 
-                          W = windowW, 
+                        { AutoSizeWindow = false,
+                          AllowMove = false,
+                          AllowResize = false,
+                          AllowFocus = false,
+                          NoSavedSettings = true,
+                          X = 0, Y = MMBH,
+                          W = windowW,
                           H = windowH - MMBH,
                           ContentW = windowW,
                           ContentH = windowH - MMBH,
