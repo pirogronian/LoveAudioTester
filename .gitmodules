@@ -4,3 +4,6 @@
 [submodule "thirdparty/bitser"]
 	path = thirdparty/bitser
 	url = https://github.com/gvx/bitser
+[submodule "thirdparty/middleclass"]
+	path = thirdparty/middleclass
+	url = https://github.com/kikito/middleclass
