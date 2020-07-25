@@ -43,42 +43,56 @@ function SortableContainer:deleteAttribute(id)
     table.remove(self.indexes, id);
 end
 
-function SortableContainer:getIndex(id)
-    local index = self.indexes[id];
-    if type(index) ~= 'table' then
-        error(self.class.name..": attribute \""..id.."\" not found in indexes.");
+function SortableContainer:getIndex(attrid, groupid)
+    if self.indexes[attrid] == nil then
+        error(self.class.name..": attribute \""..attrid.."\" not found in indexes.");
     end
-    return index;
+    if groupid == nil then
+        groupid = "DefaultGroup";
+    end
+    if self.indexes[attrid][groupid] == nil then
+        self.indexes[attrid][groupid] = {};
+    end
+    return self.indexes[attrid][groupid];
 end
 
 function SortableContainer:getAttribute(id)
     local attr = self.attributes[id];
-    if type(attr) ~= 'table' then
+    if type(attr) == nil then
         error(self.class.name..": attribute \""..id.."\" not found in attributes.");
     end
     return attr;
 end
 
-function SortableContainer:addItem(item, selected)
+function SortableContainer:addItem(item, groupid)
     if self.ids[item.id] ~= nil then
         error(self.class.name..":addItem("..item.id.."): item already exists!");
     end
     self.ids[item.id] = item;
     for id, attr in pairs(self.attributes) do
-        local index = self:getIndex(id);
+        local index = self:getIndex(id, groupid);
         table.insert(index, { attribute = item.attributes[id], item = item });
-    end
-    if selected == true then
-        self:select(item.id);
     end
 end
 
-function SortableContainer:deleteItem(id)
-    for attrid, index in pairs(self.indexes) do
-        for sid, item in ipairs(index) do
-            if item.item.id == id then
-                table.remove(index, sid);
-                break;
+function SortableContainer:deleteItem(id, groupid)
+    for attrid, groups in pairs(self.indexes) do
+        if groupid == nil then
+            for gid, index in pairs(groups) do
+                for idx, item in ipairs(index) do
+                    if item.item.id == id then
+                        table.remove(index, idx);
+                        break;
+                    end
+                end
+            end
+        else
+            local index = self:getIndex(attrid, groupid);
+            for idx, item in ipairs(index) do
+                if item.item.id == id then
+                    table.remove(index, idx);
+                    break;
+                end
             end
         end
     end
@@ -148,9 +162,12 @@ function SortableContainer.dumpIndexArray(array)
     end
 end
 
-function SortableContainer:dumpIndex(id)
-    local index = self:getIndex(id);
-    print("Index ("..table.getn(index)..":");
+function SortableContainer:dumpIndex(attrid, groupid)
+    if groupid == nil then
+        groupid = "DefaultGroup";
+    end
+    local index = self:getIndex(id, groupid);
+    print("Index of group \""..groupid.."\"("..table.getn(index)..":");
     self.dumpIndexArray(index);
 end
 
