@@ -63,7 +63,6 @@ function love.update(dt)
     Slab.EndWindow();
 
     AddFilepathDialog();
-    FnameidExistsDialog();
     dpConfirmator:update();
 
     if quitDialog then
@@ -97,22 +96,11 @@ function AddFilepathDialog()
         if result.Button == "OK" then
             for key, fpath in pairs(result.Files) do
                 local item = { id = fpath, attributes = { path = fpath } };
-                if FilepathContainer.ids[item.id] ~= nil then
-                    fnameidExistsDialog = true;
-                else
+                if FilepathContainer.ids[item.id] == nil then
                     FilepathContainer:addItem(item);
                 end
             end
         end
         if result.Button ~= "" then openFilepathDialog = false; end
-    end
-end
-
-function FnameidExistsDialog()
-    if fnameidExistsDialog then
-        local result = Slab.MessageBox("Existing item!", "This item already exists!", { Buttons = { "OK" } });
-        if result ~= "" then
-            fnameidExistsDialog = false;
-        end
     end
 end
