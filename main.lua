@@ -1,19 +1,7 @@
 
 Slab = require('thirdparty/Slab');
 
-local SContainer = require('SortableContainer');
-
-require('SortGUI');
-
-local DConfirmator = require('DeleteConfirmator');
-
-StandardId = SContainer.Attribute("id", "Id");
-PathAttr = SContainer.Attribute("path", "Path");
-FilepathContainer = SContainer("fpathcontainer", "Filepath list");
-
-FilepathContainer:addAttribute(PathAttr);
-
-dpConfirmator = DConfirmator(FilepathContainer, "filepaths");
+local FPSModule = require('FilepathSources');
 
 function love.load(args)
     Slab.Initialize(args);
@@ -34,16 +22,8 @@ function love.update(dt)
             end
             Slab.EndMenu();
         end
-        if Slab.BeginMenu("Filepaths") then
-            SortMenu(FilepathContainer);
-            if Slab.MenuItem("Add") then
-                openFilepathDialog = true;
-            end
-            if Slab.MenuItem("Delete") then
-                dpConfirmator.active = true;
-            end
-            Slab.EndMenu();
-        end
+        FPSModule:UpdateMenu();
+
         MMBW, MMBH = Slab.GetControlSize();
         Slab.EndMainMenuBar();
     end
@@ -60,12 +40,11 @@ function love.update(dt)
                           ContentW = windowW,
                           ContentH = windowH - MMBH,
                           NoOutline = true}) then
-        SortedTree(FilepathContainer);
+        FPSModule:UpdateTree();
     end
     Slab.EndWindow();
 
-    AddFilepathDialog();
-    dpConfirmator:update();
+    FPSModule:UpdateDialogs();
 
     if quitDialog then
         local result = Slab.MessageBox("Are You sure?", "Are You sure to quit program?", { Buttons = { "Yes", "No" }});
@@ -90,19 +69,4 @@ function onquit()
     end
     quitDialog = true;
     return true;
-end
-
-function AddFilepathDialog()
-    if openFilepathDialog then
-        local result = Slab.FileDialog({ Type = "openfile" })
-        if result.Button == "OK" then
-            for key, fpath in pairs(result.Files) do
-                local item = { id = fpath, attributes = { path = fpath } };
-                if FilepathContainer.ids[item.id] == nil then
-                    FilepathContainer:addItem(item);
-                end
-            end
-        end
-        if result.Button ~= "" then openFilepathDialog = false; end
-    end
 end

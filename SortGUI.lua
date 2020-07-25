@@ -1,5 +1,5 @@
 
-function SortMenu(container)
+local function SortMenu(container)
     if Slab.BeginMenu("Sort by") then
         for attrid, attr in pairs(container.attributes) do
             if Slab.BeginMenu(attr.name) then
@@ -16,7 +16,7 @@ function SortMenu(container)
     end
 end
 
-function SortedTree(container)
+local function SortedTree(container)
     if Slab.BeginTree(container.name) then
         local index = container:getIndex(container.currentAttr);
         for idx, item in ipairs(index) do
@@ -37,3 +37,5 @@ function SortedTree(container)
         Slab.EndTree();
     end
 end
+
+return { SortMenu = SortMenu, SortedTree = SortedTree };
