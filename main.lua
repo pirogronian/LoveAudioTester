@@ -1,21 +1,19 @@
 
-MiddleClass = require ('thirdparty/middleclass/middleclass');
-
 Slab = require('thirdparty/Slab');
 
-require('SortableContainer');
+local SContainer = require('SortableContainer');
 
 require('SortGUI');
 
-require('DeleteConfirmator');
+local DConfirmator = require('DeleteConfirmator');
 
-StandardId = SortableAttribute("id", "Id");
-PathAttr = SortableAttribute("path", "Path");
-FilepathContainer = SortableContainer("fpathcontainer", "Filepath list");
+StandardId = SContainer.Attribute("id", "Id");
+PathAttr = SContainer.Attribute("path", "Path");
+FilepathContainer = SContainer("fpathcontainer", "Filepath list");
 
-FilepathContainer:addAttribute(PathAttr)
+FilepathContainer:addAttribute(PathAttr);
 
-dpConfirmator = DeleteConfirmator(FilepathContainer, "filepaths");
+dpConfirmator = DConfirmator(FilepathContainer, "filepaths");
 
 function love.load(args)
     Slab.Initialize(args);

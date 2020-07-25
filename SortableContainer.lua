@@ -1,5 +1,7 @@
 
-SortableAttribute = MiddleClass("SortableAttribute");
+local Class = require('thirdparty/middleclass/middleclass');
+
+local SortableAttribute = Class("SortableAttribute");
 
 function SortableAttribute.sortAsc(sitem1, sitem2)
     return sitem1.attribute < sitem2.attribute;
@@ -18,7 +20,9 @@ function SortableAttribute:dump()
     print(self.class.name..":\n  id: "..self.id.."\n  name: "..self.name)
 end
 
-SortableContainer = MiddleClass("SortableContainer");
+local SortableContainer = Class("SortableContainer");
+
+SortableContainer.Attribute = SortableAttribute;
 
 function SortableContainer:initialize(id, name)
     self.ids = {};
@@ -101,8 +105,11 @@ function SortableContainer:deleteItem(id, groupid)
 end
 
 function SortableContainer:deleteSelected()
-    for id, unused in pairs(self.selected) do
-        self:deleteItem(id);
+--     self:dumpSelection();
+    for id, selected in pairs(self.selected) do
+        if selected then
+            self:deleteItem(id);
+        end
     end
 end
 
@@ -177,3 +184,5 @@ function SortableContainer:dumpSelection()
         print("  ["..id.."] =>", val);
     end
 end
+
+return SortableContainer;

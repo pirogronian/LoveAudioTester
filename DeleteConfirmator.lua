@@ -1,5 +1,7 @@
 
-DeleteConfirmator = MiddleClass("DeleteConfirmator");
+local Class = require('thirdparty/middleclass/middleclass');
+
+local DeleteConfirmator = Class("DeleteConfirmator");
 
 function DeleteConfirmator:initialize(container, itemname)
     self.container = container;
@@ -22,3 +24,5 @@ function DeleteConfirmator:update()
         end
     end
 end
+
+return DeleteConfirmator;
