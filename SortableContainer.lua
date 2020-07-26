@@ -37,8 +37,8 @@ end
 function SortableContainer:addAttribute(attr)
     self.attributes[attr.id] = attr;
     self.indexes[attr.id] = {};
-    if self.currentAttr == nil then
-        self.currentAttr = attr.id;
+    if self.currentAttribute == nil then
+        self.currentAttribute = attr.id;
     end
 end
 
@@ -153,7 +153,7 @@ function SortableContainer:sort(attrid, dir)
     end
     local index = self:getIndex(attrid);
     table.sort(index, comp);
-    self.currentAttr = attrid;
+    self.currentAttribute = attrid;
 end
 
 function SortableContainer:dumpAttributes()

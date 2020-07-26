@@ -1,12 +1,29 @@
 
+bitser = require('thirdparty/bitser/bitser');
+
 Slab = require('thirdparty/Slab');
 
 local FPSModule = require('FilepathSources');
+
+local function loadData()
+    local progData = bitser.loadLoveFile('LoveAudioTesterState.dat');
+    if progData == nil then return; end
+    if progData.modules ~= nil then
+        FPSModule:LoadData(progData.modules.fpsmodule)
+    end
+end
+
+local function saveData()
+    local progData = { modules = {} };
+    progData.modules.fpsmodule = FPSModule:SaveData();
+    bitser.dumpLoveFile('LoveAudioTesterState.dat', progData);
+end
 
 function love.load(args)
     Slab.Initialize(args);
     SlabQuit = love.quit;
     love.quit = onquit;
+    loadData();
 end
 
 
@@ -65,6 +82,7 @@ end
 function onquit()
     if quitConfirmed then
         SlabQuit();
+        saveData();
         return false;
     end
     quitDialog = true;
