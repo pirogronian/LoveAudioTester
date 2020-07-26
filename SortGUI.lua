@@ -16,21 +16,21 @@ local function SortMenu(container)
     end
 end
 
-local function SortedTree(container)
+local function SortedTree(container, groupid)
     if Slab.BeginTree(container.name) then
-        local index = container:getIndex(container.currentAttr);
+        local index = container:getIndex(container.currentAttr, groupid);
         for idx, item in ipairs(index) do
-            if item.item.isSortableContainer == true then
-                isLeaf = false;
-            else
+            if item.item.container == nil then
                 isLeaf = true;
+            else
+                isLeaf = false;
             end
-            local ret = Slab.BeginTree(item.item.id, { IsLeaf = isLeaf, IsSelected = container:isSelected(item.item.id) });
+            local ret = Slab.BeginTree(item.item, { IsLeaf = isLeaf, IsSelected = container:isSelected(item.item.id) });
             if Slab.IsControlClicked() then
                 container:toggleSelection(item.item.id);
             end
             if not isLeaf and ret then
-                SortedTree(item.item);
+                SortedTree(item.item.container, item.item.id);
                 Slab.EndTree();
             end
         end

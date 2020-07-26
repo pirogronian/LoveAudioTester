@@ -13,9 +13,22 @@ fps.paths:addAttribute(SContainer.Attribute("path", "Path"));
 
 fps.deleteConfirmator = DConfirmator(fps.paths, "filepaths");
 
+function fps:createPathItem(fpath)
+    local item = { id = fpath, attributes = { path = fpath } };
+    local mt = getmetatable(item);
+    if mt == nil then
+        mt = {};
+    end
+    mt.__tostring = function(item)
+        return item.id;
+    end
+    setmetatable(item, mt);
+    return item;
+end
+
 function fps:addPaths(paths)
     for key, fpath in pairs(paths) do
-        local item = { id = fpath, attributes = { path = fpath } };
+        local item = self:createPathItem(fpath);
         if self.paths.ids[item.id] == nil then
             self.paths:addItem(item);
         end
@@ -46,6 +59,21 @@ function fps:UpdateOpenFileDialog()
             self:addPaths(result.Files);
         end
         if result.Button ~= "" then openFilepathDialog = false; end
+    end
+end
+
+function fps:UpdateNewSourceDialog()
+    if Slab.BeginDialog("NewFpathSourceDialog") then
+        Slab.BeginLayout("NewFpathSourceDialogLayout");
+        Slab.Text("Id:");
+        Slab.SameLine();
+        Slab.Input("FpathSourceId");
+        local id = Slab.GetInputText();
+        Slab.EndLayout();
+        if Slab.Button("Create") then
+            print("Create");
+        end
+        Slab.EndDialog();
     end
 end
 
