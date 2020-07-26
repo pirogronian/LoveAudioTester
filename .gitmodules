@@ -3,7 +3,7 @@
 	url = https://github.com/pirogronian/Slab
 [submodule "thirdparty/bitser"]
 	path = thirdparty/bitser
-	url = https://github.com/gvx/bitser
+	url = https://github.com/pirogronian/bitser
 [submodule "thirdparty/middleclass"]
 	path = thirdparty/middleclass
 	url = https://github.com/kikito/middleclass
