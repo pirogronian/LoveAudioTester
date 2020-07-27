@@ -3,6 +3,8 @@ bitser = require('thirdparty/bitser/bitser');
 
 Slab = require('thirdparty/Slab');
 
+local InfoQueue = require('InfoQueue');
+
 local FPSModule = require('FilepathSources');
 
 local function loadData()
@@ -70,6 +72,7 @@ function love.update(dt)
     Slab.EndWindow();
 
     FPSModule:UpdateDialogs();
+    InfoQueue:Update();
 
     if quitDialog then
         local result = Slab.MessageBox("Are You sure?", "Are You sure to quit program?", { Buttons = { "Yes", "No" }});
