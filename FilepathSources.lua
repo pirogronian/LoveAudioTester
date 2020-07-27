@@ -1,9 +1,13 @@
 
+local Utils = require('Utils');
+
 local SContainer = require('SortableContainer');
 
 local DConfirmator = require('DeleteConfirmator');
 
 local SortGui = require('SortGUI');
+
+local NSDialog = require('NewSourceDialog');
 
 local fps = {};
 
@@ -30,9 +34,12 @@ end
 
 function fps:addPaths(paths)
     for key, fpath in pairs(paths) do
-        local item = self:createPathItem(fpath);
-        if self.paths.ids[item.id] == nil then
-            self.paths:addItem(item);
+        local fpath = Utils.getRelativePath(fpath);
+        if fpath ~= nil then
+            local item = self:createPathItem(fpath);
+            if self.paths.ids[item.id] == nil then
+                self.paths:addItem(item);
+            end
         end
     end
 end
@@ -45,6 +52,12 @@ function fps:UpdateMenu()
         end
         if Slab.MenuItem("Delete") then
             self.deleteConfirmator.active = true;
+        end
+        if Slab.BeginMenu("Sources") then
+            if Slab.MenuItem("New") then
+                self:OpenNewSourceDialog();
+            end
+            Slab.EndMenu();
         end
         Slab.EndMenu();
     end
@@ -64,24 +77,49 @@ function fps:UpdateOpenFileDialog()
     end
 end
 
+function fps:getCurrentPath()
+    return self.paths.lastSelected;
+end
+
+function fps:OpenNewSourceDialog()
+    local path = self:getCurrentPath();
+    if path == nil then return; end
+    self.currentPath = path;
+    Slab.OpenDialog("NewSourceDialog");
+    self.newSourceDialog = true;
+end
+
+function fps:CreateSourceItem(id, path)
+    local source = love.audio.newSource(path, "static");
+    local item = { id = id, attributes = { id = id }, source = source };
+    local mt = {};
+    mt.__tostring = function(item) return item.id; end
+    setmetatable(item, mt);
+    return item;
+end
+
+function fps:AddNewSource(id, path)
+    local item = self:CreateSourceItem(id, path)
+    self.sources:addItem(item, path);
+end
+
 function fps:UpdateNewSourceDialog()
-    if Slab.BeginDialog("NewFpathSourceDialog") then
-        Slab.BeginLayout("NewFpathSourceDialogLayout");
-        Slab.Text("Id:");
-        Slab.SameLine();
-        Slab.Input("FpathSourceId");
-        local id = Slab.GetInputText();
-        Slab.EndLayout();
-        if Slab.Button("Create") then
-            print("Create"); --Debug only for now
+    if not self.newSourceDialog then return; end
+    if self.currentPath ~= nil then
+        local closed, id = NSDialog(self.currentPath);
+        if closed then
+            self.newSourceDialog = false;
+            if id == nil then return; end
+            self:AddNewSource(id, self.currentPath);
+--             self.sources:dumpIds();
         end
-        Slab.EndDialog();
     end
 end
 
 function fps:UpdateDialogs()
     self.deleteConfirmator:update();
     self:UpdateOpenFileDialog();
+    self:UpdateNewSourceDialog();
 end
 
 function fps:SaveData()

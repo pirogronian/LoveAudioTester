@@ -115,10 +115,14 @@ end
 
 function SortableContainer:select(id)
     self.selected[id] = true;
+    self.lastSelected = id;
 end
 
 function SortableContainer:deselect(id)
-    self.selected[id] = false;
+    self.selected[id] = nil;
+    if self.lastSelected == id then
+        self.lastSelected = nil;
+    end
 end
 
 function SortableContainer:isSelected(id)
@@ -182,6 +186,13 @@ function SortableContainer:dumpSelection()
     print("Selected ("..self:selectedNumber().."):");
     for id, val in pairs(self.selected) do
         print("  ["..id.."] =>", val);
+    end
+end
+
+function SortableContainer:dumpIds()
+    print("Container set:");
+    for id, val in pairs(self.ids) do
+        print(id.." ", val);
     end
 end
 
