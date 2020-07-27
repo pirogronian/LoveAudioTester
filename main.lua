@@ -34,6 +34,9 @@ function love.update(dt)
 
     if Slab.BeginMainMenuBar() then
         if Slab.BeginMenu("Program") then
+            if Slab.MenuItem("Save state") then
+                saveData();
+            end
             if Slab.MenuItem("Quit") then
                 love.event.quit();
             end
