@@ -9,6 +9,8 @@ local SortGui = require('SortGUI');
 
 local NSDialog = require('NewSourceDialog');
 
+local InfoQueue = require('InfoQueue');
+
 local fps = {};
 
 fps.paths = SContainer("fpathcontainer", "Filepaths");
@@ -110,8 +112,13 @@ function fps:UpdateNewSourceDialog()
         if closed then
             self.newSourceDialog = false;
             if id == nil then return; end
-            self:AddNewSource(id, self.currentPath);
+            if self.sources.ids[id] ~= nil then
+                InfoQueue:pushMessage("Id already exists!", "Source with id \""..id.."\" already exists.");
+                self.newSourceDialog = true;
+            else
+                self:AddNewSource(id, self.currentPath);
 --             self.sources:dumpIds();
+            end
         end
     end
 end
