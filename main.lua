@@ -6,7 +6,12 @@ Slab = require('thirdparty/Slab');
 local FPSModule = require('FilepathSources');
 
 local function loadData()
-    local progData = bitser.loadLoveFile('LoveAudioTesterState.dat');
+    local status, value = pcall(bitser.loadLoveFile, 'LoveAudioTesterState.dat');
+    if status == false then
+        progData = nil;
+    else
+        progData = value;
+    end
     if progData == nil then return; end
     if progData.modules ~= nil then
         FPSModule:LoadData(progData.modules.fpsmodule)
