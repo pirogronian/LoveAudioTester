@@ -13,6 +13,8 @@ local InfoQueue = require('InfoQueue');
 
 local IWManager = require('ItemWindowsManager');
 
+local MemSizeFormat = require('MemorySizeFormat');
+
 local dT = require('DumpTable');
 
 local fps = {};
@@ -51,6 +53,7 @@ function fps:createPathItem(fpath, isFullPath)
         id = localpath,
         attributes = { path = localpath },
         fullpath = fpath,
+        fileinfo = love.filesystem.getInfo(localpath);
         decoder = value,
         container = self.sources };
     local mt = getmetatable(item);
@@ -197,9 +200,11 @@ function fps.fileItemWindowContent(item, module)
     Slab.SetLayoutColumn(1);
     Slab.Text("Path:");
     Slab.Text("Full path:");
+    Slab.Text("Size:");
     Slab.SetLayoutColumn(2);
     Slab.Text(item.id);
     Slab.Text(item.fullpath);
+    Slab.Text(MemSizeFormat(item.fileinfo.size));
     Slab.EndLayout();
 end
 
