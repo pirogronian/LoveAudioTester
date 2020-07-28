@@ -5,7 +5,7 @@ Slab = require('thirdparty/Slab');
 
 local InfoQueue = require('InfoQueue');
 
-local FPSModule = require('FilepathSources');
+local FPSModule = require('FileSourcesModule');
 
 local function loadData()
     local status, value = pcall(bitser.loadLoveFile, 'LoveAudioTesterState.dat');
