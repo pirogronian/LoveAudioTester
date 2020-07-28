@@ -76,13 +76,21 @@ function love.update(dt)
     InfoQueue:Update();
 
     if quitDialog then
-        local result = Slab.MessageBox("Are You sure?", "Are You sure to quit program?", { Buttons = { "Yes", "No" }});
+        local result = Slab.MessageBox(
+            "Are You sure?",
+            "Save state before quit program?",
+            { Buttons = { "Yes", "No", "Cancel" }});
         if result ~= "" then
             quitDialog = false;
-        end
-        if result == "Yes" then
-            quitConfirmed = true;
-            love.event.quit();
+            if result ~= "Cancel" then
+                quitConfirmed = true;
+                if result == "Yes" then
+                    saveOnQuit = true;
+                else
+                    saveOnQuit = false;
+                end
+                love.event.quit();
+            end
         end
     end
 end
@@ -94,7 +102,9 @@ end
 function onquit()
     if quitConfirmed then
         SlabQuit();
-        saveData();
+        if saveOnQuit then
+            saveData();
+        end
         return false;
     end
     quitDialog = true;
