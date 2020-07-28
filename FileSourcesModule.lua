@@ -11,12 +11,22 @@ local NSDialog = require('NewSourceDialog');
 
 local InfoQueue = require('InfoQueue');
 
+local IWManager = require('ItemWindowsManager');
+
+local dT = require('DumpTable');
+
 local fps = {};
 
 fps.paths = SContainer("fpathcontainer", "Filepaths");
 fps.paths:addAttribute(SContainer.Attribute("path", "Path"));
 
 fps.deleteConfirmator = DConfirmator(fps.paths, "filepaths");
+
+function fps.onFileDelete(id)
+    IWManager:delItem("File", id, true);
+end
+
+fps.paths.onDelete = fps.onFileDelete;
 
 fps.sources = SContainer("filesourcescontainer", "Sources");
 fps.sources:addAttribute(SContainer.Attribute("name", "Name"));
@@ -70,6 +80,9 @@ end
 function fps:UpdateMenu()
     if Slab.BeginMenu("Filepaths") then
         SortGui.SortMenu(self.paths);
+        if Slab.MenuItem("Info") then
+            IWManager:showCurrentItemWindow("File");
+        end
         if Slab.MenuItem("Add") then
             openFilepathDialog = true;
         end
@@ -84,10 +97,6 @@ function fps:UpdateMenu()
         end
         Slab.EndMenu();
     end
-end
-
-function fps:UpdateTree()
-    SortGui.SortedTree(fps.paths);
 end
 
 function fps:UpdateOpenFileDialog()
@@ -150,6 +159,10 @@ function fps:UpdateDialogs()
     self:UpdateNewSourceDialog();
 end
 
+function fps:UpdateTree()
+    SortGui.SortedTree(fps.paths, { clicked = self.fileClicked });
+end
+
 function fps:SaveData()
     local data = { paths = { currentAttribute = self.paths.currentAttribute, selected =  self.paths.selected, ids = {}}};
     for id, path in pairs(self.paths.ids) do
@@ -174,5 +187,22 @@ function fps:LoadData(data)
         end
     end
 end
+
+function fps.fileClicked(item, context)
+    IWManager:setCurrentItem("File", item);
+end
+
+function fps.fileItemWindowContent(item, module)
+    Slab.BeginLayout("FileItemWindowLayout", { Columns = 2 });
+    Slab.SetLayoutColumn(1);
+    Slab.Text("Path:");
+    Slab.Text("Full path:");
+    Slab.SetLayoutColumn(2);
+    Slab.Text(item.id);
+    Slab.Text(item.fullpath);
+    Slab.EndLayout();
+end
+
+IWManager:registerModule("File", "File", fps.fileItemWindowContent, fps);
 
 return fps;

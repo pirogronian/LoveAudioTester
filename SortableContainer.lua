@@ -102,6 +102,9 @@ function SortableContainer:deleteItem(id, groupid)
     end
     self.selected[id] = nil;
     self.ids[id] = nil;
+    if self.onDelete then
+        self.onDelete(id);
+    end
 end
 
 function SortableContainer:deleteSelected()
@@ -177,7 +180,7 @@ function SortableContainer:dumpIndex(attrid, groupid)
     if groupid == nil then
         groupid = "DefaultGroup";
     end
-    local index = self:getIndex(id, groupid);
+    local index = self:getIndex(attrid, groupid);
     print("Index of group \""..groupid.."\"("..table.getn(index)..":");
     self.dumpIndexArray(index);
 end

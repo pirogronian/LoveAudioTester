@@ -5,6 +5,8 @@ Slab = require('thirdparty/Slab');
 
 local InfoQueue = require('InfoQueue');
 
+local IWManager = require('ItemWindowsManager');
+
 local FPSModule = require('FileSourcesModule');
 
 local function loadData()
@@ -72,6 +74,7 @@ function love.update(dt)
     end
     Slab.EndWindow();
 
+    IWManager:UpdateCurrentItemWindows();
     FPSModule:UpdateDialogs();
     InfoQueue:Update();
 
