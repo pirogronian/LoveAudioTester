@@ -27,6 +27,7 @@ local function saveData()
 end
 
 function love.load(args)
+    InfoQueue.debug = true;
     Slab.Initialize(args);
     SlabQuit = love.quit;
     love.quit = onquit;

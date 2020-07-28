@@ -1,12 +1,18 @@
 
 local iq = {
         messages = {};
+        debug = false;
     };
 
 function iq:pushMessage(title, text)
     if text == nil then text = title; end
     local message = { title = title, text = text }
     table.insert(self.messages, message);
+    if self.debug then
+        print("InfoQueue: New message:");
+        print("  ", title);
+        print("  ", text);
+    end
 end
 
 function iq:Update()
