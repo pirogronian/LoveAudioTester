@@ -18,11 +18,31 @@ fps.paths:addAttribute(SContainer.Attribute("path", "Path"));
 
 fps.deleteConfirmator = DConfirmator(fps.paths, "filepaths");
 
-fps.sources = SContainer("fpathsourcescontainer", "Sources");
+fps.sources = SContainer("filesourcescontainer", "Sources");
 fps.sources:addAttribute(SContainer.Attribute("name", "Name"));
 
-function fps:createPathItem(fpath)
-    local item = { id = fpath, attributes = { path = fpath }, container = self.sources };
+function fps:createPathItem(fpath, isFullPath)
+    local localpath = "";
+    if isFullPath == nil or isFullPath == true then
+        localpath = Utils.getRelativePath(fpath);
+        if localpath == nil then
+            InfoQueue:pushMessage("File doesnt exist!", "File with path \n\""..fpath.."\"\nis inaccessable!");
+            return;
+        end
+    else
+        localpath = fpath;
+    end
+    local status, value = pcall(love.sound.newDecoder, localpath);
+    if not status then
+        InfoQueue:pushMessage("Cannot create decoder!", "Cannot create decoder from file\n\""..localpath.."\"!\nError: \""..value.."\"");
+        return;
+    end
+    local item = {
+        id = localpath,
+        attributes = { path = localpath },
+        fullpath = fpath,
+        decoder = value,
+        container = self.sources };
     local mt = getmetatable(item);
     if mt == nil then
         mt = {};
@@ -36,11 +56,12 @@ end
 
 function fps:addPaths(paths)
     for key, fpath in pairs(paths) do
-        local fpath = Utils.getRelativePath(fpath);
         if fpath ~= nil then
             local item = self:createPathItem(fpath);
-            if self.paths.ids[item.id] == nil then
-                self.paths:addItem(item);
+            if item ~= nil then
+                if self.paths.ids[item.id] == nil then
+                    self.paths:addItem(item);
+                end
             end
         end
     end
@@ -142,7 +163,10 @@ function fps:LoadData(data)
     local paths = data.paths;
     self.paths.currentAttribute = paths.currentAttribute;
     for key, val in pairs(paths.ids) do
-        self.paths:addItem(self:createPathItem(key));
+        local item = self:createPathItem(key, false);
+        if item ~= nil then
+            self.paths:addItem(item);
+        end
     end
     for key, val in pairs(paths.selected) do
         if val == true then
