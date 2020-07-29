@@ -1,6 +1,8 @@
 
 local Class = require('thirdparty/middleclass/middleclass');
 
+local Comm = require('Communicator');
+
 local SortableAttribute = Class("SortableAttribute");
 
 function SortableAttribute.sortAsc(sitem1, sitem2)
@@ -20,11 +22,12 @@ function SortableAttribute:dump()
     print(self.class.name..":\n  id: "..self.id.."\n  name: "..self.name)
 end
 
-local SortableContainer = Class("SortableContainer");
+local SortableContainer = Class("SortableContainer", Comm);
 
 SortableContainer.Attribute = SortableAttribute;
 
 function SortableContainer:initialize(id, name)
+    Comm.initialize(self);
     self.ids = {};
     self.indexes = {};
     self.attributes = {};
@@ -32,6 +35,10 @@ function SortableContainer:initialize(id, name)
     self.id = id;
     self.name = name;
     self.isSortableContainer = true;
+    self:DeclareSignal("AttributeAdded");
+    self:DeclareSignal("AttributeRemoved");
+    self:DeclareSignal("ItemAdded");
+    self:DeclareSignal("ItemRemoved");
 end
 
 function SortableContainer:addAttribute(attr)
@@ -40,11 +47,15 @@ function SortableContainer:addAttribute(attr)
     if self.currentAttribute == nil then
         self.currentAttribute = attr.id;
     end
+    self:EmitSignal("AttributeAdded", attr);
 end
 
 function SortableContainer:deleteAttribute(id)
-    table.remove(self.attributes, id);
-    table.remove(self.indexes, id);
+    local attr = self.attributes[id];
+    if attr == nil then return; end
+    self.attributes[id] = nil;
+    self.indexes[id] = nil;
+    self:EmitSignal("AttributeRemoved", attr);
 end
 
 function SortableContainer:getIndex(attrid, groupid)

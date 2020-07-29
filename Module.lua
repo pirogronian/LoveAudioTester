@@ -4,6 +4,7 @@ local Comm = require('Communicator');
 local Module = Comm:subclass("Module");
 
 function Module:initialize(id, title)
+    Comm.initialize(self);
     self.id = id;
     self.title = title;
     self.stateChangd = false;

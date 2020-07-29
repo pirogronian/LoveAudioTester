@@ -83,7 +83,7 @@ function fps:addPaths(paths)
     for key, fpath in pairs(paths) do
         if fpath ~= nil then
             local item = self:createPathItem(fpath);
-            
+            self:addPathItem(item);
         end
     end
 end
