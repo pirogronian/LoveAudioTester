@@ -25,6 +25,7 @@ end
 local function saveData()
     local progData = { modules = {} };
     progData.modules.fpsmodule = FPSModule:SaveData();
+    FPSModule:StateClean();
     bitser.dumpLoveFile('LoveAudioTesterState.dat', progData);
 end
 

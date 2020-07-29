@@ -8,6 +8,7 @@ function Module:initialize(id, title)
     self.id = id;
     self.title = title;
     self.stateChangd = false;
+    self:DeclareSignal("StateChanged");
 end
 
 function Module:LoadState()
@@ -20,6 +21,11 @@ end
 
 function Module:StateChanged()
     self.stateChanged = true;
+    self:EmitSignal("StateChanged")
+end
+
+function Module:StateClean()
+    self.stateChanged = false;
 end
 
 function Module:IsStateChanged()

@@ -113,9 +113,7 @@ function SortableContainer:deleteItem(id, groupid)
     end
     self.selected[id] = nil;
     self.ids[id] = nil;
-    if self.onDelete then
-        self.onDelete(id);
-    end
+    self:EmitSignal("ItemRemoved", id);
 end
 
 function SortableContainer:deleteSelected()

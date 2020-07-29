@@ -26,12 +26,10 @@ fps.paths:addAttribute(SContainer.Attribute("path", "Path"));
 
 fps.deleteConfirmator = DConfirmator(fps.paths, "filepaths");
 
-function fps.onFileDelete(id)
+function fps:onFileDelete(id)
     IWManager:delItem("File", id, true);
-    fps:StateChanged();
+    self:StateChanged();
 end
-
-fps.paths.onDelete = fps.onFileDelete;
 
 fps.sources = SContainer("filesourcescontainer", "Sources");
 fps.sources:addAttribute(SContainer.Attribute("name", "Name"));
@@ -219,6 +217,8 @@ function fps.fileItemWindowContent(item, module)
     Slab.Separator();
     DecoderInfo(item.decoder, "FileItemWindowDecoderInfoLayout")
 end
+
+fps.paths:Connect("ItemRemoved", fps.onFileDelete, fps);
 
 IWManager:registerModule("File", "File", fps.fileItemWindowContent, fps);
 
