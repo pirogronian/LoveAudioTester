@@ -15,4 +15,29 @@ function u.getRelativePath(path)
     return rel;
 end
 
+
+function u.MemorySizeFormat(bytes)
+    local units = "B";
+    if bytes >= 1024 then
+        bytes = bytes / 1024;
+        units = "KB";
+        if bytes >= 1024 then
+            bytes = bytes / 1024;
+            units = "MB";
+            if bytes >= 1024 then
+                bytes = bytes / 1024;
+                units = "GB";
+            end
+        end
+    end
+    return string.format("%.2f %s", bytes, units);
+end
+
+function u.TimeFormat(seconds)
+    seconds = math.floor(seconds);
+    local minutes = math.floor(seconds / 60);
+    local hours = math.floor(minutes / 60);
+    return string.format("%u:%02u:%02u", hours, minutes, seconds);
+end
+
 return u;

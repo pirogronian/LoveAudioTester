@@ -13,7 +13,7 @@ local InfoQueue = require('InfoQueue');
 
 local IWManager = require('ItemWindowsManager');
 
-local MemSizeFormat = require('MemorySizeFormat');
+local DecoderInfo = require('DecoderInfo');
 
 local dT = require('DumpTable');
 
@@ -204,8 +204,10 @@ function fps.fileItemWindowContent(item, module)
     Slab.SetLayoutColumn(2);
     Slab.Text(item.id);
     Slab.Text(item.fullpath);
-    Slab.Text(MemSizeFormat(item.fileinfo.size));
+    Slab.Text(Utils.MemorySizeFormat(item.fileinfo.size));
     Slab.EndLayout();
+    Slab.Separator();
+    DecoderInfo(item.decoder, "FileItemWindowDecoderInfoLayout")
 end
 
 IWManager:registerModule("File", "File", fps.fileItemWindowContent, fps);
