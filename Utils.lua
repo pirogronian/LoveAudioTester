@@ -40,4 +40,10 @@ function u.TimeFormat(seconds)
     return string.format("%u:%02u:%02u", hours, minutes, seconds);
 end
 
+function u.VariableInfoString(var)
+    local t = type(var);
+    local val = tostring(var);
+    return string.format("%s (%s)", val, t);
+end
+
 return u;

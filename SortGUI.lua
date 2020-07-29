@@ -31,7 +31,6 @@ local function SortedTreeContent(container, options)
         end
         local ret = Slab.BeginTree(item.item, { IsLeaf = isLeaf, IsSelected = container:isSelected(item.item.id) });
         if Slab.IsControlClicked() then
-            container:toggleSelection(item.item.id);
             if options.clicked ~= nil then
                 options.clicked(item.item, options.context);
             end

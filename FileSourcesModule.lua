@@ -1,4 +1,6 @@
 
+local Module = require('Module');
+
 local Utils = require('Utils');
 
 local SContainer = require('SortableContainer');
@@ -17,7 +19,7 @@ local DecoderInfo = require('DecoderInfo');
 
 local dT = require('DumpTable');
 
-local fps = {};
+local fps = Module("filesourcesmodule", "File sources");
 
 fps.paths = SContainer("fpathcontainer", "Filepaths");
 fps.paths:addAttribute(SContainer.Attribute("path", "Path"));
@@ -26,6 +28,7 @@ fps.deleteConfirmator = DConfirmator(fps.paths, "filepaths");
 
 function fps.onFileDelete(id)
     IWManager:delItem("File", id, true);
+    fps:StateChanged();
 end
 
 fps.paths.onDelete = fps.onFileDelete;
@@ -67,15 +70,20 @@ function fps:createPathItem(fpath, isFullPath)
     return item;
 end
 
+function fps:addPathItem(item)
+    if item ~= nil then
+        if self.paths.ids[item.id] == nil then
+            self.paths:addItem(item);
+            self:StateChanged();
+        end
+    end
+end
+
 function fps:addPaths(paths)
     for key, fpath in pairs(paths) do
         if fpath ~= nil then
             local item = self:createPathItem(fpath);
-            if item ~= nil then
-                if self.paths.ids[item.id] == nil then
-                    self.paths:addItem(item);
-                end
-            end
+            
         end
     end
 end
@@ -192,7 +200,9 @@ function fps:LoadData(data)
 end
 
 function fps.fileClicked(item, context)
+    fps.paths:toggleSelection(item.id);
     IWManager:setCurrentItem("File", item);
+    fps:StateChanged();
 end
 
 function fps.fileItemWindowContent(item, module)

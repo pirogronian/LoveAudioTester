@@ -103,6 +103,9 @@ function love.draw()
 end
 
 function onquit()
+    if not FPSModule:IsStateChanged() then
+        quitConfirmed = true;
+    end
     if quitConfirmed then
         SlabQuit();
         if saveOnQuit then
