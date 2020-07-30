@@ -40,11 +40,13 @@ function iwm:isGlobalCurrent()
     return self._globalCurrent;
 end
 
-function iwm:setCurrentItem(modid, item)
+function iwm:setCurrentItem(modid, item, onload)
     local module = self:getModule(modid);
     module.currentItem = item;
     self._currentModuleId = modid;
-    self:StateChanged();
+    if not onload then
+        self:StateChanged();
+    end
 end
 
 function iwm:unsetCurrentItem(modid, id)
@@ -60,6 +62,7 @@ end
 function iwm:showCurrentItemWindow(modid)
     local module = self:getModule(modid);
     module.currentWindow = true;
+    self:StateChanged();
 end
 
 function iwm:addItem(modid, item)
@@ -81,7 +84,7 @@ function iwm.getCurrentWindowId(module)
     return module.id.."CurrentItemWindow";
 end
 
-function iwm.UpdateCurrentItemWindow(module)
+function iwm:UpdateCurrentItemWindow(module)
     if module.currentItem == nil or not module.currentWindow then return; end
     if Slab.BeginWindow(iwm.getCurrentWindowId(module),
                         {
@@ -96,6 +99,7 @@ function iwm.UpdateCurrentItemWindow(module)
         end
     else
         module.currentWindow = false;
+        self:StateChanged();
     end
     Slab.EndWindow();
 end
@@ -106,7 +110,7 @@ function iwm:UpdateCurrentItemWindows()
         self.UpdateCurrentItemWindow(module);
     else
         for id, module in pairs(self.modules) do
-            self.UpdateCurrentItemWindow(module);
+            self:UpdateCurrentItemWindow(module);
         end
     end
 end
@@ -118,8 +122,15 @@ function iwm:LoadState(data)
     if type(data.modules) == "table" then
         for modid, moddata in pairs(data.modules) do
             local module = self:getModule(modid);
-            local item = module.options.onItemLoad(moddata.currentItemId)
-            self:setCurrentItem(modid, item);
+            local item = module.options.onItemLoad(moddata.currentItemId);
+            if item == nil then
+                self:StateChanged();
+            else
+                self:setCurrentItem(modid, item, true);
+                if moddata.currentWindow == true then
+                    module.currentWindow = true;
+                end
+            end
         end
     end
 end
@@ -133,8 +144,9 @@ function iwm:DumpState()
         local moddata = {};
         if module.currentItem ~= nil then
             moddata.currentItemId = module.currentItem.id;
-        else
-            self:StateChanged();
+        end
+        if module.currentWindow == true then
+            moddata.currentWindow = true;
         end
         data.modules[modid] = moddata;
     end
