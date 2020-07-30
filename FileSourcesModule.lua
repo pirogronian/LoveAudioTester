@@ -172,7 +172,7 @@ function fps:UpdateTree()
     SortGui.SortedTree(fps.paths, { clicked = self.fileClicked });
 end
 
-function fps:SaveData()
+function fps:DumpState()
     local data = { paths = { currentAttribute = self.paths.currentAttribute, selected =  self.paths.selected, ids = {}}};
     for id, path in pairs(self.paths.ids) do
         data.paths.ids[id] = {};
@@ -180,7 +180,7 @@ function fps:SaveData()
     return data;
 end
 
-function fps:LoadData(data)
+function fps:LoadState(data)
     if data == nil then return end
     local paths = data.paths;
     self.paths.currentAttribute = paths.currentAttribute;

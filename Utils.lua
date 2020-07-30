@@ -46,4 +46,8 @@ function u.VariableInfoString(var)
     return string.format("%s (%s)", val, t);
 end
 
+function u.IsClassOrSubClass(class, name)
+    return class.name == name or class:isSubclassOf(name);
+end
+
 return u;

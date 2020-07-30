@@ -1,40 +1,21 @@
 
-bitser = require('thirdparty/bitser/bitser');
-
 Slab = require('thirdparty/Slab');
 
 local InfoQueue = require('InfoQueue');
 
 local IWManager = require('ItemWindowsManager');
 
+local SManager = require('StateManager');
+
 local FPSModule = require('FileSourcesModule');
-
-local function loadData()
-    local status, value = pcall(bitser.loadLoveFile, 'LoveAudioTesterState.dat');
-    if status == false then
-        progData = nil;
-    else
-        progData = value;
-    end
-    if progData == nil then return; end
-    if progData.modules ~= nil then
-        FPSModule:LoadData(progData.modules.fpsmodule)
-    end
-end
-
-local function saveData()
-    local progData = { modules = {} };
-    progData.modules.fpsmodule = FPSModule:SaveData();
-    FPSModule:StateClean();
-    bitser.dumpLoveFile('LoveAudioTesterState.dat', progData);
-end
 
 function love.load(args)
     InfoQueue.debug = true;
     Slab.Initialize(args);
     SlabQuit = love.quit;
     love.quit = onquit;
-    loadData();
+    SManager:RegisterModule(FPSModule);
+    SManager:LoadState();
 end
 
 
@@ -46,7 +27,7 @@ function love.update(dt)
     if Slab.BeginMainMenuBar() then
         if Slab.BeginMenu("Program") then
             if Slab.MenuItem("Save state") then
-                saveData();
+                SManager:SaveState();
             end
             if Slab.MenuItem("Quit") then
                 love.event.quit();
@@ -104,13 +85,13 @@ function love.draw()
 end
 
 function onquit()
-    if not FPSModule:IsStateChanged() then
+    if not SManager:IsStateChanged() then
         quitConfirmed = true;
     end
     if quitConfirmed then
         SlabQuit();
         if saveOnQuit then
-            saveData();
+            SManager:SaveState();
         end
         return false;
     end

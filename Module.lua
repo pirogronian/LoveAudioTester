@@ -15,7 +15,7 @@ function Module:LoadState()
     print("Module:LoadState() dummy");
 end
 
-function Module:SaveState()
+function Module:DumpState()
     print("Module:SaveState() dummy");
 end
 
