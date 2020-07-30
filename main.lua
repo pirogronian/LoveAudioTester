@@ -15,6 +15,7 @@ function love.load(args)
     SlabQuit = love.quit;
     love.quit = onquit;
     SManager:RegisterModule(FPSModule);
+    SManager:RegisterModule(IWManager);
     SManager:LoadState();
 end
 

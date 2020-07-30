@@ -203,6 +203,10 @@ function fps.fileClicked(item, context)
     fps:StateChanged();
 end
 
+function fps.getFileItem(id, context)
+    return fps.paths.ids[id];
+end
+
 function fps.fileItemWindowContent(item, module)
     Slab.BeginLayout("FileItemWindowLayout", { Columns = 2 });
     Slab.SetLayoutColumn(1);
@@ -220,6 +224,8 @@ end
 
 fps.paths:Connect("ItemRemoved", fps.onFileDelete, fps);
 
-IWManager:registerModule("File", "File", fps.fileItemWindowContent, fps);
+IWManager:registerModule("File", "File",
+                         { onWindowUpdate = fps.fileItemWindowContent,
+                           onItemLoad = fps.getFileItem, context = fps });
 
 return fps;
