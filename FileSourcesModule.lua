@@ -157,31 +157,21 @@ function fps:UpdateTree()
 end
 
 function fps:DumpState()
-    local data = { paths = { currentAttribute = self.paths.currentAttribute, selected =  self.paths.selected, ids = {}}};
+--[[    local data = { paths = { currentAttribute = self.paths.currentAttribute, selected =  self.paths.selected, ids = {}}};
     for id, path in pairs(self.paths.ids) do
         data.paths.ids[id] = {};
-    end
+    end]]
+    local data = {
+        paths = self.paths:DumpState();
+        };
     return data;
 end
 
 function fps:LoadState(data)
     if data == nil then return end
     self:SetLoadPhase(true);
-    local paths = data.paths;
-    self.paths.currentAttribute = paths.currentAttribute;
-    for key, val in pairs(paths.ids) do
-        local item = FileItem(key);
-        if item ~= nil then
-            self.paths:addItem(item);
-        else
-            print("Warning:", self, "Cannot recreate item:", key);
-            self:StateChanged(true);
-        end
-    end
-    for key, val in pairs(paths.selected) do
-        if val == true then
-            self.paths:select(key);
-        end
+    if self.paths:LoadState(data.paths, FileItem) then
+        self:StateChanged(true);
     end
     self:SetLoadPhase(false);
 end

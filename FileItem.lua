@@ -5,15 +5,19 @@ local Item = require('Item');
 
 local fi = Item:subclass("FileItem");
 
-function fi:initialize(path, isFullPath)
+function fi:initialize(data, isFullPath)
+    local path = data;
+    if type(data) == 'table' then
+        path = data.id;
+        isFullPath = data.isFullPath;
+    end
+    local localpath = path;
     if isFullPath == true then
         localpath = Utils.getRelativePath(path);
         if localpath == nil then
             error("File with path \n\""..path.."\"\nis inaccessable!");
             return;
         end
-    else
-        localpath = path;
     end
     Item.initialize(self, localpath);
     self.attributes = { path = localpath };

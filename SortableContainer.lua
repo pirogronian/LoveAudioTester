@@ -216,7 +216,44 @@ function SortableContainer:dumpIds()
 end
 
 function SortableContainer:DumpState()
-    
+    local data = {
+            currentAttribute = self.currentAttribute,
+            selected =  self.selected, ids = {}};
+    for id, item in pairs(self.ids) do
+        data.ids[id] = item:getSerializableData();
+    end
+    return data;
+end
+
+function SortableContainer:LoadState(data, ItemClass, parentContainer)
+    if data == nil then return end
+    local err = false;
+    self.currentAttribute = data.currentAttribute;
+    for key, val in pairs(data.ids) do
+        if parentContainer then
+            local parent = parentContainer:getItem(val.parent);
+        end
+        val.parent = parent;
+        local status, value = pcall(ItemClass.new, ItemClass, val);
+        if status then
+            local item = value;
+            if item ~= nil then
+                self:addItem(item);
+            else
+                print("Warning:", self, "Cannot recreate item:", key);
+                err = true;
+            end
+        else
+            print("Warning:", self, "Cannot create item:", key, value);
+            err = true;
+        end
+    end
+    for key, val in pairs(data.selected) do
+        if val == true then
+            self:select(key);
+        end
+    end
+    return err;
 end
 
 return SortableContainer;
