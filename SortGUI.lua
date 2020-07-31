@@ -36,7 +36,9 @@ local function SortedTreeContent(container, options, groupid)
             end
         end
         if not isLeaf and ret then
-            SortedTreeContent(item.item.container, options.childrenOptions, item.id);
+            SortedTreeContent(item.item.container, options.childrenOptions, item.item.id);
+        end
+        if ret then
             Slab.EndTree();
         end
     end

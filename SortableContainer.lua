@@ -204,7 +204,7 @@ end
 function SortableContainer:dumpIds()
     print("Container set:");
     for id, val in pairs(self.ids) do
-        print(id.." ", val);
+        print(id, val);
     end
 end
 

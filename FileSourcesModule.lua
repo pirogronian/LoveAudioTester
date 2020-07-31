@@ -128,6 +128,7 @@ function fps:getCurrentPath()
 end
 
 function fps:OpenNewSourceDialog()
+    
     local path = self:getCurrentPath();
     if path == nil then return; end
     self.currentPath = path;
@@ -135,9 +136,14 @@ function fps:OpenNewSourceDialog()
     self.newSourceDialog = true;
 end
 
-function fps:CreateSourceItem(id, pathitem)
-    local source = love.audio.newSource(pathitem.file.path, "static");
-    local item = { id = id, attributes = { id = id }, source = source, parent = pathitem };
+function fps:CreateSourceItem(id, path)
+    local fitem = self.getFileItem(path, self);
+    if fitem == nil then
+        print(self, "Cannot create source: No such file item:", Utils.VariableInfoString(path))
+        return;
+    end
+    local source = love.audio.newSource(path, "static");
+    local item = { id = id, attributes = { id = id }, source = source, parent = fitem };
     local mt = {};
     mt.__tostring = function(item) return item.id; end
     setmetatable(item, mt);
@@ -161,7 +167,7 @@ function fps:UpdateNewSourceDialog()
                 self.newSourceDialog = true;
             else
                 self:AddNewSource(id, self.currentPath);
---             self.sources:dumpIds();
+                self.sources:dumpIds();
             end
         end
     end
@@ -174,6 +180,12 @@ function fps:UpdateDialogs()
 end
 
 function fps:UpdateTree()
+    local cpath = self:getCurrentPath();
+    if cpath ~= nil then
+        Slab.Text(cpath);
+    else
+        Slab.Text("Click on item to make it active.");
+    end
     SortGui.SortedTree(fps.paths, { clicked = self.fileClicked });
 end
 
