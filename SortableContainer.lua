@@ -88,9 +88,16 @@ function SortableContainer:addItem(item, groupid)
         local index = self:getIndex(id, groupid);
         table.insert(index, { attribute = item.attributes[id], item = item });
     end
+    item.container = self;
 end
 
 function SortableContainer:deleteItem(id, groupid)
+    local item = self.ids[id];
+    if item == nil then
+        print("Warning: no item for delete:", Utils.VariableInfoString(id));
+        return;
+    end
+    item.container = nil;
     for attrid, groups in pairs(self.indexes) do
         if groupid == nil then
             for gid, index in pairs(groups) do
@@ -206,6 +213,10 @@ function SortableContainer:dumpIds()
     for id, val in pairs(self.ids) do
         print(id, val);
     end
+end
+
+function SortableContainer:DumpState()
+    
 end
 
 return SortableContainer;

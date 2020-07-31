@@ -23,6 +23,8 @@ local SourceControlPanel = require('SourceControlPanel');
 
 local dT = require('DumpTable');
 
+local FileItem = require('FileItem');
+
 local fps = Module("filesourcesmodule", "File sources");
 
 fps.paths = SContainer("fpathcontainer", "Filepaths");
@@ -38,41 +40,6 @@ end
 fps.sources = SContainer("filesourcescontainer", "Sources");
 fps.sources:addAttribute(SContainer.Attribute("name", "Name"));
 
-function fps:createPathItem(fpath, isFullPath)
-    local localpath = "";
-    if isFullPath == nil or isFullPath == true then
-        localpath = Utils.getRelativePath(fpath);
-        if localpath == nil then
-            InfoQueue:pushMessage("File doesnt exist!", "File with path \n\""..fpath.."\"\nis inaccessable!");
-            return;
-        end
-    else
-        localpath = fpath;
-    end
-    local status, value = pcall(love.sound.newDecoder, localpath);
-    if not status then
-        InfoQueue:pushMessage("Cannot create decoder!", "Cannot create decoder from file\n\""..localpath.."\"!\nError: \""..value.."\"");
-        return;
-    end
-    local item = {
-        id = localpath,
-        attributes = { path = localpath },
-        file = love.filesystem.getInfo(localpath);
-        decoder = value,
-        container = self.sources };
-    item.file.path = localpath;
-    item.file.fullpath = fpath;
-    local mt = getmetatable(item);
-    if mt == nil then
-        mt = {};
-    end
-    mt.__tostring = function(item)
-        return item.id;
-    end
-    setmetatable(item, mt);
-    return item;
-end
-
 function fps:addPathItem(item)
     if item ~= nil then
         if self.paths.ids[item.id] == nil then
@@ -85,7 +52,7 @@ end
 function fps:addPaths(paths)
     for key, fpath in pairs(paths) do
         if fpath ~= nil then
-            local item = self:createPathItem(fpath);
+            local item = FileItem(fpath, true);
             self:addPathItem(item);
         end
     end
@@ -167,7 +134,7 @@ function fps:UpdateNewSourceDialog()
                 self.newSourceDialog = true;
             else
                 self:AddNewSource(id, self.currentPath);
-                self.sources:dumpIds();
+--                 self.sources:dumpIds();
             end
         end
     end
@@ -186,7 +153,7 @@ function fps:UpdateTree()
     else
         Slab.Text("Click on item to make it active.");
     end
-    SortGui.SortedTree(fps.paths, { clicked = self.fileClicked });
+    SortGui.SortedTree(fps.paths, { clicked = self.fileClicked, childrenContainer = self.sources });
 end
 
 function fps:DumpState()
@@ -203,7 +170,7 @@ function fps:LoadState(data)
     local paths = data.paths;
     self.paths.currentAttribute = paths.currentAttribute;
     for key, val in pairs(paths.ids) do
-        local item = self:createPathItem(key, false);
+        local item = FileItem(key);
         if item ~= nil then
             self.paths:addItem(item);
         else
