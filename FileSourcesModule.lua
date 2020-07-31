@@ -25,6 +25,8 @@ local dT = require('DumpTable');
 
 local FileItem = require('FileItem');
 
+local SourceItem = require('SourceItem');
+
 local fps = Module("filesourcesmodule", "File sources");
 
 fps.paths = SContainer("fpathcontainer", "Filepaths");
@@ -113,11 +115,12 @@ function fps:CreateSourceItem(id, path)
         print(self, "Cannot create source: No such file item:", Utils.VariableInfoString(path))
         return;
     end
-    local source = love.audio.newSource(path, "static");
+--[[    local source = love.audio.newSource(path, "static");
     local item = { id = id, attributes = { id = id }, source = source, parent = fitem };
     local mt = {};
     mt.__tostring = function(item) return item.id; end
-    setmetatable(item, mt);
+    setmetatable(item, mt);]]
+    local item = SourceItem(id, fitem);
     return item;
 end
 
@@ -162,7 +165,8 @@ end
 
 function fps:DumpState()
     local data = {
-        paths = self.paths:DumpState();
+        paths = self.paths:DumpState(),
+        sources = self.sources:DumpState()
         };
     return data;
 end
@@ -171,6 +175,9 @@ function fps:LoadState(data)
     if data == nil then return end
     self:SetLoadPhase(true);
     if self.paths:LoadState(data.paths, FileItem) then
+        self:StateChanged(true);
+    end
+    if self.sources:LoadState(data.sources, SourceItem, self.paths) then
         self:StateChanged(true);
     end
     self:SetLoadPhase(false);

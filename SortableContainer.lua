@@ -231,7 +231,7 @@ function SortableContainer:LoadState(data, ItemClass, parentContainer)
     self.currentAttribute = data.currentAttribute;
     for key, val in pairs(data.ids) do
         if parentContainer then
-            local parent = parentContainer:getItem(val.parent);
+            local parent = parentContainer.ids[val.parent];
         end
         val.parent = parent;
         local status, value = pcall(ItemClass.new, ItemClass, val);
