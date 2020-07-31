@@ -52,8 +52,12 @@ end
 function fps:addPaths(paths)
     for key, fpath in pairs(paths) do
         if fpath ~= nil then
-            local item = FileItem(fpath, true);
-            self:addPathItem(item);
+            local status, value = pcall(FileItem.new, FileItem, fpath, true);
+            if status then
+                self:addPathItem(value);
+            else
+                InfoQueue:pushMessage("Cannot load file!", "File could not be loaded!\n"..value);
+            end
         end
     end
 end
@@ -157,10 +161,6 @@ function fps:UpdateTree()
 end
 
 function fps:DumpState()
---[[    local data = { paths = { currentAttribute = self.paths.currentAttribute, selected =  self.paths.selected, ids = {}}};
-    for id, path in pairs(self.paths.ids) do
-        data.paths.ids[id] = {};
-    end]]
     local data = {
         paths = self.paths:DumpState();
         };
