@@ -18,11 +18,11 @@ local function SortMenu(container)
     end
 end
 
-local function SortedTreeContent(container, options)
+local function SortedTreeContent(container, options, groupid)
     if options == nil then
         options = {};
     end
-    local index = container:getIndex(container.currentAttribute, options.groupid);
+    local index = container:getIndex(container.currentAttribute, groupid);
     for idx, item in ipairs(index) do
         if item.item.container == nil then
             isLeaf = true;
@@ -36,7 +36,7 @@ local function SortedTreeContent(container, options)
             end
         end
         if not isLeaf and ret then
-            SortedTreeContent(item.item.container, options);
+            SortedTreeContent(item.item.container, options.childrenOptions, item.id);
             Slab.EndTree();
         end
     end

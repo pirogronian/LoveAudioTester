@@ -8,7 +8,16 @@ function Module:initialize(id, title)
     self.id = id;
     self.title = title;
     self.stateChangd = false;
+    self.loadPhase = false;
     self:DeclareSignal("StateChanged");
+end
+
+function Module:SetLoadPhase(loading)
+    self.loadPhase = loading;
+end
+
+function Module:IsLoadPhase()
+    return self.loadPhase;
 end
 
 function Module:LoadState()
@@ -19,7 +28,8 @@ function Module:DumpState()
     print("Module:SaveState() dummy");
 end
 
-function Module:StateChanged()
+function Module:StateChanged(force)
+    if self.loadPhase == true and not force then return; end
     self.stateChanged = true;
     self:EmitSignal("StateChanged")
 end

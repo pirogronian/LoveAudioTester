@@ -40,13 +40,11 @@ function iwm:isGlobalCurrent()
     return self._globalCurrent;
 end
 
-function iwm:setCurrentItem(modid, item, onload)
+function iwm:setCurrentItem(modid, item)
     local module = self:getModule(modid);
     module.currentItem = item;
     self._currentModuleId = modid;
-    if not onload then
-        self:StateChanged();
-    end
+    self:StateChanged();
 end
 
 function iwm:unsetCurrentItem(modid, id)
@@ -117,22 +115,27 @@ end
 
 function iwm:LoadState(data)
     if type(data) ~= "table" then return; end
+    self:SetLoadPhase(true);
     self._globalModuleId = data.globalModuleId;
     self._globalCurrent = data.globalCurrent;
     if type(data.modules) == "table" then
         for modid, moddata in pairs(data.modules) do
             local module = self:getModule(modid);
-            local item = module.options.onItemLoad(moddata.currentItemId);
-            if item == nil then
-                self:StateChanged();
-            else
-                self:setCurrentItem(modid, item, true);
-                if moddata.currentWindow == true then
-                    module.currentWindow = true;
+            if moddata.currentItemId ~= nil then
+                local item = module.options.onItemLoad(moddata.currentItemId, module.options.context);
+                if item == nil then
+                    print("Warning:", self, "Cannot recreate item:", moddata.currentItemId);
+                    self:StateChanged(true);
+                else
+                    self:setCurrentItem(modid, item);
+                    if moddata.currentWindow == true then
+                        module.currentWindow = true;
+                    end
                 end
             end
         end
     end
+    self:SetLoadPhase(false);
 end
 
 function iwm:DumpState()

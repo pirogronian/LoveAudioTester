@@ -5,7 +5,7 @@ local function di(decoder, lname)
     if lname == nil or lname == "" then
         lname = "DecoderInfoLayout";
     end
-    Slab.BeginLayout(lname, { Columns = 2 });
+    Slab.BeginLayout(lname.."Layout", { Columns = 2 });
     Slab.SetLayoutColumn(1);
     Slab.Text("Bit depth:");
     Slab.Text("Channels:");

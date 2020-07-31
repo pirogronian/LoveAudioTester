@@ -15,7 +15,11 @@ local InfoQueue = require('InfoQueue');
 
 local IWManager = require('ItemWindowsManager');
 
-local DecoderInfo = require('DecoderInfo');
+local FileInfoPanel = require('FileInfoPanel');
+
+local DecoderInfoPanel = require('DecoderInfoPanel');
+
+local SourceControlPanel = require('SourceControlPanel');
 
 local dT = require('DumpTable');
 
@@ -53,10 +57,11 @@ function fps:createPathItem(fpath, isFullPath)
     local item = {
         id = localpath,
         attributes = { path = localpath },
-        fullpath = fpath,
-        fileinfo = love.filesystem.getInfo(localpath);
+        file = love.filesystem.getInfo(localpath);
         decoder = value,
         container = self.sources };
+    item.file.path = localpath;
+    item.file.fullpath = fpath;
     local mt = getmetatable(item);
     if mt == nil then
         mt = {};
@@ -130,9 +135,9 @@ function fps:OpenNewSourceDialog()
     self.newSourceDialog = true;
 end
 
-function fps:CreateSourceItem(id, path)
-    local source = love.audio.newSource(path, "static");
-    local item = { id = id, attributes = { id = id }, source = source };
+function fps:CreateSourceItem(id, pathitem)
+    local source = love.audio.newSource(pathitem.file.path, "static");
+    local item = { id = id, attributes = { id = id }, source = source, parent = pathitem };
     local mt = {};
     mt.__tostring = function(item) return item.id; end
     setmetatable(item, mt);
@@ -182,12 +187,16 @@ end
 
 function fps:LoadState(data)
     if data == nil then return end
+    self:SetLoadPhase(true);
     local paths = data.paths;
     self.paths.currentAttribute = paths.currentAttribute;
     for key, val in pairs(paths.ids) do
         local item = self:createPathItem(key, false);
         if item ~= nil then
             self.paths:addItem(item);
+        else
+            print("Warning:", self, "Cannot recreate item:", key);
+            self:StateChanged(true);
         end
     end
     for key, val in pairs(paths.selected) do
@@ -195,6 +204,17 @@ function fps:LoadState(data)
             self.paths:select(key);
         end
     end
+    self:SetLoadPhase(false);
+end
+
+function fps.fileClicked(item, context)
+    context.paths:toggleSelection(item.id);
+    IWManager:setCurrentItem("File", item);
+    context:StateChanged();
+end
+
+function fps.getFileItem(id, context)
+    return context.paths.ids[id];
 end
 
 function fps.fileClicked(item, context)
@@ -203,23 +223,22 @@ function fps.fileClicked(item, context)
     fps:StateChanged();
 end
 
-function fps.getFileItem(id, context)
-    return fps.paths.ids[id];
+function fps.getSourceItem(id, context)
+    return fps.sources.ids[id];
 end
 
 function fps.fileItemWindowContent(item, module)
-    Slab.BeginLayout("FileItemWindowLayout", { Columns = 2 });
-    Slab.SetLayoutColumn(1);
-    Slab.Text("Path:");
-    Slab.Text("Full path:");
-    Slab.Text("Size:");
-    Slab.SetLayoutColumn(2);
-    Slab.Text(item.id);
-    Slab.Text(item.fullpath);
-    Slab.Text(Utils.MemorySizeFormat(item.fileinfo.size));
-    Slab.EndLayout();
+    FileInfoPanel(item.file, "FileInfo");
     Slab.Separator();
-    DecoderInfo(item.decoder, "FileItemWindowDecoderInfoLayout")
+    DecoderInfoPanel(item.decoder, "DecoderInfo");
+end
+
+function fps.sourceItemWindowContent(item, module)
+    FileInfoPanel(item.parent.file, "FileInfo");
+    Slab.Separator();
+    DecoderInfoPanel(item.parent.decoder, "DecoderInfo");
+    Slab.Separator();
+    SourceControlPanel(item.source);
 end
 
 fps.paths:Connect("ItemRemoved", fps.onFileDelete, fps);
@@ -227,5 +246,9 @@ fps.paths:Connect("ItemRemoved", fps.onFileDelete, fps);
 IWManager:registerModule("File", "File",
                          { onWindowUpdate = fps.fileItemWindowContent,
                            onItemLoad = fps.getFileItem, context = fps });
+
+IWManager:registerModule("FileSource", "File source",
+                         { onWindowUpdate = fps.sourceItemWindowContent,
+                           onItemLoad = fps.getSourceItem, context = fps });
 
 return fps;
