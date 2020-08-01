@@ -86,7 +86,8 @@ function SortableContainer:addItem(item, groupid)
     self.ids[item.id] = item;
     for id, attr in pairs(self.attributes) do
         local index = self:getIndex(id, groupid);
-        table.insert(index, { attribute = item.attributes[id], item = item });
+        local entry = { attribute = item.attributes[id], item = item };
+        table.insert(index, entry);
     end
     item.container = self;
 end
@@ -180,7 +181,7 @@ function SortableContainer:sort(attrid, dir)
 end
 
 function SortableContainer:dumpAttributes()
-    print("Attributes ("..table.getn(self.attributes).."):");
+    print("Attributes:");
     for id, attr in pairs(self.attributes) do
         attr:dump();
     end
@@ -188,7 +189,7 @@ end
 
 function SortableContainer.dumpIndexArray(array)
     for idx, item in ipairs(array) do
-        print("["..idx.."] => { id: "..item.item.id..", attribute: "..item.attribute.." }");
+        print("["..idx.."] => { id: ", item.item.id, ", attribute: ", item.attribute, " }");
     end
 end
 
@@ -197,8 +198,21 @@ function SortableContainer:dumpIndex(attrid, groupid)
         groupid = "DefaultGroup";
     end
     local index = self:getIndex(attrid, groupid);
-    print("Index of group \""..groupid.."\"("..table.getn(index)..":");
+    print("Index of group \""..groupid.."\"("..table.getn(index).."):");
     self.dumpIndexArray(index);
+end
+
+function SortableContainer:dumpIndexes(groupid)
+    for key, index in pairs(self.indexes) do
+        print(key, index);
+        if groupid == true then
+            for gid, group in pairs(index) do
+                self:dumpIndex(key, gid);
+            end
+        else
+            self:dumpIndex(key, groupid);
+        end
+    end
 end
 
 function SortableContainer:dumpSelection()
@@ -228,20 +242,31 @@ end
 function SortableContainer:LoadState(data, ItemClass, parentContainer)
     if data == nil then return end
     local err = false;
+    local parent = nil;
     self.currentAttribute = data.currentAttribute;
     for key, val in pairs(data.ids) do
         if parentContainer then
-            local parent = parentContainer.ids[val.parent];
+            parent = parentContainer.ids[val.parent];
+            if parent == nil then
+                print("Warning:", self, "Cannot get parent item:", val.parent);
+                err = true; -- need to abort item loading
+            end
+            val.parent = parent;
         end
-        val.parent = parent;
-        local status, value = pcall(ItemClass.new, ItemClass, val);
-        if status then
-            local item = value;
-            if item ~= nil then
-                self:addItem(item);
-            else
-                print("Warning:", self, "Cannot recreate item:", key);
-                err = true;
+        if not err then
+            local status, value = pcall(ItemClass.new, ItemClass, val);
+            if status then
+                local item = value;
+                local pid = nil;
+                if val.parent ~= nil then
+                    pid = parent.id;
+                end
+                if item ~= nil then
+                    self:addItem(item, pid);
+                else
+                    print("Warning:", self, "Cannot recreate item:", key);
+                    err = true;
+                end
             end
         else
             print("Warning:", self, "Cannot create item:", key, value);

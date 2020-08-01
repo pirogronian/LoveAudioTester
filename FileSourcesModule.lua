@@ -42,6 +42,11 @@ end
 fps.sources = SContainer("filesourcescontainer", "Sources");
 fps.sources:addAttribute(SContainer.Attribute("name", "Name"));
 
+function fps:onSourceDelete(id)
+    IWManager:delItem("Source", id, true);
+    self:StateChanged();
+end
+
 function fps:addPathItem(item)
     if item ~= nil then
         if self.paths.ids[item.id] == nil then
@@ -180,6 +185,12 @@ function fps:LoadState(data)
     if self.sources:LoadState(data.sources, SourceItem, self.paths) then
         self:StateChanged(true);
     end
+--     self.paths:dumpIds();
+--     self.paths:dumpAttributes();
+--     self.paths:dumpIndexes(true);
+--     self.sources:dumpIds();
+--     self.sources:dumpAttributes();
+--     self.sources:dumpIndexes(true);
     self:SetLoadPhase(false);
 end
 
