@@ -15,6 +15,8 @@ local InfoQueue = require('InfoQueue');
 
 local IWManager = require('ItemWindowsManager');
 
+local ItemInfoPanel = require('ItemInfoPanel');
+
 local FileInfoPanel = require('FileInfoPanel');
 
 local DecoderInfoPanel = require('DecoderInfoPanel');
@@ -32,7 +34,7 @@ local fps = Module("filesourcesmodule", "File sources");
 fps.paths = SContainer("fpathcontainer", "Filepaths");
 fps.paths:addAttribute(SContainer.Attribute("path", "Path"));
 
-fps.deleteConfirmator = DConfirmator(fps.paths, "filepaths");
+fps.fileDConfirmator = DConfirmator(fps.paths, "filepaths");
 
 function fps:onFileDelete(id)
     IWManager:delItem("File", id, true);
@@ -46,6 +48,8 @@ function fps:onSourceDelete(id)
     IWManager:delItem("Source", id, true);
     self:StateChanged();
 end
+
+fps.sourceDConfirmator = DConfirmator(fps.sources, "sources");
 
 function fps:addPathItem(item)
     if item ~= nil then
@@ -78,12 +82,18 @@ function fps:UpdateMenu()
         if Slab.MenuItem("Add") then
             openFilepathDialog = true;
         end
-        if Slab.MenuItem("Delete") then
-            self.deleteConfirmator.active = true;
+        if Slab.MenuItem("Delete selected") then
+            self.fileDConfirmator.active = true;
         end
         if Slab.BeginMenu("Sources") then
+            if Slab.MenuItem("Info") then
+                IWManager:showCurrentItemWindow("FileSource");
+            end
             if Slab.MenuItem("New") then
                 self:OpenNewSourceDialog();
+            end
+            if Slab.MenuItem("Delete selected") then
+                self.sourceDConfirmator.active = true;
             end
             Slab.EndMenu();
         end
@@ -153,7 +163,8 @@ function fps:UpdateNewSourceDialog()
 end
 
 function fps:UpdateDialogs()
-    self.deleteConfirmator:update();
+    self.fileDConfirmator:update();
+    self.sourceDConfirmator:update();
     self:UpdateOpenFileDialog();
     self:UpdateNewSourceDialog();
 end
@@ -165,7 +176,7 @@ function fps:UpdateTree()
     else
         Slab.Text("Click on item to make it active.");
     end
-    SortGui.SortedTree(fps.paths, { clicked = self.fileClicked, childrenContainer = self.sources });
+    SortGui.SortedTree(fps.paths, { context = self, clicked = self.fileClicked, childrenContainer = self.sources, childrenOptions = { context = self, clicked = self.sourceClicked } });
 end
 
 function fps:DumpState()
@@ -194,24 +205,30 @@ function fps:LoadState(data)
     self:SetLoadPhase(false);
 end
 
-function fps.fileClicked(item, context)
+--[[function fps.fileClicked(item, context)
     context.paths:toggleSelection(item.id);
     IWManager:setCurrentItem("File", item);
     context:StateChanged();
-end
+end]]
 
 function fps.getFileItem(id, context)
     return context.paths.ids[id];
 end
 
 function fps.fileClicked(item, context)
-    fps.paths:toggleSelection(item.id);
+    context.paths:toggleSelection(item.id);
     IWManager:setCurrentItem("File", item);
-    fps:StateChanged();
+    context:StateChanged();
 end
 
 function fps.getSourceItem(id, context)
     return fps.sources.ids[id];
+end
+
+function fps.sourceClicked(item, context)
+    context.sources:toggleSelection(item.id);
+    IWManager:setCurrentItem("FileSource", item);
+    context:StateChanged();
 end
 
 function fps.fileItemWindowContent(item, module)
@@ -221,6 +238,7 @@ function fps.fileItemWindowContent(item, module)
 end
 
 function fps.sourceItemWindowContent(item, module)
+    ItemInfoPanel(item);
     FileInfoPanel(item.parent.file, "FileInfo");
     Slab.Separator();
     DecoderInfoPanel(item.parent.decoder, "DecoderInfo");
