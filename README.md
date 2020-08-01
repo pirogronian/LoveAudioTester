@@ -5,7 +5,7 @@ Small Lua program to test LOVE2D audio capabilities and SLAB GUI. Could be usefu
 <h1>FAQ</h1>
 Q: How to install it?
 
-A: For now only by download or clone the repository. See below, why.
+A: For now only by download or clone the repository. See below, why. If you are infamiliar with git, I suggest following console command: `git clone --recurse-submodules https://github.com/pirogronian/LoveAudioTester LoveAudioTester`. Then `cd LoveAudioTester` and `love .`.
 
 Q: Why I got error message "File with path \< path \> is inaccessable"?
 
