@@ -29,6 +29,8 @@ local FileItem = require('FileItem');
 
 local SourceItem = require('SourceItem');
 
+local STree = require('SortableTree');
+
 local fps = Module("filesourcesmodule", "File sources");
 
 fps.paths = SContainer("fpathcontainer", "Filepaths");
@@ -46,6 +48,10 @@ end
 
 fps.sources = SContainer("filesourcescontainer", "Sources");
 fps.sources:addAttribute(SContainer.Attribute("name", "Name"));
+
+fps.paths.childContainer = fps.sources;
+
+fps.tree = STree(fps.paths);
 
 function fps:onSourceDelete(id)
     if self.currentSource == id then
@@ -176,7 +182,8 @@ function fps:UpdateTree()
     else
         Slab.Text("Click on source item to make it active.");
     end
-    SortGui.SortedTree(fps.paths, { context = self, clicked = self.fileClicked, childrenContainer = self.sources, childrenOptions = { context = self, clicked = self.sourceClicked } });
+    self.tree:Update();
+--     SortGui.SortedTree(fps.paths, { context = self, clicked = self.fileClicked, childrenContainer = self.sources, childrenOptions = { context = self, clicked = self.sourceClicked } });
 end
 
 function fps:DumpState()
@@ -218,23 +225,37 @@ function fps.getFileItem(id, context)
     return context.paths.ids[id];
 end
 
-function fps.fileClicked(item, context)
-    context.currentFile = item.id;
-    context.paths:toggleSelection(item.id);
+function fps:fileClicked(item)
+    self.currentFile = item.id;
+    self.paths:toggleSelection(item.id);
     IWManager:setCurrentItem("File", item);
-    context:StateChanged();
+    self:StateChanged();
 end
 
 function fps.getSourceItem(id, context)
     return fps.sources.ids[id];
 end
 
-function fps.sourceClicked(item, context)
-    context.currentSource = item.id;
-    context.sources:toggleSelection(item.id);
+function fps:sourceClicked(item)
+    self.currentSource = item.id;
+    self.sources:toggleSelection(item.id);
     IWManager:setCurrentItem("FileSource", item);
-    context:StateChanged();
+    self:StateChanged();
 end
+
+function fps:itemClicked(item)
+    if item.container == self.paths then
+        self:fileClicked(item)
+    else
+        if item.container == self.sources then
+            self:sourceClicked(item);
+        else
+            print("Clicked unknown item!", item);
+        end
+    end
+end
+
+fps.tree:Connect("Clicked", fps.itemClicked, fps, false);
 
 function fps.fileItemWindowContent(item, module)
     FileInfoPanel(item.file, "FileInfo");
