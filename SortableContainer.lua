@@ -244,21 +244,20 @@ function SortableContainer:LoadState(data, ItemClass, parentContainer)
     local err = false;
     local parent = nil;
     self.currentAttribute = data.currentAttribute;
-    for key, val in pairs(data.ids) do
+    for key, itemdata in pairs(data.ids) do
         if parentContainer then
-            parent = parentContainer.ids[val.parent];
+            parent = parentContainer.ids[itemdata.parent];
             if parent == nil then
-                print("Warning:", self, "Cannot get parent item:", val.parent);
+                print("Warning:", self, "Cannot get parent item:", itemdata.parent);
                 err = true; -- need to abort item loading
             end
-            val.parent = parent;
         end
         if not err then
-            local status, value = pcall(ItemClass.new, ItemClass, val);
+            local status, value = pcall(ItemClass.new, ItemClass, itemdata, parent);
             if status then
                 local item = value;
                 local pid = nil;
-                if val.parent ~= nil then
+                if parent ~= nil then
                     pid = parent.id;
                 end
                 if item ~= nil then
@@ -267,14 +266,14 @@ function SortableContainer:LoadState(data, ItemClass, parentContainer)
                     print("Warning:", self, "Cannot recreate item:", key);
                     err = true;
                 end
+            else
+                print("Warning:", self, "Cannot create item:", key, value);
+                err = true;
             end
-        else
-            print("Warning:", self, "Cannot create item:", key, value);
-            err = true;
         end
     end
     for key, val in pairs(data.selected) do
-        if val == true then
+        if self.ids[key] and val == true then
             self:select(key);
         end
     end

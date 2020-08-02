@@ -1,16 +1,15 @@
 
-local class = require('thirdparty/middleclass/middleclass');
+local Comm = require('Communicator');
 
-local Item = class("Item");
+local Item = Comm:subclass("Item");
 
 function Item:initialize(data, parent)
     if type(data) == 'table' then
         self.id = data.id;
-        selfparent = data.parent
     else
         self.id = data;
-        self.parent = parent;
     end
+    self.parent = parent;
 end
 
 function Item:getSerializableData()

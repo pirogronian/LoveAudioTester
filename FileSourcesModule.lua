@@ -37,6 +37,9 @@ fps.paths:addAttribute(SContainer.Attribute("path", "Path"));
 fps.fileDConfirmator = DConfirmator(fps.paths, "filepaths");
 
 function fps:onFileDelete(id)
+    if self.currentFile == id then
+        self.currentFile = nil;
+    end
     IWManager:delItem("File", id, true);
     self:StateChanged();
 end
@@ -45,6 +48,9 @@ fps.sources = SContainer("filesourcescontainer", "Sources");
 fps.sources:addAttribute(SContainer.Attribute("name", "Name"));
 
 function fps:onSourceDelete(id)
+    if self.currentSource == id then
+        self.currentSource = nil;
+    end
     IWManager:delItem("Source", id, true);
     self:StateChanged();
 end
@@ -111,30 +117,20 @@ function fps:UpdateOpenFileDialog()
     end
 end
 
-function fps:getCurrentPath()
-    return self.paths.lastSelected;
-end
-
 function fps:OpenNewSourceDialog()
-    
-    local path = self:getCurrentPath();
-    if path == nil then return; end
-    self.currentPath = path;
+    if self.currentFile == nil then return; end
+    local fileitem = self.paths.ids[self.currentFile];
+    if fileitem == nil then print("Warning: current file", self.currentFile, "doesnt exists!"); return; end
     Slab.OpenDialog("NewSourceDialog");
     self.newSourceDialog = true;
 end
 
 function fps:CreateSourceItem(id, path)
-    local fitem = self.getFileItem(path, self);
+    local fitem = self.paths.ids[path];
     if fitem == nil then
         print(self, "Cannot create source: No such file item:", Utils.VariableInfoString(path))
         return;
     end
---[[    local source = love.audio.newSource(path, "static");
-    local item = { id = id, attributes = { id = id }, source = source, parent = fitem };
-    local mt = {};
-    mt.__tostring = function(item) return item.id; end
-    setmetatable(item, mt);]]
     local item = SourceItem(id, fitem);
     return item;
 end
@@ -146,8 +142,8 @@ end
 
 function fps:UpdateNewSourceDialog()
     if not self.newSourceDialog then return; end
-    if self.currentPath ~= nil then
-        local closed, id = NSDialog(self.currentPath);
+    if self.currentFile ~= nil then
+        local closed, id = NSDialog(self.currentFile);
         if closed then
             self.newSourceDialog = false;
             if id == nil then return; end
@@ -155,7 +151,7 @@ function fps:UpdateNewSourceDialog()
                 InfoQueue:pushMessage("Id already exists!", "Source with id \""..id.."\" already exists.");
                 self.newSourceDialog = true;
             else
-                self:AddNewSource(id, self.currentPath);
+                self:AddNewSource(id, self.currentFile);
 --                 self.sources:dumpIds();
             end
         end
@@ -170,17 +166,23 @@ function fps:UpdateDialogs()
 end
 
 function fps:UpdateTree()
-    local cpath = self:getCurrentPath();
-    if cpath ~= nil then
-        Slab.Text(cpath);
+    if self.currentFile ~= nil then
+        Slab.Text(self.currentFile);
     else
-        Slab.Text("Click on item to make it active.");
+        Slab.Text("Click on file item to make it active.");
+    end
+    if self.currentSource ~= nil then
+        Slab.Text(self.currentSource);
+    else
+        Slab.Text("Click on source item to make it active.");
     end
     SortGui.SortedTree(fps.paths, { context = self, clicked = self.fileClicked, childrenContainer = self.sources, childrenOptions = { context = self, clicked = self.sourceClicked } });
 end
 
 function fps:DumpState()
     local data = {
+        currentFile = self.currentFile,
+        currentSource = self.currentSource,
         paths = self.paths:DumpState(),
         sources = self.sources:DumpState()
         };
@@ -202,20 +204,21 @@ function fps:LoadState(data)
 --     self.sources:dumpIds();
 --     self.sources:dumpAttributes();
 --     self.sources:dumpIndexes(true);
+    if self.paths.ids[data.currentFile] ~= nil then
+        self.currentFile = data.currentFile;
+    end
+    if self.sources.ids[data.currentSource] ~= nil then
+        self.currentSource = data.currentSource;
+    end
     self:SetLoadPhase(false);
 end
-
---[[function fps.fileClicked(item, context)
-    context.paths:toggleSelection(item.id);
-    IWManager:setCurrentItem("File", item);
-    context:StateChanged();
-end]]
 
 function fps.getFileItem(id, context)
     return context.paths.ids[id];
 end
 
 function fps.fileClicked(item, context)
+    context.currentFile = item.id;
     context.paths:toggleSelection(item.id);
     IWManager:setCurrentItem("File", item);
     context:StateChanged();
@@ -226,6 +229,7 @@ function fps.getSourceItem(id, context)
 end
 
 function fps.sourceClicked(item, context)
+    context.currentSource = item.id;
     context.sources:toggleSelection(item.id);
     IWManager:setCurrentItem("FileSource", item);
     context:StateChanged();

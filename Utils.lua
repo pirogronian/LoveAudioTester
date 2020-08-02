@@ -50,4 +50,14 @@ function u.IsClassOrSubClass(class, name)
     return class.name == name or class:isSubclassOf(name);
 end
 
+function u.Dump(var, level, str)
+    if type(str) ~= 'string' then str = ""; end
+    print(str..tostring(var), "(", type(var) ,")");
+    if type(var) == 'table' and level ~= 0 then
+        for key, val in pairs(var) do
+            u.Dump(val, level - 1, str..tostring(key)..".")
+        end
+    end
+end
+
 return u;

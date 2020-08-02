@@ -75,6 +75,8 @@ function ss:LoadState()
         local mod = self._modules[modid];
         mod:LoadState(self._state.modules[modid]);
     end
+--     print("Dump loaded state:");
+--     utils.Dump(self._state, 10)
 end
 
 function ss:SaveState(force)
@@ -89,6 +91,8 @@ function ss:SaveState(force)
             mod:StateClean();
         end
     end
+--     print("Dump state before saving:");
+--     utils.Dump(self._state, 10)
     bitser.dumpLoveFile(self._filepath, self._state);
     self._stateChanged = false;
 end
