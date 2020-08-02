@@ -24,10 +24,11 @@ local function SortedTreeContent(container, options, groupid)
     end
     local index = container:getIndex(container.currentAttribute, groupid);
     for idx, item in ipairs(index) do
-        if options.childrenContainer == nil then
-            isLeaf = true;
-        else
+        if options.childrenContainer ~= nil and options.childrenContainer:getItemCount(item.item.id) > 0 then
+--             print(item.id, options.childrenContainer:getItemCount(item.id));
             isLeaf = false;
+        else
+            isLeaf = true;
         end
         local ret = Slab.BeginTree(item.item, { IsLeaf = isLeaf, IsSelected = container:isSelected(item.item.id) });
         if Slab.IsControlClicked() then

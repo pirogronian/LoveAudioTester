@@ -202,6 +202,7 @@ function fps:LoadState(data)
 --     self.paths:dumpAttributes();
 --     self.paths:dumpIndexes(true);
 --     self.sources:dumpIds();
+--     self.sources:dumpGroups();
 --     self.sources:dumpAttributes();
 --     self.sources:dumpIndexes(true);
     if self.paths.ids[data.currentFile] ~= nil then

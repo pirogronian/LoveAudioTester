@@ -31,10 +31,11 @@ function SortableContainer:initialize(id, name)
     self.ids = {};
     self.indexes = {};
     self.attributes = {};
+    self.groups = {};
     self.selected = {};
     self.id = id;
     self.name = name;
-    self.isSortableContainer = true;
+    self.itemCount = 0;
     self:DeclareSignal("AttributeAdded");
     self:DeclareSignal("AttributeRemoved");
     self:DeclareSignal("ItemAdded");
@@ -84,12 +85,22 @@ function SortableContainer:addItem(item, groupid)
         error(self.class.name..":addItem("..item.id.."): item already exists!");
     end
     self.ids[item.id] = item;
+    if groupid == nil then
+        groupid = "DefaultGroup";
+    end
+    if self.groups[groupid] == nil then
+        self.groups[groupid] = 1;
+    else
+        self.groups[groupid] = self.groups[groupid] + 1;
+    end
     for id, attr in pairs(self.attributes) do
         local index = self:getIndex(id, groupid);
         local entry = { attribute = item.attributes[id], item = item };
         table.insert(index, entry);
     end
     item.container = self;
+    self.itemCount = self.itemCount + 1;
+    self:EmitSignal("ItemAdded", item);
 end
 
 function SortableContainer:deleteItem(id, groupid)
@@ -105,6 +116,7 @@ function SortableContainer:deleteItem(id, groupid)
                 for idx, item in ipairs(index) do
                     if item.item.id == id then
                         table.remove(index, idx);
+                        groupid = gid;
                         break;
                     end
                 end
@@ -121,7 +133,21 @@ function SortableContainer:deleteItem(id, groupid)
     end
     self.selected[id] = nil;
     self.ids[id] = nil;
+    self.groups[groupid] = self.groups[groupid] - 1;
+    self.itemCount = self.itemCount - 1;
     self:EmitSignal("ItemRemoved", id);
+end
+
+function SortableContainer:getItemCount(groupid)
+    if groupid == nil then
+        return self.itemCount;
+    else
+        if self.groups[groupid] == nil then
+            return 0;
+        else
+            return self.groups[groupid];
+        end
+    end
 end
 
 function SortableContainer:deleteSelected()
@@ -226,6 +252,12 @@ function SortableContainer:dumpIds()
     print("Container set:");
     for id, val in pairs(self.ids) do
         print(id, val);
+    end
+end
+
+function SortableContainer:dumpGroups()
+    for gid, cnt in pairs(self.groups) do
+        print(gid, cnt, self:getItemCount(gid));
     end
 end
 
