@@ -74,17 +74,19 @@ function ss:LoadState()
     for key, modid in ipairs(self._modsOrder) do
         local mod = self._modules[modid];
         mod:LoadState(self._state.modules[modid]);
-        mod:StateClean();
     end
 end
 
-function ss:SaveState()
+function ss:SaveState(force)
     if self._state == nil then
         self._state = { modules = {} };
     end
     for id, mod in pairs(self._modules) do
-        if mod:IsStateChanged() then
+--         print("Checking module", id);
+        if force or mod:IsStateChanged() then
+--             print("Saving module", id);
             self._state.modules[id] = mod:DumpState();
+            mod:StateClean();
         end
     end
     bitser.dumpLoveFile(self._filepath, self._state);
