@@ -53,6 +53,8 @@ fps.paths.childContainer = fps.sources;
 
 fps.tree = STree(fps.paths);
 
+fps.playing = 0;
+
 function fps:onSourceDelete(item)
     if self.currentSource == item.id then
         self.currentSource = nil;
@@ -146,6 +148,11 @@ function fps:AddNewSource(id, path)
     self.sources:addItem(item, path);
 end
 
+function fps:SourcePostCreation(item)
+    item.played:connect(self.onPlayed, self);
+    item.paused:connect(self.onPaused, self);
+end
+
 function fps:UpdateNewSourceDialog()
     if not self.newSourceDialog then return; end
     if self.currentFile ~= nil then
@@ -183,7 +190,7 @@ function fps:UpdateTree()
         Slab.Text("Click on source item to make it active.");
     end
     self.tree:Update();
---     SortGui.SortedTree(fps.paths, { context = self, clicked = self.fileClicked, childrenContainer = self.sources, childrenOptions = { context = self, clicked = self.sourceClicked } });
+    Slab.Text("Playing now: "..tostring(self.playing));
 end
 
 function fps:DumpState()
@@ -204,6 +211,9 @@ function fps:LoadState(data)
     end
     if self.sources:LoadState(data.sources, SourceItem, self.paths) then
         self:StateChanged(true);
+    end
+    for key, item in pairs(self.sources.ids) do
+        self:SourcePostCreation(item);
     end
 --     self.paths:dumpIds();
 --     self.paths:dumpAttributes();
@@ -244,7 +254,6 @@ function fps:sourceClicked(item)
 end
 
 function fps:itemClicked(item)
-    print("Clicked item!", item);
     if item.container == self.paths then
         self:fileClicked(item)
     else
@@ -254,6 +263,16 @@ function fps:itemClicked(item)
             print("Clicked unknown item!", item);
         end
     end
+end
+
+function fps:onPlayed()
+    self.playing = self.playing + 1;
+    self:StateChanged();
+end
+
+function fps:onPaused()
+    self.playing = self.playing - 1;
+    self:StateChanged();
 end
 
 fps.tree.clicked:connect(fps.itemClicked, fps);
@@ -270,7 +289,7 @@ function fps.sourceItemWindowContent(item, module)
     Slab.Separator();
     DecoderInfoPanel(item.parent.decoder, "DecoderInfo");
     Slab.Separator();
-    SourceControlPanel(item.source);
+    SourceControlPanel(item);
 end
 
 fps.paths.itemRemoved:connect(fps.onFileDelete, fps);

@@ -9,7 +9,7 @@ function s:initialize()
     self._slots = {};
 end
 
-function s:connect( slot, receiver, sender)
+function s:connect(slot, receiver, sender)
     if self._slots[slot] == nil then
         self._slots[slot] = { };
     end
