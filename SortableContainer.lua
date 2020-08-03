@@ -1,7 +1,7 @@
 
 local Class = require('thirdparty/middleclass/middleclass');
 
-local Comm = require('Communicator');
+local Signal = require('Signal');
 
 local SortableAttribute = Class("SortableAttribute");
 
@@ -27,7 +27,6 @@ local SortableContainer = Class("SortableContainer", Comm);
 SortableContainer.Attribute = SortableAttribute;
 
 function SortableContainer:initialize(id, name)
-    Comm.initialize(self);
     self.ids = {};
     self.indexes = {};
     self.attributes = {};
@@ -36,10 +35,10 @@ function SortableContainer:initialize(id, name)
     self.id = id;
     self.name = name;
     self.itemCount = 0;
-    self:DeclareSignal("AttributeAdded");
-    self:DeclareSignal("AttributeRemoved");
-    self:DeclareSignal("ItemAdded");
-    self:DeclareSignal("ItemRemoved");
+    self.attributeAdded = Signal();
+    self.attributeRemoved = Signal();
+    self.itemAdded = Signal();
+    self.itemRemoved = Signal();
 end
 
 function SortableContainer:addAttribute(attr)
@@ -48,7 +47,7 @@ function SortableContainer:addAttribute(attr)
     if self.currentAttribute == nil then
         self.currentAttribute = attr.id;
     end
-    self:EmitSignal("AttributeAdded", attr);
+    self.attributeAdded:emit(attr);
 end
 
 function SortableContainer:deleteAttribute(id)
@@ -56,7 +55,7 @@ function SortableContainer:deleteAttribute(id)
     if attr == nil then return; end
     self.attributes[id] = nil;
     self.indexes[id] = nil;
-    self:EmitSignal("AttributeRemoved", attr);
+    self.attributeRemoved:emit(attr);
 end
 
 function SortableContainer:getIndex(attrid, groupid)
@@ -100,7 +99,7 @@ function SortableContainer:addItem(item, groupid)
     end
     item.container = self;
     self.itemCount = self.itemCount + 1;
-    self:EmitSignal("ItemAdded", item);
+    self.itemAdded:emit(item);
 end
 
 function SortableContainer:deleteItem(id, groupid)
@@ -135,7 +134,7 @@ function SortableContainer:deleteItem(id, groupid)
     self.ids[id] = nil;
     self.groups[groupid] = self.groups[groupid] - 1;
     self.itemCount = self.itemCount - 1;
-    self:EmitSignal("ItemRemoved", id);
+    self.itemRemoved:emit(item);
 end
 
 function SortableContainer:getItemCount(groupid)

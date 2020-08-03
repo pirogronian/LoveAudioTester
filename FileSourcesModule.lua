@@ -38,11 +38,11 @@ fps.paths:addAttribute(SContainer.Attribute("path", "Path"));
 
 fps.fileDConfirmator = DConfirmator(fps.paths, "filepaths");
 
-function fps:onFileDelete(id)
-    if self.currentFile == id then
+function fps:onFileDelete(item)
+    if self.currentFile == item.id then
         self.currentFile = nil;
     end
-    IWManager:delItem("File", id, true);
+    IWManager:delItem("File", item.id, true);
     self:StateChanged();
 end
 
@@ -53,11 +53,11 @@ fps.paths.childContainer = fps.sources;
 
 fps.tree = STree(fps.paths);
 
-function fps:onSourceDelete(id)
-    if self.currentSource == id then
+function fps:onSourceDelete(item)
+    if self.currentSource == item.id then
         self.currentSource = nil;
     end
-    IWManager:delItem("Source", id, true);
+    IWManager:delItem("FileSource", item.id, true);
     self:StateChanged();
 end
 
@@ -244,6 +244,7 @@ function fps:sourceClicked(item)
 end
 
 function fps:itemClicked(item)
+    print("Clicked item!", item);
     if item.container == self.paths then
         self:fileClicked(item)
     else
@@ -255,7 +256,7 @@ function fps:itemClicked(item)
     end
 end
 
-fps.tree:Connect("Clicked", fps.itemClicked, fps, false);
+fps.tree.clicked:connect(fps.itemClicked, fps);
 
 function fps.fileItemWindowContent(item, module)
     FileInfoPanel(item.file, "FileInfo");
@@ -272,7 +273,8 @@ function fps.sourceItemWindowContent(item, module)
     SourceControlPanel(item.source);
 end
 
-fps.paths:Connect("ItemRemoved", fps.onFileDelete, fps);
+fps.paths.itemRemoved:connect(fps.onFileDelete, fps);
+fps.sources.itemRemoved:connect(fps.onSourceDelete, fps);
 
 IWManager:registerModule("File", "File",
                          { onWindowUpdate = fps.fileItemWindowContent,

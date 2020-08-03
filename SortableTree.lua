@@ -1,12 +1,13 @@
 
-local Comm = require('Communicator');
+local Class = require('thirdparty/middleclass/middleclass');
 
-local STree = Comm:subclass("SortableTree");
+local Signal = require('Signal');
+
+local STree = Class("SortableTree");
 
 function STree:initialize(container)
-    Comm.initialize(self);
-    self:DeclareSignal("Clicked");
-    self:DeclareSignal("ContextMenu");
+    self.clicked = Signal();
+    self.contextMenu = Signal();
     self.container = container;
 end
 
@@ -21,10 +22,10 @@ function STree:SortedTreeContent(container, groupid)
         end
         local ret = Slab.BeginTree(item.item, { IsLeaf = isLeaf, IsSelected = container:isSelected(item.item.id) });
         if Slab.IsControlClicked() then
-            self:EmitSignal("Clicked", item.item)
+            self.clicked:emit(item.item);
         end
         if not isLeaf and ret then
-            SortedTreeContent(container.childContainer, item.item.id);
+            self:SortedTreeContent(container.childContainer, item.item.id);
         end
         if ret then
             Slab.EndTree();

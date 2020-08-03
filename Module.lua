@@ -1,15 +1,16 @@
 
-local Comm = require('Communicator');
+local Class = require('thirdparty/middleclass/middleclass');
 
-local Module = Comm:subclass("Module");
+local Signal = require('Signal');
+
+local Module = Class("Module");
 
 function Module:initialize(id, title)
-    Comm.initialize(self);
     self.id = id;
     self.title = title;
-    self.stateChangd = false;
+    self._stateChangd = false;
     self.loadPhase = false;
-    self:DeclareSignal("StateChanged");
+    self.stateChanged = Signal();
 end
 
 function Module:SetLoadPhase(loading)
@@ -30,16 +31,16 @@ end
 
 function Module:StateChanged(force)
     if self.loadPhase == true and not force then return; end
-    self.stateChanged = true;
-    self:EmitSignal("StateChanged")
+    self._stateChanged = true;
+    self.stateChanged:emit();
 end
 
 function Module:StateClean()
-    self.stateChanged = false;
+    self._stateChanged = false;
 end
 
 function Module:IsStateChanged()
-    return self.stateChanged;
+    return self._stateChanged;
 end
 
 return Module;

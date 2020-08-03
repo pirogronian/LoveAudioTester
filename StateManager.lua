@@ -26,7 +26,7 @@ function ss:RegisterModule(mod)
         return;
     end
     self._modules[mod.id] = mod;
-    mod:Connect("StateChanged", self.OnStateChanged, self);
+    mod.stateChanged:connect(self.OnStateChanged, self);
     table.insert(self._modsOrder, mod.id);
 end
 
@@ -36,7 +36,7 @@ function ss:UnregisterModule(id)
         return;
     end
     local mod = _modules[id];
-    mod:Disconnect("StateChanged", self.OnStateChanged, self);
+    mod.stateChanged:disconnect(self.OnStateChanged, self);
     self._modules[id] = nil;
     for key, modid in ipairs(self._modsOrder) do
         if modid == id then

@@ -1,7 +1,7 @@
 
-local Comm = require('Communicator');
+local Class = require('thirdparty/middleclass/middleclass');
 
-local Item = Comm:subclass("Item");
+local Item = Class("Item");
 
 function Item:initialize(data, parent)
     if type(data) == 'table' then
