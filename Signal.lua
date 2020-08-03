@@ -30,7 +30,7 @@ function s:disconnect(slot, receiver)
     end
     local recs = self._slots[slot];
     if recs == nil then
-        print("Warning: Disconecting nonexisting slot: "..Utils.VariableInfoString(slot));
+        print("Warning: Disconecting nonexisting slot: "..Utils.DumpStr(slot));
         return;
     end
     recs[receiver] = nil;

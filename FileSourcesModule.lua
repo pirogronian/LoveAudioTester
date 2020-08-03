@@ -134,7 +134,7 @@ end
 function fps:CreateSourceItem(id, path)
     local fitem = self.paths.ids[path];
     if fitem == nil then
-        print(self, "Cannot create source: No such file item:", Utils.VariableInfoString(path))
+        print(self, "Cannot create source: No such file item:", Utils.DumpStr(path))
         return;
     end
     local item = SourceItem(id, fitem);

@@ -105,7 +105,7 @@ end
 function SortableContainer:deleteItem(id, groupid)
     local item = self.ids[id];
     if item == nil then
-        print("Warning: no item for delete:", Utils.VariableInfoString(id));
+        print("Warning: no item for delete:", Utils.DumpStr(id));
         return;
     end
     item.container = nil;

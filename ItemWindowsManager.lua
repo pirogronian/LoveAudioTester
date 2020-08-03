@@ -27,7 +27,7 @@ end
 function iwm:getModule(id)
     local module = self.modules[id];
     if module == nil then
-        error(string.format("No such module: %s", utils.VariableInfoString(id)));
+        error(string.format("No such module: %s", utils.DumpStr(id)));
     end
     return module;
 end

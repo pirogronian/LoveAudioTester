@@ -40,22 +40,28 @@ function u.TimeFormat(seconds)
     return string.format("%u:%02u:%02u", hours, minutes, seconds);
 end
 
-function u.VariableInfoString(var)
-    local t = type(var);
-    local val = tostring(var);
-    return string.format("%s (%s)", val, t);
-end
-
 function u.IsClassOrSubClass(class, name)
     return class.name == name or class:isSubclassOf(name);
 end
 
 function u.Dump(var, level, str)
+    if level == nil then level = 0; end
     if type(str) ~= 'string' then str = ""; end
     print(str..tostring(var), "(", type(var) ,")");
     if type(var) == 'table' and level ~= 0 then
         for key, val in pairs(var) do
             u.Dump(val, level - 1, str..tostring(key)..".")
+        end
+    end
+end
+
+function u.DumpStr(var, level, str)
+    if level == nil then level = 0; end
+    if type(str) ~= 'string' then str = ""; end
+    local ret = str..tostring(var).."(", type(var) ,")";
+    if type(var) == 'table' and level ~= 0 then
+        for key, val in pairs(var) do
+            ret = ret.."\n"..u.DumpStr(val, level - 1, str..tostring(key)..".");
         end
     end
 end
