@@ -44,13 +44,27 @@ function u.IsClassOrSubClass(class, name)
     return class.name == name or class:isSubclassOf(name);
 end
 
-function u.Dump(var, level, str)
+local function VarInfo(var, str)
+    if string.len(str) > 0 then
+        str = str..": ";
+    end
+    print(str..tostring(var), "(", type(var) ,")");
+end
+
+function u.Dump(var, level, str, tname)
+--     print(var, level, str, tname);
     if level == nil then level = 0; end
     if type(str) ~= 'string' then str = ""; end
-    print(str..tostring(var), "(", type(var) ,")");
+    if tname ~= nil then
+        if type(var) == tname then
+            VarInfo(var, str);
+        end
+    else
+        VarInfo(var, str);
+    end
     if type(var) == 'table' and level ~= 0 then
         for key, val in pairs(var) do
-            u.Dump(val, level - 1, str..tostring(key)..".")
+            u.Dump(val, level - 1, str..tostring(key)..".", tname)
         end
     end
 end

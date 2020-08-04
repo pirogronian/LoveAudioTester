@@ -1,5 +1,5 @@
 
-local function NewSourceDialog(parentId)
+local function NewSourceDialog(parent)
     local closed = false;
     local id = nil;
     if Slab.BeginDialog("NewSourceDialog", { Title = "Create new source from file", AllowResize = true }) then
@@ -8,7 +8,7 @@ local function NewSourceDialog(parentId)
         Slab.Text("Parent object:");
         Slab.Text("Id:");
         Slab.SetLayoutColumn(2);
-        Slab.Text(parentId);
+        Slab.Text(parent.id);
         Slab.Input("SourceId", { ReturnOnText = false });
         id = Slab.GetInputText();
         Slab.EndLayout();

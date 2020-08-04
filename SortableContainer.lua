@@ -1,4 +1,6 @@
 
+local Utils = require('Utils');
+
 local Class = require('thirdparty/middleclass/middleclass');
 
 local Signal = require('Signal');
@@ -27,7 +29,6 @@ local SortableContainer = Class("SortableContainer", Comm);
 SortableContainer.Attribute = SortableAttribute;
 
 function SortableContainer:initialize(id, name)
-    self.ids = {};
     self.indexes = {};
     self.attributes = {};
     self.groups = {};
@@ -58,13 +59,18 @@ function SortableContainer:deleteAttribute(id)
     self.attributeRemoved:emit(attr);
 end
 
+function SortableContainer:groupId(groupid)
+    if groupid == nil then
+        return "DefaultGroup";
+    end
+    return groupid;
+end
+
 function SortableContainer:getIndex(attrid, groupid)
     if self.indexes[attrid] == nil then
         error(self.class.name..": attribute \""..attrid.."\" not found in indexes.");
     end
-    if groupid == nil then
-        groupid = "DefaultGroup";
-    end
+    groupid = self:groupId(groupid)
     if self.indexes[attrid][groupid] == nil then
         self.indexes[attrid][groupid] = {};
     end
@@ -80,21 +86,21 @@ function SortableContainer:getAttribute(id)
 end
 
 function SortableContainer:addItem(item, groupid)
-    if self.ids[item.id] ~= nil then
-        error(self.class.name..":addItem("..item.id.."): item already exists!");
-    end
-    self.ids[item.id] = item;
-    if groupid == nil then
-        groupid = "DefaultGroup";
-    end
+--     print("addItem", item, groupid, type(groupid));
+    groupid = self:groupId(groupid);
     if self.groups[groupid] == nil then
-        self.groups[groupid] = 1;
+        self.groups[groupid] = { ids = { }, n = 1 };
+        self.groups[groupid].ids[item.id] = item;
     else
-        self.groups[groupid] = self.groups[groupid] + 1;
+        self.groups[groupid].n = self.groups[groupid].n + 1;
+        if self.groups[groupid].ids[item.id] ~= nil then
+            error(self.class.name..":addItem("..tostring(item.id).."): item already exists!");
+        end
+        self.groups[groupid].ids[item.id] = item;
     end
-    for id, attr in pairs(self.attributes) do
-        local index = self:getIndex(id, groupid);
-        local entry = { attribute = item.attributes[id], item = item };
+    for attrid, attr in pairs(self.attributes) do
+        local index = self:getIndex(attrid, groupid);
+        local entry = { attribute = item.attributes[attrid], item = item };
         table.insert(index, entry);
     end
     item.container = self;
@@ -102,39 +108,51 @@ function SortableContainer:addItem(item, groupid)
     self.itemAdded:emit(item);
 end
 
-function SortableContainer:deleteItem(id, groupid)
-    local item = self.ids[id];
-    if item == nil then
-        print("Warning: no item for delete:", Utils.DumpStr(id));
+function SortableContainer:deleteItem(item)
+    if not self:hasItem(item) then
+        print("Warning: no item for delete:", Utils.DumpStr(item), "parent:", Utils.DumpStr(item.parent));
         return;
     end
+    local groupid = item.parent;
+    groupid = self:groupId(groupid);
     item.container = nil;
     for attrid, groups in pairs(self.indexes) do
-        if groupid == nil then
-            for gid, index in pairs(groups) do
-                for idx, item in ipairs(index) do
-                    if item.item.id == id then
-                        table.remove(index, idx);
-                        groupid = gid;
-                        break;
-                    end
-                end
-            end
-        else
-            local index = self:getIndex(attrid, groupid);
-            for idx, item in ipairs(index) do
-                if item.item.id == id then
-                    table.remove(index, idx);
-                    break;
-                end
+        local index = self:getIndex(attrid, groupid);
+        for idx, xitem in ipairs(index) do
+            if xitem.item.id == item.id then
+                table.remove(index, idx);
+                break;
             end
         end
     end
-    self.selected[id] = nil;
-    self.ids[id] = nil;
-    self.groups[groupid] = self.groups[groupid] - 1;
+    self.selected[item] = nil;
+    self.groups[groupid].ids[item.id] = nil;
+    self.groups[groupid].n = self.groups[groupid].n - 1;
     self.itemCount = self.itemCount - 1;
+--     self:dumpIds(groupid);
     self.itemRemoved:emit(item);
+end
+
+function SortableContainer:getItem(id, parent)
+    local groupid = parent;
+    if parent == nil then
+        groupid = self:groupId(groupid);
+    else
+        if parent.class == nil then -- serializable data, probably loading phase
+            parent = self.parentContainer:getItem(parent.id, parent.parent);
+        end
+    end
+    local group = self.groups[groupid];
+    if group == nil then return nil; end
+    return group.ids[id];
+end
+
+function SortableContainer:hasItemId(id, groupid)
+    return self:getItem(id, groupid) ~= nil;
+end
+
+function SortableContainer:hasItem(item)
+    return self:getItem(item.id, item.parent) ~= nil;
 end
 
 function SortableContainer:getItemCount(groupid)
@@ -144,41 +162,42 @@ function SortableContainer:getItemCount(groupid)
         if self.groups[groupid] == nil then
             return 0;
         else
-            return self.groups[groupid];
+            return self.groups[groupid].n;
         end
     end
 end
 
 function SortableContainer:deleteSelected()
 --     self:dumpSelection();
-    for id, selected in pairs(self.selected) do
+    for item, selected in pairs(self.selected) do
         if selected then
-            self:deleteItem(id);
+--             print("deleteing selected", item, item.class);
+            self:deleteItem(item);
         end
     end
 end
 
-function SortableContainer:select(id)
-    self.selected[id] = true;
-    self.lastSelected = id;
+function SortableContainer:select(item)
+    self.selected[item] = true;
+    self.lastSelected = item;
 end
 
-function SortableContainer:deselect(id)
-    self.selected[id] = nil;
-    if self.lastSelected == id then
+function SortableContainer:deselect(item)
+    self.selected[item] = nil;
+    if self.lastSelected == item then
         self.lastSelected = nil;
     end
 end
 
-function SortableContainer:isSelected(id)
-    return self.selected[id] == true;
+function SortableContainer:isSelected(item)
+    return self.selected[item] == true;
 end
 
-function SortableContainer:toggleSelection(id)
-    if self:isSelected(id) then
-        self:deselect(id);
+function SortableContainer:toggleSelection(item)
+    if self:isSelected(item) then
+        self:deselect(item);
     else
-        self:select(id);
+        self:select(item);
     end
 end
 
@@ -223,7 +242,7 @@ function SortableContainer:dumpIndex(attrid, groupid)
         groupid = "DefaultGroup";
     end
     local index = self:getIndex(attrid, groupid);
-    print("Index of group \""..groupid.."\"("..table.getn(index).."):");
+    print("Index of group \"", groupid, type(groupid), "\"(", table.getn(index), "):");
     self.dumpIndexArray(index);
 end
 
@@ -242,44 +261,57 @@ end
 
 function SortableContainer:dumpSelection()
     print("Selected ("..self:selectedNumber().."):");
-    for id, val in pairs(self.selected) do
-        print("  ["..id.."] =>", val);
+    for item, selected in pairs(self.selected) do
+        print("   ["..tostring(item).."] =>", selected);
     end
 end
 
-function SortableContainer:dumpIds()
-    print("Container set:");
-    for id, val in pairs(self.ids) do
-        print(id, val);
+function SortableContainer:dumpIds(groupid)
+    groupid = self:groupId(groupid);
+    if self.groups[groupid] == nil then
+        print(self, "dumpIds: No such group:", groupid);
+        return;
+    end
+    print("Group:", groupid, type(groupid), "size:", self.groups[groupid].n);
+    for item, val in pairs(self.groups[groupid].ids) do
+        print(item, type(item), val, type(val));
     end
 end
 
 function SortableContainer:dumpGroups()
-    for gid, cnt in pairs(self.groups) do
-        print(gid, cnt, self:getItemCount(gid));
+    print("Items:", self.itemCount)
+    for gid, group in pairs(self.groups) do
+        self:dumpIds(gid);
     end
 end
 
 function SortableContainer:DumpState()
     local data = {
             currentAttribute = self.currentAttribute,
-            selected =  self.selected, ids = {}};
-    for id, item in pairs(self.ids) do
-        data.ids[id] = item:getSerializableData();
+            items = {}};
+    for gid, group in pairs(self.groups) do
+        for id, item in pairs(group.ids) do
+            local itemdata = item:getSerializableData();
+            if self:isSelected(item) then
+                itemdata.selected = true;
+            end
+            table.insert(data.items, itemdata);
+        end
     end
     return data;
 end
 
-function SortableContainer:LoadState(data, ItemClass, parentContainer)
+function SortableContainer:LoadState(data, ItemClass)
     if data == nil then return end
     local err = false;
     local parent = nil;
     self.currentAttribute = data.currentAttribute;
-    for key, itemdata in pairs(data.ids) do
-        if parentContainer then
-            parent = parentContainer.ids[itemdata.parent];
+    if data.items == nil then return err; end
+    for _, itemdata in pairs(data.items) do
+        if itemdata.parent then
+            parent = self.parentContainer:getItem(itemdata.parent.id, itemdata.parent.parent);
             if parent == nil then
-                print("Warning:", self, "Cannot get parent item:", itemdata.parent);
+                print("Warning:", self, "Cannot get parent item:", itemdata.parent.id);
                 err = true; -- need to abort item loading
             end
         end
@@ -287,12 +319,11 @@ function SortableContainer:LoadState(data, ItemClass, parentContainer)
             local status, value = pcall(ItemClass.new, ItemClass, itemdata, parent);
             if status then
                 local item = value;
-                local pid = nil;
-                if parent ~= nil then
-                    pid = parent.id;
-                end
                 if item ~= nil then
-                    self:addItem(item, pid);
+                    self:addItem(item, parent);
+                    if itemdata.selected then
+                        self:select(item);
+                    end
                 else
                     print("Warning:", self, "Cannot recreate item:", key);
                     err = true;
@@ -301,11 +332,6 @@ function SortableContainer:LoadState(data, ItemClass, parentContainer)
                 print("Warning:", self, "Cannot create item:", key, value);
                 err = true;
             end
-        end
-    end
-    for key, val in pairs(data.selected) do
-        if self.ids[key] and val == true then
-            self:select(key);
         end
     end
     return err;

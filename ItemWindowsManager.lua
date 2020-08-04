@@ -1,6 +1,8 @@
 
 local utils = require('Utils');
 
+local Item = require('Item');
+
 local Module = require('Module');
 
 local dTable = require('DumpTable');
@@ -47,11 +49,11 @@ function iwm:setCurrentItem(modid, item)
     self:StateChanged();
 end
 
-function iwm:unsetCurrentItem(modid, id)
+function iwm:unsetCurrentItem(modid, tem)
     local module = self:getModule(modid);
     if module.currentItem == nil then return; end
     if id ~= nil then
-        if module.currentItem.id ~= id then return; end
+        if module.currentItem ~= item then return; end
     end
     module.currentItem = nil;
     self:StateChanged();
@@ -65,7 +67,7 @@ end
 
 function iwm:addItem(modid, item)
     local module = self:getModule(modid);
-    module.items[item.id] = item;
+    module.items[item] = item;
     self:StateChanged();
 end
 
@@ -122,7 +124,7 @@ function iwm:LoadState(data)
         for modid, moddata in pairs(data.modules) do
             local module = self:getModule(modid);
             if moddata.currentItemId ~= nil then
-                local item = module.options.onItemLoad(moddata.currentItemId, module.options.context);
+                local item = module.options.onItemLoad(moddata.currentItemId, currentItemParent, module.options.context);
                 if item == nil then
                     print("Warning:", self, "Cannot recreate item:", moddata.currentItemId);
                     self:StateChanged(true);
@@ -146,14 +148,13 @@ function iwm:DumpState()
     for modid, module in pairs(self.modules) do
         local moddata = {};
         if module.currentItem ~= nil then
-            moddata.currentItemId = module.currentItem.id;
+            moddata.currentItem = Item.getSerializableData(module.currentItem);
         end
         if module.currentWindow == true then
             moddata.currentWindow = true;
         end
         data.modules[modid] = moddata;
     end
-    
     return data;
 end
 

@@ -50,6 +50,7 @@ fps.sources = SContainer("filesourcescontainer", "Sources");
 fps.sources:addAttribute(SContainer.Attribute("name", "Name"));
 
 fps.paths.childContainer = fps.sources;
+fps.sources.parentContainer = fps.paths;
 
 fps.tree = STree(fps.paths);
 
@@ -67,7 +68,7 @@ fps.sourceDConfirmator = DConfirmator(fps.sources, "sources");
 
 function fps:addPathItem(item)
     if item ~= nil then
-        if self.paths.ids[item.id] == nil then
+        if not self.paths:hasItem(item) then
             self.paths:addItem(item);
             self:StateChanged();
         end
@@ -127,24 +128,12 @@ end
 
 function fps:OpenNewSourceDialog()
     if self.currentFile == nil then return; end
-    local fileitem = self.paths.ids[self.currentFile];
-    if fileitem == nil then print("Warning: current file", self.currentFile, "doesnt exists!"); return; end
     Slab.OpenDialog("NewSourceDialog");
     self.newSourceDialog = true;
 end
 
-function fps:CreateSourceItem(id, path)
-    local fitem = self.paths.ids[path];
-    if fitem == nil then
-        print(self, "Cannot create source: No such file item:", Utils.DumpStr(path))
-        return;
-    end
-    local item = SourceItem(id, fitem);
-    return item;
-end
-
 function fps:AddNewSource(id, path)
-    local item = self:CreateSourceItem(id, path)
+    local item = SourceItem(id, path);
     self.sources:addItem(item, path);
 end
 
@@ -160,8 +149,8 @@ function fps:UpdateNewSourceDialog()
         if closed then
             self.newSourceDialog = false;
             if id == nil then return; end
-            if self.sources.ids[id] ~= nil then
-                InfoQueue:pushMessage("Id already exists!", "Source with id \""..id.."\" already exists.");
+            if self.sources:hasItemId(id, self.currentFile) then
+                InfoQueue:pushMessage("Id already exists!", "Source with id \""..tostring(id).."\" already exists.");
                 self.newSourceDialog = true;
             else
                 self:AddNewSource(id, self.currentFile);
@@ -180,12 +169,12 @@ end
 
 function fps:UpdateTree()
     if self.currentFile ~= nil then
-        Slab.Text(self.currentFile);
+        Slab.Text(tostring(self.currentFile));
     else
         Slab.Text("Click on file item to make it active.");
     end
     if self.currentSource ~= nil then
-        Slab.Text(self.currentSource);
+        Slab.Text(tostring(self.currentSource));
     else
         Slab.Text("Click on source item to make it active.");
     end
@@ -194,12 +183,21 @@ function fps:UpdateTree()
 end
 
 function fps:DumpState()
+    local currentFileData = nil;
+    if self.currrentFile then
+        currentFileData = Item.getSerializableData(self.currentFile);
+    end
+    local currentSourceData = nil;
+    if self.currrentSource then
+        currentSourceData = Item.getSerializableData(self.currentSource);
+    end
     local data = {
-        currentFile = self.currentFile,
-        currentSource = self.currentSource,
+        currentFile = currentFileData,
+        currentSource = currentSourceData,
         paths = self.paths:DumpState(),
         sources = self.sources:DumpState()
         };
+--     Utils.Dump(data.sources, 10);
     return data;
 end
 
@@ -209,46 +207,52 @@ function fps:LoadState(data)
     if self.paths:LoadState(data.paths, FileItem) then
         self:StateChanged(true);
     end
-    if self.sources:LoadState(data.sources, SourceItem, self.paths) then
+    if self.sources:LoadState(data.sources, SourceItem) then
         self:StateChanged(true);
     end
-    for key, item in pairs(self.sources.ids) do
-        self:SourcePostCreation(item);
+    for groupid, group in pairs(self.sources.groups) do
+        for key, item in pairs(group.ids) do
+            self:SourcePostCreation(item);
+        end
     end
---     self.paths:dumpIds();
---     self.paths:dumpAttributes();
---     self.paths:dumpIndexes(true);
---     self.sources:dumpIds();
+--    self.paths:dumpIds();
+--    self.paths:dumpAttributes();
+--    self.paths:dumpIndexes(true);
+--    self.sources:dumpIds();
 --     self.sources:dumpGroups();
 --     self.sources:dumpAttributes();
 --     self.sources:dumpIndexes(true);
-    if self.paths.ids[data.currentFile] ~= nil then
-        self.currentFile = data.currentFile;
+    if self.currentFile then
+        if self.paths:hasItemId(data.currentFile) then
+            self.currentSource = self.paths:getItem(data.currentFile.id);
+        end
     end
-    if self.sources.ids[data.currentSource] ~= nil then
-        self.currentSource = data.currentSource;
+    if data.currentSource then
+        if self.sources:hasItemId(data.currentSource.id, data.currentSource.parent) then
+            self.currentSource = self.sources:getItem(data.currentSource.id, data.currentSource.parent);
+        end
     end
     self:SetLoadPhase(false);
 end
 
-function fps.getFileItem(id, context)
-    return context.paths.ids[id];
+function fps.getFileItem(id, unused, context)
+    return context.paths:getItem(id);
 end
 
 function fps:fileClicked(item)
-    self.currentFile = item.id;
-    self.paths:toggleSelection(item.id);
+    self.currentFile = item;
+    self.paths:toggleSelection(item);
     IWManager:setCurrentItem("File", item);
     self:StateChanged();
 end
 
-function fps.getSourceItem(id, context)
-    return fps.sources.ids[id];
+function fps.getSourceItem(id, parent, context)
+    return fps.sources:getItem(id, parent);
 end
 
 function fps:sourceClicked(item)
-    self.currentSource = item.id;
-    self.sources:toggleSelection(item.id);
+    self.currentSource = item;
+    self.sources:toggleSelection(item);
     IWManager:setCurrentItem("FileSource", item);
     self:StateChanged();
 end
