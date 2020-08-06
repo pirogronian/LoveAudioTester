@@ -21,7 +21,10 @@ function fi:initialize(data, isFullPath)
     end
     Item.initialize(self, localpath);
     self.attributes = { path = localpath };
-    file = love.filesystem.getInfo(localpath);
+    local file = love.filesystem.getInfo(localpath);
+    if file == nil then
+        error("Cannot get info of file: "..tostring(localpath));
+    end
     file.path = localpath;
     file.fullpath = path;
     self.file = file;
