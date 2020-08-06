@@ -72,12 +72,14 @@ end
 function u.DumpStr(var, level, str)
     if level == nil then level = 0; end
     if type(str) ~= 'string' then str = ""; end
-    local ret = str..tostring(var).."(", type(var) ,")";
+    local ret = str..tostring(var).."  ("..type(var)..")";
     if type(var) == 'table' and level ~= 0 then
         for key, val in pairs(var) do
             ret = ret.."\n"..u.DumpStr(val, level - 1, str..tostring(key)..".");
         end
+        ret = ret.."\n";
     end
+    return ret;
 end
 
 return u;
