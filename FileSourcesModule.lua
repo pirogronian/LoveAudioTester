@@ -64,24 +64,10 @@ end
 
 fps.sourceDConfirmator = DConfirmator(fps.sources, "sources");
 
-function fps:addPathItem(item)
-    if item ~= nil then
-        if not self.paths:hasItem(item) then
-            self.paths:addItem(item);
-            self:StateChanged();
-        end
-    end
-end
-
 function fps:addPaths(paths)
     for key, fpath in pairs(paths) do
         if fpath ~= nil then
-            local status, value = pcall(FileItem.new, FileItem, fpath, true);
-            if status then
-                self:addPathItem(value);
-            else
-                InfoQueue:pushMessage("Cannot load file!", "File could not be loaded!\n"..value);
-            end
+            self.paths:createItem(fpath, true);
         end
     end
 end
@@ -130,11 +116,6 @@ function fps:OpenNewSourceDialog()
     self.newSourceDialog = true;
 end
 
-function fps:AddNewSource(id, path)
-    local item = SourceItem(id, path);
-    self.sources:addItem(item, path);
-end
-
 function fps:SourcePostCreation(item)
     item.played:connect(self.onPlayed, self);
     item.paused:connect(self.onPaused, self);
@@ -151,8 +132,9 @@ function fps:UpdateNewSourceDialog()
                 InfoQueue:pushMessage("Id already exists!", "Source with id \""..tostring(id).."\" already exists.");
                 self.newSourceDialog = true;
             else
-                self:AddNewSource(id, self.currentFile);
---                 self.sources:dumpIds();
+                self.sources:createItem(id, self.currentFile);
+--                 self.sources:dumpIds(self.currentFile);
+--                 self.sources:dumpGroups();
             end
         end
     end
@@ -294,8 +276,19 @@ function fps.sourceItemWindowContent(item, module)
     SourceControlPanel(item);
 end
 
+function fps:onFileCreationFail(value)
+    InfoQueue:pushMessage("Cannot load file!", "File could not be loaded!\n"..value);
+end
+
+function fps:onSourceCreationFail(value)
+    InfoQueue:pushMessage("Cannot create source!", "Source could not be created!\n"..value);
+end
+
 fps.paths.itemRemoved:connect(fps.onFileDelete, fps);
 fps.sources.itemRemoved:connect(fps.onSourceDelete, fps);
+
+fps.paths.creationError:connect(fps.onFileCreationFail, fps);
+fps.sources.creationError:connect(fps.onSourceCreationFail, fps);
 
 IWManager:registerModule("File", "File",
                          { onWindowUpdate = fps.fileItemWindowContent,

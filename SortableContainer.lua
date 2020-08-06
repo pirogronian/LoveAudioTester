@@ -41,6 +41,7 @@ function SortableContainer:initialize(id, name, itemclass)
     self.attributeRemoved = Signal();
     self.itemAdded = Signal();
     self.itemRemoved = Signal();
+    self.creationError = Signal();
 end
 
 function SortableContainer:addAttribute(attr)
@@ -87,7 +88,7 @@ function SortableContainer:getAttribute(id)
 end
 
 function SortableContainer:addItem(item, groupid)
---     print("addItem", item, groupid, type(groupid));
+--     print("addItem("..Utils.DumpStr(item)..", "..Utils.DumpStr(groupid)..")");
     groupid = self:groupId(groupid);
     if self.groups[groupid] == nil then
         self.groups[groupid] = { ids = { }, n = 1 };
@@ -107,6 +108,15 @@ function SortableContainer:addItem(item, groupid)
     item.container = self;
     self.itemCount = self.itemCount + 1;
     self.itemAdded:emit(item);
+end
+
+function SortableContainer:createItem(...)
+    local status, value = pcall(self.ItemClass.new, self.ItemClass, ...);
+    if status then
+        self:addItem(value, value.parent);
+        return value;
+    end
+    self.creationError:emit(value);
 end
 
 function SortableContainer:deleteItem(item)
