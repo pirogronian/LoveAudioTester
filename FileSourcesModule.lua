@@ -23,8 +23,6 @@ local DecoderInfoPanel = require('DecoderInfoPanel');
 
 local SourceControlPanel = require('SourceControlPanel');
 
-local dT = require('DumpTable');
-
 local FileItem = require('FileItem');
 
 local SourceItem = require('SourceItem');
@@ -33,7 +31,7 @@ local STree = require('SortableTree');
 
 local fps = Module("filesourcesmodule", "File sources");
 
-fps.paths = SContainer("fpathcontainer", "Filepaths");
+fps.paths = SContainer("fpathcontainer", "Filepaths", FileItem);
 fps.paths:addAttribute(SContainer.Attribute("path", "Path"));
 
 fps.fileDConfirmator = DConfirmator(fps.paths, "filepaths");
@@ -46,7 +44,7 @@ function fps:onFileDelete(item)
     self:StateChanged();
 end
 
-fps.sources = SContainer("filesourcescontainer", "Sources");
+fps.sources = SContainer("filesourcescontainer", "Sources", SourceItem);
 fps.sources:addAttribute(SContainer.Attribute("name", "Name"));
 
 fps.paths.childContainer = fps.sources;

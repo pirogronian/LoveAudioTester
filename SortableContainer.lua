@@ -28,13 +28,14 @@ local SortableContainer = Class("SortableContainer", Comm);
 
 SortableContainer.Attribute = SortableAttribute;
 
-function SortableContainer:initialize(id, name)
+function SortableContainer:initialize(id, name, itemclass)
     self.indexes = {};
     self.attributes = {};
     self.groups = {};
     self.selected = {};
     self.id = id;
     self.name = name;
+    self.ItemClass = itemclass;
     self.itemCount = 0;
     self.attributeAdded = Signal();
     self.attributeRemoved = Signal();
@@ -319,7 +320,7 @@ function SortableContainer:DumpState()
     return data;
 end
 
-function SortableContainer:LoadState(data, ItemClass)
+function SortableContainer:LoadState(data)
     if data == nil then return end
     local err = false;
     local parent = nil;
@@ -334,7 +335,7 @@ function SortableContainer:LoadState(data, ItemClass)
             end
         end
         if not err then
-            local status, value = pcall(ItemClass.new, ItemClass, itemdata, parent);
+            local status, value = pcall(self.ItemClass.new, self.ItemClass, itemdata, parent);
             if status then
                 local item = value;
                 if item ~= nil then
