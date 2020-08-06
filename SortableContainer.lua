@@ -129,6 +129,9 @@ function SortableContainer:deleteItem(item)
     self.groups[groupid].ids[item.id] = nil;
     self.groups[groupid].n = self.groups[groupid].n - 1;
     self.itemCount = self.itemCount - 1;
+    if self.childContainer then
+        self.childContainer:deleteGroup(item);
+    end
 --     self:dumpIds(groupid);
     self.itemRemoved:emit(item);
 end
@@ -209,6 +212,21 @@ function SortableContainer:selectedNumber()
         end
     end
     return count;
+end
+
+function SortableContainer:deleteGroup(gid)
+    local ret = 0;
+    local group = self.groups[gid];
+    if group == nil then
+        print(self, "Warning: No such group:", Utils.DumpStr(gid, 0));
+        return ret;
+    end
+    for id, item in pairs(group.ids) do
+        self:deleteItem(item);
+        ret = ret + 1;
+    end
+    self.groups[gid] = nil;
+    return ret;
 end
 
 function SortableContainer:sort(attrid, dir)
