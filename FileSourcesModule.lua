@@ -43,7 +43,9 @@ function fps.sourceItemWindowContent(item)
     Slab.Separator();
     DecoderInfoPanel(item.parent.decoder, "DecoderInfo");
     Slab.Separator();
-    SourceControlPanel(item);
+    if SourceControlPanel(item) then
+        fps.StateChanged(fps);
+    end
 end
 
 fps.fileMan = IManager("files", "Files", FileItem, fps.fileItemWindowContent);

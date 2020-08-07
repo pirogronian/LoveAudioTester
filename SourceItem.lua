@@ -7,8 +7,10 @@ local SItem = Item:subclass("SourceItem");
 
 function SItem:initialize(data, parent)
     local playPos = 0;
+    local volume = 1;
     if type(data) == 'table' then
         playPos = data.source.playPos;
+        volume = data.source.volume;
     end
     Item.initialize(self, data, parent);
     self.played = Signal();
@@ -17,6 +19,7 @@ function SItem:initialize(data, parent)
     self.attributes = { name = self.id };
     self.source = love.audio.newSource(self.parent.id, "static");
     self.source:seek(playPos);
+    self:setVolume(volume);
 end
 
 function SItem:play()
@@ -49,10 +52,20 @@ function SItem:rewindBy(dtime, units)
     self.source:seek(rtime, units);
 end
 
+function SItem:setVolume(v)
+    if type(v) ~= 'number' then
+        v = 1;
+    else
+        if v < 0 or v > 1 then v = 1; end
+    end
+    self.source:setVolume(v);
+end
+
 function SItem:getSerializableData()
     local data = Item.getSerializableData(self);
     local sdata = {};
     sdata.playPos = self.source:tell();
+    sdata.volume = self.source:getVolume();
     data.source = sdata;
     return data;
 end

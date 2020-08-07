@@ -2,13 +2,28 @@
 local Utils = require('Utils');
 
 local function scp(item, name)
+    changed = false;
     Slab.BeginLayout(tostring(name).."InfoLayout", { Columns = 2 });
     Slab.SetLayoutColumn(1);
     Slab.Text("Current time:");
     Slab.SetLayoutColumn(2);
     Slab.Text(Utils.TimeFormat(item.source:tell()));
     Slab.EndLayout();
-    Slab.BeginLayout(tostring(name).."ControlLayout", { Columns = 5 });
+    Slab.BeginLayout(tostring(name).."ParamsControlLayout", { Columns = 2 });
+    Slab.SetLayoutColumn(1);
+    Slab.Text("Volume:");
+    Slab.SetLayoutColumn(2);
+    local oldv = item.source:getVolume();
+    oldv = math.floor(oldv * 100) / 100;
+    Slab.InputNumberSlider("VolumeSlider", oldv, 0, 1, { NoDrag = false, ReturnOnText = false });
+    local newv = Slab.GetInputNumber();
+    if newv ~= oldv then
+        changed = true;
+        item:setVolume(newv);
+        print("New volume:", newv, oldv)
+    end
+    Slab.EndLayout();
+    Slab.BeginLayout(tostring(name).."PlaybackControlLayout", { Columns = 5 });
     Slab.SetLayoutColumn(1);
     if Slab.Button("[<<") then
         item.source:seek(0);
@@ -36,6 +51,7 @@ local function scp(item, name)
         item:rewindBy(10);
     end
     Slab.EndLayout();
+    return changed;
 end
 
 return scp;
