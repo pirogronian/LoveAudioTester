@@ -16,6 +16,7 @@ function SItem:initialize(data, parent)
     self.played = Signal();
     self.stopped = Signal();
     self.paused = Signal();
+    self.changed = Signal();
     self.attributes = { name = self.id };
     self.source = love.audio.newSource(self.parent.id, "static");
     self.source:seek(playPos);
@@ -59,6 +60,7 @@ function SItem:setVolume(v)
         if v < 0 or v > 1 then v = 1; end
     end
     self.source:setVolume(v);
+    self.changed:emit();
 end
 
 function SItem:getSerializableData()

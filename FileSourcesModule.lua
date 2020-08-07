@@ -119,6 +119,7 @@ end
 function fps:SourcePostCreation(item)
     item.played:connect(self.onPlayed, self);
     item.paused:connect(self.onPaused, self);
+    item.changed:connect(self.StateChanged, self);
 end
 
 function fps:UpdateNewSourceDialog()

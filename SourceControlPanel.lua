@@ -13,14 +13,10 @@ local function scp(item, name)
     Slab.SetLayoutColumn(1);
     Slab.Text("Volume:");
     Slab.SetLayoutColumn(2);
-    local oldv = item.source:getVolume();
-    oldv = math.floor(oldv * 100) / 100;
-    Slab.InputNumberSlider("VolumeSlider", oldv, 0, 1, { NoDrag = false, ReturnOnText = false });
-    local newv = Slab.GetInputNumber();
-    if newv ~= oldv then
-        changed = true;
-        item:setVolume(newv);
-        print("New volume:", newv, oldv)
+    local ov = item.source:getVolume();
+    if Slab.InputNumberSlider("VolumeSlider", math.floor(ov * 100), 0, 100, { NoDrag = false, ReturnOnText = true }) then
+        local nv = Slab.GetInputNumber();
+        item:setVolume(nv / 100);
     end
     Slab.EndLayout();
     Slab.BeginLayout(tostring(name).."PlaybackControlLayout", { Columns = 5 });
