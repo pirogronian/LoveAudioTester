@@ -108,6 +108,7 @@ function im:LoadState(data)
         IWManager:setCurrentItem(self:windowsManagerId(), self.currentItem);
 --         print("Current item set.");
     end
+    self:LoadSubmodulesState(data.children);
 end
 
 function im:DumpState()
@@ -117,6 +118,7 @@ function im:DumpState()
     if self.currentItem then
         data.currentItem = self.currentItem:getSerializableData();
     end
+    data.children = self:DumpSubmodulesState();
 --     Utils.Dump(data, -1);
     return data;
 end

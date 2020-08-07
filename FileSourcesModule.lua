@@ -55,7 +55,7 @@ fps.srcMan.container:addAttribute(SContainer.Attribute("name", "Name"));
 fps.srcMan:setParent(fps.fileMan);
 
 fps:AddSubmodule(fps.fileMan);
-fps:AddSubmodule(fps.srcMan);
+fps.fileMan:AddSubmodule(fps.srcMan);
 
 fps.tree = STree(fps.fileMan.container);
 

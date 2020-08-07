@@ -41,6 +41,7 @@ function Module:RemoveSubmodule(module)
 end
 
 function Module:LoadSubmodulesState(data)
+    if type(data) ~= 'table' then return; end
     for id, module in pairs(self._submodules) do
         module:LoadState(data[module.id]);
     end
