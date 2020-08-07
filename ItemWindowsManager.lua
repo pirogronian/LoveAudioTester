@@ -49,7 +49,7 @@ function iwm:isGlobalCurrent()
 end
 
 function iwm:setCurrentItem(modid, item)
-    print("Set current item:", modid, item);
+--     print("Set current item:", modid, item);
     local module = self:getModule(modid);
     module.currentItem = item;
     self._currentModuleId = modid;
@@ -114,7 +114,7 @@ end
 
 function iwm:UpdateCurrentItemWindows()
     if self._globalCurrent and _self._currentModuleId  ~= nil then
-        local module = self:getModule(self.__currentModuleId);
+        local module = self:getModule(self._currentModuleId);
         self.UpdateCurrentItemWindow(module);
     else
         for id, module in pairs(self.modules) do

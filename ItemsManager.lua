@@ -72,7 +72,7 @@ function im:createItem(...)
         return;
     end
     self.container:addItem(value, value.parent);
-    self.container:dumpGroups();
+--     self.container:dumpGroups();
     return value;
 end
 
@@ -95,19 +95,23 @@ end
 
 function im:LoadState(data)
     if data == nil then return; end
-    Utils.Dump(data, -1);
+--     Utils.Dump(data, -1);
+    self:SetLoadPhase(true);
+    IWManager:SetLoadPhase(true);
     self.container:LoadState(data.container, self.ItemClass);
     if data.currentItem then
 --         print("Loading current item:");
 --         Utils.Dump(data.currentItem, -1)
         self.currentItem = self.container:getItem(data.currentItem.id, data.currentItem.parent);
-        print(self.currentItem);
+--         print(self.currentItem);
     end
     if self.currentItem then
 --         print("Setting current item:", self.currentItem)
         IWManager:setCurrentItem(self:windowsManagerId(), self.currentItem);
 --         print("Current item set.");
     end
+    IWManager:SetLoadPhase(false);
+    self:SetLoadPhase(false);
     self:LoadSubmodulesState(data.children);
 end
 
