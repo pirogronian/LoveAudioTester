@@ -24,8 +24,8 @@ function iwm:registerModule(id, title, options)
             currentItem = nil,
             currentWindow = false
         };
-    print("Registered module:", id);
-    self:dumpModules();
+--     print("Registered module:", id);
+--     self:dumpModules();
 end
 
 function iwm:getModule(id, noerr)
@@ -67,9 +67,9 @@ function iwm:unsetCurrentItem(modid, item)
 end
 
 function iwm:showCurrentItemWindow(modid)
-    self:dumpModules();
+--     self:dumpModules();
     local module = self:getModule(modid);
-    module.currentWindow = true;
+    module.windowOpen = true;
     self:StateChanged();
 end
 
@@ -93,11 +93,11 @@ function iwm.getCurrentWindowId(module)
 end
 
 function iwm:UpdateCurrentItemWindow(module)
-    if module.currentItem == nil or not module.currentWindow then return; end
+    if module.currentItem == nil or not module.windowOpen then return; end
     if Slab.BeginWindow(iwm.getCurrentWindowId(module),
                         {
                          Title = module.title,
-                         IsOpen = module.currentWindow,
+                         IsOpen = module.windowOpen,
                          AutoSizeWindow = false,
                          W = 300,
                          H = 200
@@ -106,7 +106,7 @@ function iwm:UpdateCurrentItemWindow(module)
             module.options.onWindowUpdate(module.currentItem, module.options.context);
         end
     else
-        module.currentWindow = false;
+        module.windowOpen = false;
         self:StateChanged();
     end
     Slab.EndWindow();
@@ -148,19 +148,7 @@ function iwm:LoadState(data)
         for modid, moddata in pairs(data.modules) do
             local module = self:getModule(modid, true);
             if module ~= nil then
-                if moddata.currentItem ~= nil then
-                    utils.Dump(moddata.currentItem, -1);
-                    local item = self:loadItem(moddata.currentItem.id, moddata.currentItem.parent, module);
-                    if item == nil then
-                        print("Warning:", self, "Cannot recreate item:", moddata.currentItem.id);
-                        self:StateChanged(true);
-                    else
-                        self:setCurrentItem(modid, item);
-                        if moddata.currentWindow == true then
-                            module.currentWindow = true;
-                        end
-                    end
-                end
+                module.windowOpen = moddata.windowOpen;
             end
         end
     end
@@ -171,16 +159,11 @@ function iwm:DumpState()
     local data = {
         globalModuleId = self._globalModuleId,
         modules = {} };
-    if self._globalCurrent then
-        data.globalCurrent = Item.getSerializableData(self._globalCurrent);
-    end
+    data.globalCurrent = self._globalCurrent;
     for modid, module in pairs(self.modules) do
         local moddata = {};
-        if module.currentItem ~= nil then
-            moddata.currentItem = Item.getSerializableData(module.currentItem);
-        end
-        if module.currentWindow == true then
-            moddata.currentWindow = true;
+        if module.windowOpen == true then
+            moddata.windowOpen = true;
         end
         data.modules[modid] = moddata;
     end

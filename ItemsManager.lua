@@ -23,8 +23,7 @@ function im:initialize(id, title, ItemClass, itemWindowFunc)
     self.container.itemAdded:connect(self.onAddNewItem, self);
     self.container.itemRemoved:connect(self.onDeleteItem, self);
     IWManager:registerModule(self:windowsManagerId(), self.title,
-                         { onWindowUpdate = self.windowFunc,
-                           onItemLoad = self.onItemLoad, context = self });
+                         { onWindowUpdate = self.windowFunc, context = self });
 end
 
 function im:windowsManagerId()
@@ -42,7 +41,7 @@ function im:onClick(item)
 end
 
 function im:onAddNewItem(item)
-    print("New item:", item)
+--     print("New item:", item)
     self:StateChanged();
 end
 
@@ -96,13 +95,18 @@ end
 
 function im:LoadState(data)
     if data == nil then return; end
---     Utils.Dump(data);
+    Utils.Dump(data, -1);
     self.container:LoadState(data.container, self.ItemClass);
     if data.currentItem then
+--         print("Loading current item:");
+--         Utils.Dump(data.currentItem, -1)
         self.currentItem = self.container:getItem(data.currentItem.id, data.currentItem.parent);
+        print(self.currentItem);
     end
     if self.currentItem then
+--         print("Setting current item:", self.currentItem)
         IWManager:setCurrentItem(self:windowsManagerId(), self.currentItem);
+--         print("Current item set.");
     end
 end
 
@@ -113,7 +117,7 @@ function im:DumpState()
     if self.currentItem then
         data.currentItem = self.currentItem:getSerializableData();
     end
---     Utils.Dump(data);
+--     Utils.Dump(data, -1);
     return data;
 end
 

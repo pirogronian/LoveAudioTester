@@ -139,15 +139,14 @@ function SortableContainer:deleteItem(item)
 end
 
 function SortableContainer:getItem(id, parent)
-    local groupid = parent;
     if parent == nil then
-        groupid = self:groupId(groupid);
+        parent = self:groupId(parent);
     else
         if parent.class == nil then -- serializable data, probably loading phase
             parent = self.parent:getItem(parent.id, parent.parent);
         end
     end
-    local group = self.groups[groupid];
+    local group = self.groups[parent];
     if group == nil then return nil; end
     return group.ids[id];
 end
