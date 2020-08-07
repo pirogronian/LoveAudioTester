@@ -40,8 +40,8 @@ function u.TimeFormat(seconds)
     return string.format("%u:%02u:%02u", hours, minutes, seconds);
 end
 
-function u.IsClassOrSubClass(class, name)
-    return class.name == name or class:isSubclassOf(name);
+function u.IsClassOrSubClass(class, class2)
+    return class == class2 or class:isSubclassOf(class2);
 end
 
 local function VarInfo(var, str)

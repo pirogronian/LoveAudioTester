@@ -24,18 +24,17 @@ function SortableAttribute:dump()
     print(self.class.name..":\n  id: "..self.id.."\n  name: "..self.name)
 end
 
-local SortableContainer = Class("SortableContainer", Comm);
+local SortableContainer = Class("SortableContainer");
 
 SortableContainer.Attribute = SortableAttribute;
 
-function SortableContainer:initialize(id, name, itemclass)
+function SortableContainer:initialize(id, name)
     self.indexes = {};
     self.attributes = {};
     self.groups = {};
     self.selected = {};
     self.id = id;
     self.name = name;
-    self.ItemClass = itemclass;
     self.itemCount = 0;
     self.attributeAdded = Signal();
     self.attributeRemoved = Signal();
@@ -96,7 +95,8 @@ function SortableContainer:addItem(item, groupid)
     else
         self.groups[groupid].n = self.groups[groupid].n + 1;
         if self.groups[groupid].ids[item.id] ~= nil then
-            error(self.class.name..":addItem("..tostring(item.id).."): item already exists!");
+            print(self.class.name..":addItem("..tostring(item.id).."): item already exists!");
+            return
         end
         self.groups[groupid].ids[item.id] = item;
     end
@@ -108,15 +108,6 @@ function SortableContainer:addItem(item, groupid)
     item.container = self;
     self.itemCount = self.itemCount + 1;
     self.itemAdded:emit(item);
-end
-
-function SortableContainer:createItem(...)
-    local status, value = pcall(self.ItemClass.new, self.ItemClass, ...);
-    if status then
-        self:addItem(value, value.parent);
-        return value;
-    end
-    self.creationError:emit(value);
 end
 
 function SortableContainer:deleteItem(item)
@@ -153,7 +144,7 @@ function SortableContainer:getItem(id, parent)
         groupid = self:groupId(groupid);
     else
         if parent.class == nil then -- serializable data, probably loading phase
-            parent = self.parentContainer:getItem(parent.id, parent.parent);
+            parent = self.parent:getItem(parent.id, parent.parent);
         end
     end
     local group = self.groups[groupid];
@@ -330,7 +321,7 @@ function SortableContainer:DumpState()
     return data;
 end
 
-function SortableContainer:LoadState(data)
+function SortableContainer:LoadState(data, ItemClass)
     if data == nil then return end
     local err = false;
     local parent = nil;
@@ -338,14 +329,14 @@ function SortableContainer:LoadState(data)
     if data.items == nil then return err; end
     for _, itemdata in pairs(data.items) do
         if itemdata.parent then
-            parent = self.parentContainer:getItem(itemdata.parent.id, itemdata.parent.parent);
+            parent = self.parent:getItem(itemdata.parent.id, itemdata.parent.parent);
             if parent == nil then
                 print("Warning:", self, "Cannot get parent item:", itemdata.parent.id);
                 err = true; -- need to abort item loading
             end
         end
         if not err then
-            local status, value = pcall(self.ItemClass.new, self.ItemClass, itemdata, parent);
+            local status, value = pcall(ItemClass.new, ItemClass, itemdata, parent);
             if status then
                 local item = value;
                 if item ~= nil then

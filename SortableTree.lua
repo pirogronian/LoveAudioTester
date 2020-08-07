@@ -14,8 +14,7 @@ end
 function STree:SortedTreeContent(container, groupid)
     local index = container:getIndex(container.currentAttribute, groupid);
     for idx, item in ipairs(index) do
-        if container.childContainer ~= nil and container.childContainer:getItemCount(item.item) > 0 then
---             print(item.id, options.childrenContainer:getItemCount(item.id));
+        if container.child ~= nil and container.child:getItemCount(item.item) > 0 then
             isLeaf = false;
         else
             isLeaf = true;
@@ -25,7 +24,7 @@ function STree:SortedTreeContent(container, groupid)
             self.clicked:emit(item.item);
         end
         if not isLeaf and ret then
-            self:SortedTreeContent(container.childContainer, item.item);
+            self:SortedTreeContent(container.child, item.item);
         end
         if ret then
             Slab.EndTree();

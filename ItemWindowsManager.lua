@@ -3,14 +3,14 @@ local utils = require('Utils');
 
 local Item = require('Item');
 
-local Module = require('Module');
+local SModule = require('StateModule');
 
 local dTable = require('DumpTable');
 
-local iwm = Module:subclass("ItemWindowsManager");
+local iwm = SModule:subclass("ItemWindowsManager");
 
 function iwm:initialize(id, name)
-    Module.initialize(self, id, name);
+    SModule.initialize(self, id, name);
     self.modules = {};
     self._globalCurrent = false;
 end
@@ -26,10 +26,14 @@ function iwm:registerModule(id, title, options)
         };
 end
 
-function iwm:getModule(id)
+function iwm:getModule(id, noerr)
     local module = self.modules[id];
     if module == nil then
-        error(string.format("No such module: %s", utils.DumpStr(id)));
+        if noerr then
+            print(string.format("Warning: No such module: %s", utils.DumpStr(id)));
+        else
+            error(string.format("No such module: %s", utils.DumpStr(id)));
+        end
     end
     return module;
 end
@@ -115,23 +119,40 @@ function iwm:UpdateCurrentItemWindows()
     end
 end
 
+function iwm:loadItem(id, parent, module)
+    local item = nil;
+    if module.options.context then
+        item = module.options.onItemLoad(module.options.context, moddata.currentItemId, currentItemParent);
+    else
+        item = module.options.onItemLoad(moddata.currentItemId, currentItemParent);
+    end
+end
+
 function iwm:LoadState(data)
     if type(data) ~= "table" then return; end
     self:SetLoadPhase(true);
-    self._globalModuleId = data.globalModuleId;
+    local globMod = self:getModule(data.globalModuleId, true);
+    if globMod ~= nil then
+        self._globalModuleId = data.globalModuleId;
+        if data.globalCurrent then
+            self._globalCurrent = self:loadItem(data.globalCurrent.id, data.globalCurrent.parent, globMod);
+        end
+    end
     self._globalCurrent = data.globalCurrent;
     if type(data.modules) == "table" then
         for modid, moddata in pairs(data.modules) do
-            local module = self:getModule(modid);
-            if moddata.currentItemId ~= nil then
-                local item = module.options.onItemLoad(moddata.currentItemId, currentItemParent, module.options.context);
-                if item == nil then
-                    print("Warning:", self, "Cannot recreate item:", moddata.currentItemId);
-                    self:StateChanged(true);
-                else
-                    self:setCurrentItem(modid, item);
-                    if moddata.currentWindow == true then
-                        module.currentWindow = true;
+            local module = self:getModule(modid, true);
+            if module ~= nil then
+                if moddata.currentItem ~= nil then
+                    local item = self:loadItem(moddata.currentItem.id, moddata.currentItem.parent, module);
+                    if item == nil then
+                        print("Warning:", self, "Cannot recreate item:", moddata.currentItem.id);
+                        self:StateChanged(true);
+                    else
+                        self:setCurrentItem(modid, item);
+                        if moddata.currentWindow == true then
+                            module.currentWindow = true;
+                        end
                     end
                 end
             end
@@ -143,8 +164,10 @@ end
 function iwm:DumpState()
     local data = {
         globalModuleId = self._globalModuleId,
-        globalCurrent = self._globalCurrent,
         modules = {} };
+    if self._globalCurrent then
+        data.globalCurrent = Item.getSerializableData(self._globalCurrent);
+    end
     for modid, module in pairs(self.modules) do
         local moddata = {};
         if module.currentItem ~= nil then

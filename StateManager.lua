@@ -1,6 +1,8 @@
 
 bitser = require('thirdparty/bitser/bitser');
 
+local SModule = require('StateModule');
+
 local utils = require('Utils');
 
 local function defaultFpath()
@@ -17,7 +19,7 @@ local ss = {
     };
 
 function ss:RegisterModule(mod)
-    if not utils.IsClassOrSubClass("Module") then
+    if not utils.IsClassOrSubClass(mod.class, SModule) then
         error("Not a module:"..tostring(mod));
         return;
     end
