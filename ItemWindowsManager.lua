@@ -24,6 +24,8 @@ function iwm:registerModule(id, title, options)
             currentItem = nil,
             currentWindow = false
         };
+    print("Registered module:", id);
+    self:dumpModules();
 end
 
 function iwm:getModule(id, noerr)
@@ -47,6 +49,7 @@ function iwm:isGlobalCurrent()
 end
 
 function iwm:setCurrentItem(modid, item)
+    print("Set current item:", modid, item);
     local module = self:getModule(modid);
     module.currentItem = item;
     self._currentModuleId = modid;
