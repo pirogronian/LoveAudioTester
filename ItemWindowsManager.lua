@@ -53,7 +53,7 @@ function iwm:setCurrentItem(modid, item)
     self:StateChanged();
 end
 
-function iwm:unsetCurrentItem(modid, tem)
+function iwm:unsetCurrentItem(modid, item)
     local module = self:getModule(modid);
     if module.currentItem == nil then return; end
     if id ~= nil then
@@ -64,6 +64,7 @@ function iwm:unsetCurrentItem(modid, tem)
 end
 
 function iwm:showCurrentItemWindow(modid)
+    self:dumpModules();
     local module = self:getModule(modid);
     module.currentWindow = true;
     self:StateChanged();
@@ -122,10 +123,11 @@ end
 function iwm:loadItem(id, parent, module)
     local item = nil;
     if module.options.context then
-        item = module.options.onItemLoad(module.options.context, moddata.currentItemId, currentItemParent);
+        item = module.options.onItemLoad(module.options.context, id, parent);
     else
-        item = module.options.onItemLoad(moddata.currentItemId, currentItemParent);
+        item = module.options.onItemLoad(id, parent);
     end
+    return item;
 end
 
 function iwm:LoadState(data)
@@ -144,6 +146,7 @@ function iwm:LoadState(data)
             local module = self:getModule(modid, true);
             if module ~= nil then
                 if moddata.currentItem ~= nil then
+                    utils.Dump(moddata.currentItem, -1);
                     local item = self:loadItem(moddata.currentItem.id, moddata.currentItem.parent, module);
                     if item == nil then
                         print("Warning:", self, "Cannot recreate item:", moddata.currentItem.id);
@@ -184,7 +187,7 @@ end
 function iwm:dumpModules()
     print("ItemWindowsManager::dumpModules:");
     for id, module in pairs(self.modules) do
-        print(id, module)
+        print(id, module.currentItem)
     end
 end
 
