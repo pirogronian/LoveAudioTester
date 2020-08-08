@@ -34,7 +34,7 @@ fps.srcMan:setParent(fps.fileMan);
 fps:AddSubmodule(fps.fileMan);
 fps.fileMan:AddSubmodule(fps.srcMan);
 
-fps.tree = STree(fps.fileMan.container);
+fps.tree = STree(fps.fileMan);
 
 fps.playing = 0;
 

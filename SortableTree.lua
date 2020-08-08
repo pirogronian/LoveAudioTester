@@ -5,26 +5,26 @@ local Signal = require('Signal');
 
 local STree = Class("SortableTree");
 
-function STree:initialize(container)
+function STree:initialize(manager)
     self.clicked = Signal();
     self.contextMenu = Signal();
-    self.container = container;
+    self.manager = manager;
 end
 
-function STree:SortedTreeContent(container, groupid)
-    local index = container:getIndex(container.currentAttribute, groupid);
+function STree:SortedTreeContent(manager, groupid)
+    local index = manager.container:getIndex(manager.container.currentAttribute, groupid);
     for idx, item in ipairs(index) do
-        if container.child ~= nil and container.child:getItemCount(item.item) > 0 then
+        if manager.child ~= nil and manager.child.container:getItemCount(item.item) > 0 then
             isLeaf = false;
         else
             isLeaf = true;
         end
-        local ret = Slab.BeginTree(item.item, { IsLeaf = isLeaf, IsSelected = container:isSelected(item.item) });
+        local ret = Slab.BeginTree(item.item, { IsLeaf = isLeaf, IsSelected = manager.container:isSelected(item.item) });
         if Slab.IsControlClicked() then
             self.clicked:emit(item.item);
         end
         if not isLeaf and ret then
-            self:SortedTreeContent(container.child, item.item);
+            self:SortedTreeContent(manager.child, item.item);
         end
         if ret then
             Slab.EndTree();
@@ -33,8 +33,8 @@ function STree:SortedTreeContent(container, groupid)
 end
 
 function STree:Update()
-    if Slab.BeginTree(self.container.name) then
-        self:SortedTreeContent(self.container);
+    if Slab.BeginTree(self.manager.title) then
+        self:SortedTreeContent(self.manager);
         Slab.EndTree();
     end
 end

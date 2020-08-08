@@ -78,9 +78,11 @@ end
 
 function im:setParent(manager)
     if manager == nil then
-        self.parent = nil;
         if self.container.parent then
             self.container.parent.child = nil;
+        end
+        if self.parent then
+            self.parent.child = nil;
         end
         self.container.parent = nil;
         return;
@@ -89,7 +91,8 @@ function im:setParent(manager)
         print(tostring(manager).." is not of class "..self.class.name.."!");
     end
     self.parent = manager;
-    self.container.parent = manager.container
+    self.parent.child = self;
+    self.container.parent = manager.container;
     manager.container.child = self.container;
 end
 
