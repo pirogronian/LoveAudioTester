@@ -5,7 +5,7 @@ local Utils = require('Utils');
 
 local SContainer = require('SortableContainer');
 
-local SortGui = require('SortGUI');
+local SortMenu = require('SortMenu');
 
 local NSDialog = require('NewSourceDialog');
 
@@ -75,7 +75,7 @@ end
 
 function fps:UpdateMenu()
     if Slab.BeginMenu("Filepaths") then
-        SortGui.SortMenu(self.fileMan.container);
+        SortMenu(self.fileMan.container);
         if Slab.MenuItem("Info") then
             IWManager:showCurrentItemWindow(self.fileMan:windowsManagerId());
         end
@@ -86,7 +86,7 @@ function fps:UpdateMenu()
             self.fileMan:onDeleteSelectedConfirm();
         end
         if Slab.BeginMenu("Sources") then
-            SortGui.SortMenu(self.srcMan.container);
+            SortMenu(self.srcMan.container);
             if Slab.MenuItem("Info") then
                 IWManager:showCurrentItemWindow(self.srcMan:windowsManagerId());
             end
