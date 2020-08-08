@@ -86,6 +86,7 @@ function fps:UpdateMenu()
             self.fileMan:onDeleteSelectedConfirm();
         end
         if Slab.BeginMenu("Sources") then
+            SortGui.SortMenu(self.srcMan.container);
             if Slab.MenuItem("Info") then
                 IWManager:showCurrentItemWindow(self.srcMan:windowsManagerId());
             end

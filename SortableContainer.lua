@@ -204,8 +204,10 @@ function SortableContainer:sort(attrid, dir)
     else
         comp = attr.sortDesc;
     end
-    local index = self:getIndex(attrid);
-    table.sort(index, comp);
+    for gid, _ in pairs(self.groups) do
+        local index = self:getIndex(attrid, gid);
+        table.sort(index, comp);
+    end
     self.currentAttribute = attrid;
 end
 
