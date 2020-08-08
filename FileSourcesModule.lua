@@ -3,8 +3,6 @@ local SModule = require('StateModule');
 
 local Utils = require('Utils');
 
-local SContainer = require('SortableContainer');
-
 local SortMenu = require('SortMenu');
 
 local NSDialog = require('NewSourceDialog');
@@ -25,19 +23,13 @@ local FileItem = require('FileItem');
 
 local SourceItem = require('SourceItem');
 
-local IAttribute = require('ItemAttribute');
-
 local IManager = require('ItemsManager');
+
+local FIManager = require("FileItemsManager");
 
 local STree = require('SortableTree');
 
 local fps = SModule("filesourcesmodule", "File sources");
-
-function fps.fileItemWindowContent(item)
-    FileInfoPanel(item.file, "FileInfo");
-    Slab.Separator();
-    DecoderInfoPanel(item.decoder, "DecoderInfo");
-end
 
 function fps.sourceItemWindowContent(item)
     ItemInfoPanel(item);
@@ -50,11 +42,9 @@ function fps.sourceItemWindowContent(item)
     end
 end
 
-fps.fileMan = IManager("files", "Files", FileItem, fps.fileItemWindowContent);
--- fps.fileMan.container:addAttribute(IAttribute("path", "Path"));
+fps.fileMan = FIManager();
 
 fps.srcMan = IManager("filesources", "Sources", SourceItem, fps.sourceItemWindowContent);
--- fps.srcMan.container:addAttribute(IAttribute("name", "Name"));
 
 fps.srcMan:setParent(fps.fileMan);
 
