@@ -11,14 +11,6 @@ local InfoQueue = require('InfoQueue');
 
 local IWManager = require('ItemWindowsManager');
 
-local ItemInfoPanel = require('ItemInfoPanel');
-
-local FileInfoPanel = require('FileInfoPanel');
-
-local DecoderInfoPanel = require('DecoderInfoPanel');
-
-local SourceControlPanel = require('SourceControlPanel');
-
 local FileItem = require('FileItem');
 
 local SourceItem = require('SourceItem');
@@ -27,24 +19,15 @@ local IManager = require('ItemsManager');
 
 local FIManager = require("FileItemsManager");
 
+local SIManager = require("SourceItemsManager");
+
 local STree = require('SortableTree');
 
 local fps = SModule("filesourcesmodule", "File sources");
 
-function fps.sourceItemWindowContent(item)
-    ItemInfoPanel(item);
-    FileInfoPanel(item.parent.file, "FileInfo");
-    Slab.Separator();
-    DecoderInfoPanel(item.parent.decoder, "DecoderInfo");
-    Slab.Separator();
-    if SourceControlPanel(item) then
-        fps.StateChanged(fps);
-    end
-end
-
 fps.fileMan = FIManager();
 
-fps.srcMan = IManager("filesources", "Sources", SourceItem, fps.sourceItemWindowContent);
+fps.srcMan = SIManager();
 
 fps.srcMan:setParent(fps.fileMan);
 
