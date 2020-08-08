@@ -17,7 +17,7 @@ function im:initialize(id, title, ItemClass, itemWindowFunc)
     SModule.initialize(self, id, title);
     self.ItemClass = ItemClass;
     self.windowFunc = itemWindowFunc;
-    self.container = SContainer(id, title);
+    self.container = SContainer(id, title, ItemClass);
     self.currentItem = nil;
     self.deleteConfirmator = DConfirmator(self.container, self.title);
     self.container.itemAdded:connect(self.onAddNewItem, self);

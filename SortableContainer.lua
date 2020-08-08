@@ -5,42 +5,25 @@ local Class = require('thirdparty/middleclass/middleclass');
 
 local Signal = require('Signal');
 
-local IAttribute = require('ItemAttribute');
-
 local SortableContainer = Class("SortableContainer");
 
-SortableContainer.Attribute = SortableAttribute;
-
-function SortableContainer:initialize(id, name)
+function SortableContainer:initialize(id, name, ItemClass)
     self.indexes = {};
-    self.attributes = {};
     self.groups = {};
     self.selected = {};
     self.id = id;
     self.name = name;
+    self.ItemClass = ItemClass;
     self.itemCount = 0;
-    self.attributeAdded = Signal();
-    self.attributeRemoved = Signal();
     self.itemAdded = Signal();
     self.itemRemoved = Signal();
     self.creationError = Signal();
-end
-
-function SortableContainer:addAttribute(attr)
-    self.attributes[attr.id] = attr;
-    self.indexes[attr.id] = {};
-    if self.currentAttribute == nil then
-        self.currentAttribute = attr.id;
+    for attrid, attr in pairs(self.ItemClass.attributes) do
+        self.indexes[attr.id] = {};
+        if self.currentAttribute == nil then
+            self.currentAttribute = attr.id;
+        end
     end
-    self.attributeAdded:emit(attr);
-end
-
-function SortableContainer:deleteAttribute(id)
-    local attr = self.attributes[id];
-    if attr == nil then return; end
-    self.attributes[id] = nil;
-    self.indexes[id] = nil;
-    self.attributeRemoved:emit(attr);
 end
 
 function SortableContainer:groupId(groupid)
@@ -62,7 +45,7 @@ function SortableContainer:getIndex(attrid, groupid)
 end
 
 function SortableContainer:getAttribute(id)
-    local attr = self.attributes[id];
+    local attr = self.ItemClass.attributes[id];
     if type(attr) == nil then
         error(self.class.name..": attribute \""..id.."\" not found in attributes.");
     end
@@ -83,7 +66,7 @@ function SortableContainer:addItem(item, groupid)
         end
         self.groups[groupid].ids[item.id] = item;
     end
-    for attrid, attr in pairs(self.attributes) do
+    for attrid, attr in pairs(self.ItemClass.attributes) do
         local index = self:getIndex(attrid, groupid);
         local entry = { attribute = item.attributes[attrid], item = item };
         table.insert(index, entry);
@@ -226,13 +209,6 @@ function SortableContainer:sort(attrid, dir)
     self.currentAttribute = attrid;
 end
 
-function SortableContainer:dumpAttributes()
-    print("Attributes:");
-    for id, attr in pairs(self.attributes) do
-        attr:dump();
-    end
-end
-
 function SortableContainer.dumpIndexArray(array)
     for idx, item in ipairs(array) do
         print("["..idx.."] => { id: ", item.item.id, ", attribute: ", item.attribute, " }");
@@ -303,7 +279,7 @@ function SortableContainer:DumpState()
     return data;
 end
 
-function SortableContainer:LoadState(data, ItemClass)
+function SortableContainer:LoadState(data)
     if data == nil then return end
     local err = false;
     local parent = nil;
@@ -318,7 +294,7 @@ function SortableContainer:LoadState(data, ItemClass)
             end
         end
         if not err then
-            local status, value = pcall(ItemClass.new, ItemClass, itemdata, parent);
+            local status, value = pcall(self.ItemClass.new, self.ItemClass, itemdata, parent);
             if status then
                 local item = value;
                 if item ~= nil then

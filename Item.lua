@@ -3,7 +3,23 @@ local Class = require('thirdparty/middleclass/middleclass');
 
 local u = require('Utils');
 
+local IAttribute = require('ItemAttribute');
+
 local Item = Class("Item");
+
+Item.static.Attribute = IAttribute;
+
+Item.static.attributes = {};
+
+function Item.static:addAttribute(attr)
+    self.attributes[attr.id] = attr;
+end
+
+function Item.static:deleteAttribute(id)
+    local attr = self.attributes[id];
+    if attr == nil then return; end
+    self.attributes[id] = nil;
+end
 
 function Item:initialize(data, parent)
     if type(data) == 'table' then

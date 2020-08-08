@@ -5,6 +5,10 @@ local Signal = require('Signal');
 
 local SItem = Item:subclass("SourceItem");
 
+SItem.static.attributes = {};
+
+SItem:addAttribute(Item.Attribute("name", "Name"));
+
 function SItem:initialize(data, parent)
     local playPos = 0;
     local volume = 1;

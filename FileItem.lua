@@ -5,6 +5,10 @@ local Item = require('Item');
 
 local fi = Item:subclass("FileItem");
 
+fi.static.attributes = {};
+
+fi:addAttribute(Item.Attribute("path", "Path"));
+
 function fi:initialize(data, isFullPath)
     local path = data;
     if type(data) == 'table' then

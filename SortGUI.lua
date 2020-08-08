@@ -1,9 +1,7 @@
 
-local dT = require('DumpTable')
-
 local function SortMenu(container)
     if Slab.BeginMenu("Sort by") then
-        for attrid, attr in pairs(container.attributes) do
+        for attrid, attr in pairs(container.ItemClass.attributes) do
             if Slab.BeginMenu(attr.name) then
                 if Slab.MenuItem("Ascending") then
                     container:sort(attrid, "asc");

@@ -51,10 +51,10 @@ function fps.sourceItemWindowContent(item)
 end
 
 fps.fileMan = IManager("files", "Files", FileItem, fps.fileItemWindowContent);
-fps.fileMan.container:addAttribute(IAttribute("path", "Path"));
+-- fps.fileMan.container:addAttribute(IAttribute("path", "Path"));
 
 fps.srcMan = IManager("filesources", "Sources", SourceItem, fps.sourceItemWindowContent);
-fps.srcMan.container:addAttribute(IAttribute("name", "Name"));
+-- fps.srcMan.container:addAttribute(IAttribute("name", "Name"));
 
 fps.srcMan:setParent(fps.fileMan);
 
