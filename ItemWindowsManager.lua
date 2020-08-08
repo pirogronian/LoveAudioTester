@@ -92,9 +92,10 @@ function iwm.getCurrentWindowId(module)
     return module.id.."CurrentItemWindow";
 end
 
-function iwm:UpdateCurrentItemWindow(module)
+function iwm:UpdateCurrentItemWindow(module, id)
     if module.currentItem == nil or not module.windowOpen then return; end
-    if Slab.BeginWindow(iwm.getCurrentWindowId(module),
+    if id == nil then id = iwm.getCurrentWindowId(module); end
+    if Slab.BeginWindow(id,
                         {
                          Title = module.title,
                          IsOpen = module.windowOpen,
@@ -112,10 +113,15 @@ function iwm:UpdateCurrentItemWindow(module)
     Slab.EndWindow();
 end
 
-function iwm:UpdateCurrentItemWindows()
-    if self._globalCurrent and _self._currentModuleId  ~= nil then
+function iwm:UpdateWindows()
+    if self._globalCurrent and self._currentModuleId  ~= nil then
         local module = self:getModule(self._currentModuleId);
-        self.UpdateCurrentItemWindow(module);
+        if module == nil then
+            print("Warning: no such module:", self._currentModuleId);
+            self._currentModuleId = nil;
+        else
+            self:UpdateCurrentItemWindow(module, "GlobalItemWindow");
+        end
     else
         for id, module in pairs(self.modules) do
             self:UpdateCurrentItemWindow(module);
@@ -123,25 +129,33 @@ function iwm:UpdateCurrentItemWindows()
     end
 end
 
-function iwm:loadItem(id, parent, module)
-    local item = nil;
-    if module.options.context then
-        item = module.options.onItemLoad(module.options.context, id, parent);
-    else
-        item = module.options.onItemLoad(id, parent);
+function iwm:UpdateMenu()
+    if Slab.BeginMenu("Windows") then
+        if Slab.MenuItemChecked("Single acitve window", self._globalCurrent) then
+            self._globalCurrent = not self._globalCurrent;
+            self:StateChanged();
+        end
+        if not self._globalCurrent then
+            if Slab.BeginMenu("Active windows") then
+                for id, module in pairs(self.modules) do
+                    if Slab.MenuItemChecked(module.title, module.windowOpen) then
+                        module.windowOpen = not module.windowOpen;
+                        self:StateChanged();
+                    end
+                end
+                Slab.EndMenu();
+            end
+        end
+        Slab.EndMenu();
     end
-    return item;
 end
 
 function iwm:LoadState(data)
     if type(data) ~= "table" then return; end
     self:SetLoadPhase(true);
-    local globMod = self:getModule(data.globalModuleId, true);
+    local globMod = self:getModule(data.currentModuleId, true);
     if globMod ~= nil then
-        self._globalModuleId = data.globalModuleId;
-        if data.globalCurrent then
-            self._globalCurrent = self:loadItem(data.globalCurrent.id, data.globalCurrent.parent, globMod);
-        end
+        self._currentModuleId = data.currentModuleId;
     end
     self._globalCurrent = data.globalCurrent;
     if type(data.modules) == "table" then
@@ -157,7 +171,7 @@ end
 
 function iwm:DumpState()
     local data = {
-        globalModuleId = self._globalModuleId,
+        currentModuleId = self._currentModuleId,
         modules = {} };
     data.globalCurrent = self._globalCurrent;
     for modid, module in pairs(self.modules) do

@@ -35,6 +35,7 @@ function love.update(dt)
             end
             Slab.EndMenu();
         end
+        IWManager:UpdateMenu();
         FPSModule:UpdateMenu();
 
         MMBW, MMBH = Slab.GetControlSize();
@@ -57,7 +58,7 @@ function love.update(dt)
     end
     Slab.EndWindow();
 
-    IWManager:UpdateCurrentItemWindows();
+    IWManager:UpdateWindows();
     FPSModule:UpdateDialogs();
     InfoQueue:Update();
 

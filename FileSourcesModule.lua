@@ -47,11 +47,8 @@ function fps:addPaths(paths)
 end
 
 function fps:UpdateMenu()
-    if Slab.BeginMenu("Filepaths") then
+    if Slab.BeginMenu("Files") then
         SortMenu(self.fileMan.container);
-        if Slab.MenuItem("Info") then
-            IWManager:showCurrentItemWindow(self.fileMan:windowsManagerId());
-        end
         if Slab.MenuItem("Add") then
             openFilepathDialog = true;
         end
@@ -60,9 +57,6 @@ function fps:UpdateMenu()
         end
         if Slab.BeginMenu("Sources") then
             SortMenu(self.srcMan.container);
-            if Slab.MenuItem("Info") then
-                IWManager:showCurrentItemWindow(self.srcMan:windowsManagerId());
-            end
             if Slab.MenuItem("New") then
                 self:OpenNewSourceDialog();
             end
