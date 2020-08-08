@@ -5,24 +5,7 @@ local Class = require('thirdparty/middleclass/middleclass');
 
 local Signal = require('Signal');
 
-local SortableAttribute = Class("SortableAttribute");
-
-function SortableAttribute.sortAsc(sitem1, sitem2)
-    return sitem1.attribute < sitem2.attribute;
-end
-
-function SortableAttribute.sortDesc(sitem1, sitem2)
-    return sitem1.attribute > sitem2.attribute;
-end
-
-function SortableAttribute:initialize(id, name)
-    self.id = id;
-    self.name = name;
-end
-
-function SortableAttribute:dump()
-    print(self.class.name..":\n  id: "..self.id.."\n  name: "..self.name)
-end
+local IAttribute = require('ItemAttribute');
 
 local SortableContainer = Class("SortableContainer");
 
