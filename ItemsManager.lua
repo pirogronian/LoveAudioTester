@@ -42,9 +42,14 @@ function im:onClick(item)
     end
     if self.currentItem ~= item then
         self.currentItem = item;
-        self:StateChanged();
+    else
+        self.currentItem = nil;
+        IWManager:unsetCurrentItem(self:windowsManagerId(), item);
     end
-    IWManager:setCurrentItem(self:windowsManagerId(), item);
+    if self.currentItem ~= nil then
+        IWManager:setCurrentItem(self:windowsManagerId(), item);
+    end
+    self:StateChanged();
 end
 
 function im:onAddNewItem(item)
