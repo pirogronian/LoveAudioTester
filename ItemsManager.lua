@@ -7,6 +7,8 @@ local DConfirmator = require('DeleteConfirmator');
 
 local IQueue = require('InfoQueue');
 
+local OEMsg = require('ErrorMessage');
+
 local IWManager = require('ItemWindowsManager');
 
 local Utils = require('Utils');
@@ -62,11 +64,11 @@ function im:onItemLoad(id, parent)
 end
 
 function im:createItem(...)
-    local status, value = pcall(self.ItemClass.new, self.ItemClass, ...);
-    if not status then
-        IQueue:pushMessage("Cannot create item!", value);
-        return;
-    end
+    local status, value = OEMsg(
+        "Cannot create item!",
+        "An error occured while creating item of class "..tostring(self.ItemClass),
+        self.ItemClass.new, self.ItemClass, ...);
+    if not status then return; end
     if self.container:hasItem(value) then
         IQueue:pushMessage("Item already exists!", "Item "..tostring(value).." already exists!");
         return;
