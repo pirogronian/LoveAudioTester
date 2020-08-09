@@ -50,10 +50,17 @@ end
 
 function iwm:setCurrentItem(modid, item)
 --     print("Set current item:", modid, item);
+    local changed = false;
     local module = self:getModule(modid);
-    module.currentItem = item;
-    self._currentModuleId = modid;
-    self:StateChanged();
+    if module.currentItem ~= item then
+        module.currentItem = item;
+        changed = true;
+    end
+    if self._currentModuleId ~= modid then
+        self._currentModuleId = modid;
+        changed = true;
+    end
+    if changed then self:StateChanged(); end
 end
 
 function iwm:unsetCurrentItem(modid, item)
@@ -135,16 +142,14 @@ function iwm:UpdateMenu()
             self._globalCurrent = not self._globalCurrent;
             self:StateChanged();
         end
-        if not self._globalCurrent then
-            if Slab.BeginMenu("Active windows") then
-                for id, module in pairs(self.modules) do
-                    if Slab.MenuItemChecked(module.title, module.windowOpen) then
-                        module.windowOpen = not module.windowOpen;
-                        self:StateChanged();
-                    end
+        if Slab.BeginMenu("Active windows") then
+            for id, module in pairs(self.modules) do
+                if Slab.MenuItemChecked(module.title, module.windowOpen) then
+                    module.windowOpen = not module.windowOpen;
+                    self:StateChanged();
                 end
-                Slab.EndMenu();
             end
+            Slab.EndMenu();
         end
         Slab.EndMenu();
     end
