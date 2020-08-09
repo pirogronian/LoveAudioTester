@@ -49,6 +49,7 @@ end
 function fps:UpdateMenu()
     if Slab.BeginMenu("Files") then
         SortMenu(self.fileMan.container);
+        self.fileMan:selectMenu();
         if Slab.MenuItem("Add") then
             openFilepathDialog = true;
         end
@@ -57,6 +58,7 @@ function fps:UpdateMenu()
         end
         if Slab.BeginMenu("Sources") then
             SortMenu(self.srcMan.container);
+            self.srcMan:selectMenu();
             if Slab.MenuItem("New") then
                 self:OpenNewSourceDialog();
             end

@@ -21,6 +21,7 @@ function im:initialize(id, title, ItemClass, itemWindowFunc)
     self.windowFunc = itemWindowFunc;
     self.container = SContainer(id, title, ItemClass);
     self.currentItem = nil;
+    self.selectMode = false;
     self.deleteConfirmator = DConfirmator(self.container, self.title);
     self.container.itemAdded:connect(self.onAddNewItem, self);
     self.container.itemRemoved:connect(self.onDeleteItem, self);
@@ -36,10 +37,14 @@ function im:onClick(item)
     if not self.container:hasItem(item) then
         print(self, "Warning: clicked item is not in container:", item);
     end
-    self.container:toggleSelection(item);
-    self.currentItem = item;
-    IWManager:setCurrentItem(self:windowsManagerId(), item);
-    self:StateChanged();
+    if self.selectMode then
+        self.container:toggleSelection(item);
+    end
+    if self.currentItem ~= item then
+        self.currentItem = item;
+        IWManager:setCurrentItem(self:windowsManagerId(), item);
+        self:StateChanged();
+    end
 end
 
 function im:onAddNewItem(item)
@@ -115,6 +120,9 @@ function im:LoadState(data)
         IWManager:setCurrentItem(self:windowsManagerId(), self.currentItem);
 --         print("Current item set.");
     end
+    if data.selectMode == true then
+        self.selectMode = true;
+    end
     IWManager:SetLoadPhase(false);
     self:SetLoadPhase(false);
     self:LoadSubmodulesState(data.children);
@@ -127,9 +135,16 @@ function im:DumpState()
     if self.currentItem then
         data.currentItem = self.currentItem:getSerializableData();
     end
+    data.selectMode = self.selectMode;
     data.children = self:DumpSubmodulesState();
 --     Utils.Dump(data, -1);
     return data;
+end
+
+function im:selectMenu()
+    if Slab.MenuItemChecked("Select mode", self.selectMode) then
+        self.selectMode = not self.selectMode;
+    end
 end
 
 function im:update()
