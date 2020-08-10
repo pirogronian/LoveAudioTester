@@ -18,7 +18,7 @@ local im = SModule:subclass("ItemsManager");
 function im:initialize(id, title, ItemClass, itemWindowFunc)
     SModule.initialize(self, id, title);
     self.ItemClass = ItemClass;
-    self.windowFunc = itemWindowFunc;
+    self.onWindowUpdate = itemWindowFunc;
     self.container = SContainer(id, title, ItemClass);
     self.currentItem = nil;
     self.selectMode = false;
@@ -26,7 +26,7 @@ function im:initialize(id, title, ItemClass, itemWindowFunc)
     self.container.itemAdded:connect(self.onAddNewItem, self);
     self.container.itemRemoved:connect(self.onDeleteItem, self);
     IWManager:registerModule(self:windowsManagerId(), self.title,
-                         { onWindowUpdate = self.windowFunc, context = self });
+                         { onWindowUpdate = self.onWindowUpdate, context = self });
 end
 
 function im:windowsManagerId()
@@ -44,10 +44,10 @@ function im:onClick(item)
         self.currentItem = item;
     else
         self.currentItem = nil;
-        IWManager:unsetCurrentItem(self:windowsManagerId(), item);
+--         IWManager:unsetCurrentModule(self:windowsManagerId());
     end
     if self.currentItem ~= nil then
-        IWManager:setCurrentItem(self:windowsManagerId(), item);
+        IWManager:setCurrentModule(self:windowsManagerId());
     end
     self:StateChanged();
 end
@@ -119,11 +119,6 @@ function im:LoadState(data)
 --         Utils.Dump(data.currentItem, -1)
         self.currentItem = self.container:getItem(data.currentItem.id, data.currentItem.parent);
 --         print(self.currentItem);
-    end
-    if self.currentItem then
---         print("Setting current item:", self.currentItem)
-        IWManager:setCurrentItem(self:windowsManagerId(), self.currentItem);
---         print("Current item set.");
     end
     if data.selectMode == true then
         self.selectMode = true;

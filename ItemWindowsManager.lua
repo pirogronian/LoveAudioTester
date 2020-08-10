@@ -48,29 +48,20 @@ function iwm:isGlobalCurrent()
     return self._globalCurrent;
 end
 
-function iwm:setCurrentItem(modid, item)
+function iwm:setCurrentModule(modid)
 --     print("Set current item:", modid, item);
-    local changed = false;
     local module = self:getModule(modid);
-    if module.currentItem ~= item then
-        module.currentItem = item;
-        changed = true;
-    end
     if self._currentModuleId ~= modid then
         self._currentModuleId = modid;
-        changed = true;
+        self:StateChanged();
     end
-    if changed then self:StateChanged(); end
 end
 
-function iwm:unsetCurrentItem(modid, item)
-    local module = self:getModule(modid);
-    if module.currentItem == nil then return; end
-    if id ~= nil then
-        if module.currentItem ~= item then return; end
+function iwm:unsetCurrentModule(modid)
+    if self._currentModuleId == modid then
+        self._currentModuleId = nil;
+        self:StateChanged();
     end
-    module.currentItem = nil;
-    self:StateChanged();
 end
 
 function iwm:showCurrentItemWindow(modid)
@@ -89,9 +80,6 @@ end
 function iwm:delItem(modid, itemid, current)
     local module = self:getModule(modid);
     module.items[itemid] = nil;
-    if current then
-        self:unsetCurrentItem(modid, itemid);
-    end
     self:StateChanged();
 end
 
@@ -100,7 +88,7 @@ function iwm.getCurrentWindowId(module)
 end
 
 function iwm:UpdateCurrentItemWindow(module, id)
-    if module.currentItem == nil or not module.windowOpen then return; end
+    if module.options.context.currentItem == nil or not module.windowOpen then return; end
     if id == nil then id = iwm.getCurrentWindowId(module); end
     if Slab.BeginWindow(id,
                         {
@@ -111,7 +99,7 @@ function iwm:UpdateCurrentItemWindow(module, id)
                          H = 200
                          }) then
         if module.options.onWindowUpdate ~= nil then
-            module.options.onWindowUpdate(module.currentItem, module.options.context);
+            module.options.onWindowUpdate(module.options.context.currentItem, module.options.context);
         end
     else
         module.windowOpen = false;
