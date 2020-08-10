@@ -16,6 +16,8 @@ function SortableContainer:initialize(id, ItemClass)
     self.itemCount = 0;
     self.itemAdded = Signal();
     self.itemRemoved = Signal();
+    self.itemSelected = Signal();
+    self.itemDeselected = Signal();
     self.creationError = Signal();
     for attrid, attr in pairs(self.ItemClass.attributes) do
         self.indexes[attr.id] = {};
@@ -147,14 +149,20 @@ function SortableContainer:deleteSelected()
 end
 
 function SortableContainer:select(item)
-    self.selected[item] = true;
-    self.lastSelected = item;
+    if self.selected[item] ~= true then
+        self.selected[item] = true;
+        self.lastSelected = item;
+        self.itemSelected:emit();
+    end
 end
 
 function SortableContainer:deselect(item)
-    self.selected[item] = nil;
-    if self.lastSelected == item then
-        self.lastSelected = nil;
+    if self.selected[item] == true then
+        self.selected[item] = nil;
+        if self.lastSelected == item then
+            self.lastSelected = nil;
+        end
+        self.itemDeselected:emit();
     end
 end
 

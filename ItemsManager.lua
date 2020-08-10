@@ -24,6 +24,8 @@ function im:initialize(id, iname, inames, ItemClass, itemWindowFunc)
     self.selectMode = false;
     self.container.itemAdded:connect(self.onAddNewItem, self);
     self.container.itemRemoved:connect(self.onDeleteItem, self);
+    self.container.itemSelected:connect(self.StateChanged, self);
+    self.container.itemDeselected:connect(self.StateChanged, self);
     IWManager:registerModule(self:windowsManagerId(), self.inames,
                          { onWindowUpdate = self.onWindowUpdate, context = self });
 end
@@ -137,12 +139,19 @@ function im:DumpState()
 end
 
 function im:selectMenu()
-    if Slab.MenuItemChecked("Select mode", self.selectMode) then
+    if Slab.MenuItemChecked("Select on click", self.selectMode) then
         self.selectMode = not self.selectMode;
     end
 end
 
 function im:contextMenu(item)
+    local seltext = "Select";
+    if self.container:isSelected(item) then
+        seltext = "Deselect";
+    end
+    if Slab.MenuItem(seltext) then
+        self.container:toggleSelection(item);
+    end
     if Slab.MenuItem("Delete") then
         self:confirmDelete(item);
     end
