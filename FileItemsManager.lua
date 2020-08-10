@@ -19,4 +19,11 @@ function fim:initialize()
     IManager.initialize(self, "files", "file", "files", FItem, windowContent);
 end
 
+function fim:contextMenu(item)
+    if Slab.MenuItem("New source") then
+        self.child:OpenNewSourceDialog(item);
+    end
+    IManager.contextMenu(self, item);
+end
+
 return fim;

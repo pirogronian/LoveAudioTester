@@ -30,8 +30,12 @@ function sim:initialize()
     IManager.initialize(self, "filesources", "source", "sources", SItem, windowContent);
 end
 
-function sim:OpenNewSourceDialog()
-    if self.parent.currentItem == nil then return; end
+function sim:OpenNewSourceDialog(parent)
+    self.newSourceParent = parent;
+    if self.newSourceParent == nil then
+        self.newSourceParent = self.parent.currentItem;
+    end
+    if self.newSourceParent == nil then return; end
 --     print("Opening new source dialog for:", self.fileMan.currentItem);
     Slab.OpenDialog("NewSourceDialog");
     self.newSourceDialog = true;
@@ -39,12 +43,12 @@ end
 
 function sim:UpdateNewSourceDialog()
     if not self.newSourceDialog then return; end
-    local closed, id = NSDialog(self.parent.currentItem);
+    local closed, id = NSDialog(self.newSourceParent);
     if closed then
         self.newSourceDialog = false;
         if id == nil then return; end
 --         print("Creating source", id);
-        self:createItem(id, self.parent.currentItem);
+        self:createItem(id, self.newSourceParent);
     end
 end
 
