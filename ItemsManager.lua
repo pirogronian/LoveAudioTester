@@ -99,8 +99,8 @@ function im:setParent(manager)
         self.container.parent = nil;
         return;
     end
-    if not Utils.IsClassOrSubClass(manager.class, self.class) then
-        print(tostring(manager).." is not of class "..self.class.name.."!");
+    if not Utils.IsClassOrSubClass(manager.class, im) then
+        error(tostring(manager).." is not of class "..self.class.name.."!");
     end
     self.parent = manager;
     self.parent.child = self;

@@ -30,7 +30,7 @@ function Item:initialize(data, parent)
     self.parent = parent;
     if self.parent ~= nil then
 --         print("Item:", self.id, "parent:", parent, parent.class);
-        if type(self.parent.class) ~= 'table' or u.IsClassOrSubClass(self.parent.class, "Item") then
+        if type(self.parent.class) ~= 'table' or not u.IsClassOrSubClass(self.parent.class, Item) then
             error("Item parent is not from class Item! ("..u.DumpStr(self.parent)..")");
         end
     end

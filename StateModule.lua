@@ -28,8 +28,8 @@ function Module:IsLoadPhase()
 end
 
 function Module:AddSubmodule(module)
-    if not Utils.IsClassOrSubClass(self.class, module.class) then
-        print("Module "..tostring(module).." is not from class "..self.class.name);
+    if not Utils.IsClassOrSubClass(module.class, Module) then
+        error("Module "..tostring(module).." is not from class "..Module.name);
     end
     self._submodules[module.id] = module;
     module.stateChanged:connect(self.StateChanged, self);
