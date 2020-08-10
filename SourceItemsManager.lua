@@ -13,7 +13,7 @@ local SourceControlPanel = require('SourceControlPanel');
 
 local NSDialog = require('NewSourceDialog');
 
-local sim = IManager:subclass("SourceItemManager");
+local sim = IManager:subclass("SourceItemsManager");
 
 local function windowContent(item)
     ItemInfoPanel(item);

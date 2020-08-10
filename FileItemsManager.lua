@@ -7,7 +7,7 @@ local FileInfoPanel = require('FileInfoPanel');
 
 local DecoderInfoPanel = require('DecoderInfoPanel');
 
-local fim = IManager:subclass("FileItemManager");
+local fim = IManager:subclass("FileItemsManager");
 
 local function windowContent(item)
     FileInfoPanel(item.file, "FileInfo");
