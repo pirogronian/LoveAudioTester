@@ -11,7 +11,9 @@ local DecoderInfoPanel = require('DecoderInfoPanel');
 
 local SourceControlPanel = require('SourceControlPanel');
 
-local fim = IManager:subclass("FileItemManager");
+local NSDialog = require('NewSourceDialog');
+
+local sim = IManager:subclass("SourceItemManager");
 
 local function windowContent(item)
     ItemInfoPanel(item);
@@ -24,8 +26,31 @@ local function windowContent(item)
     end
 end
 
-function fim:initialize()
+function sim:initialize()
     IManager.initialize(self, "filesources", "source", "sources", SItem, windowContent);
 end
 
-return fim;
+function sim:OpenNewSourceDialog()
+    if self.parent.currentItem == nil then return; end
+--     print("Opening new source dialog for:", self.fileMan.currentItem);
+    Slab.OpenDialog("NewSourceDialog");
+    self.newSourceDialog = true;
+end
+
+function sim:UpdateNewSourceDialog()
+    if not self.newSourceDialog then return; end
+    local closed, id = NSDialog(self.parent.currentItem);
+    if closed then
+        self.newSourceDialog = false;
+        if id == nil then return; end
+--         print("Creating source", id);
+        self:createItem(id, self.parent.currentItem);
+    end
+end
+
+function sim:update()
+    IManager.update(self);
+    self:UpdateNewSourceDialog();
+end
+
+return sim;
