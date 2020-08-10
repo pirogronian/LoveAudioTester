@@ -94,6 +94,8 @@ function fps:SourcePostCreation(item)
     item.changed:connect(self.StateChanged, self);
 end
 
+fps.srcMan.container.itemAdded:connect(fps.SourcePostCreation, fps);
+
 function fps:UpdateNewSourceDialog()
     if not self.newSourceDialog then return; end
     local closed, id = NSDialog(self.fileMan.currentItem);
@@ -137,11 +139,11 @@ function fps:LoadState(data)
     if data == nil then return end
     self:SetLoadPhase(true);
     self:LoadSubmodulesState(data);
-    for groupid, group in pairs(self.srcMan.container.groups) do
-        for key, item in pairs(group.ids) do
-            self:SourcePostCreation(item);
-        end
-    end
+--     for groupid, group in pairs(self.srcMan.container.groups) do
+--         for key, item in pairs(group.ids) do
+--             self:SourcePostCreation(item);
+--         end
+--     end
 --    self.paths:dumpIds();
 --    self.paths:dumpAttributes();
 --    self.paths:dumpIndexes(true);
