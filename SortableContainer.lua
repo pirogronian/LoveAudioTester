@@ -7,12 +7,11 @@ local Signal = require('Signal');
 
 local SortableContainer = Class("SortableContainer");
 
-function SortableContainer:initialize(id, name, ItemClass)
+function SortableContainer:initialize(id, ItemClass)
     self.indexes = {};
     self.groups = {};
     self.selected = {};
     self.id = id;
-    self.name = name;
     self.ItemClass = ItemClass;
     self.itemCount = 0;
     self.itemAdded = Signal();

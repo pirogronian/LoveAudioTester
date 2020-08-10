@@ -7,9 +7,8 @@ local Utils = require('Utils');
 
 local Module = Class("StateModule");
 
-function Module:initialize(id, title)
+function Module:initialize(id)
     self.id = id;
-    self.title = title;
     self._stateChangd = false;
     self.loadPhase = false;
     self._submodules = {};

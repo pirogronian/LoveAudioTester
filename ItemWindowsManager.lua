@@ -34,6 +34,7 @@ function iwm:getModule(id, noerr)
         if noerr then
             print(string.format("Warning: No such module: %s", utils.DumpStr(id)));
         else
+            self:dumpModules();
             error(string.format("No such module: %s", utils.DumpStr(id)));
         end
     end
@@ -73,14 +74,18 @@ end
 
 function iwm:addItem(modid, item)
     local module = self:getModule(modid);
-    module.items[item] = item;
-    self:StateChanged();
+    if module.items[item] == nil then
+        module.items[item] = item;
+        self:StateChanged();
+    end
 end
 
-function iwm:delItem(modid, itemid, current)
+function iwm:delItem(modid, item, current)
     local module = self:getModule(modid);
-    module.items[itemid] = nil;
-    self:StateChanged();
+    if module.items[item] ~= nil then
+        module.items[item] = nil;
+        self:StateChanged();
+    end
 end
 
 function iwm.getCurrentWindowId(module)

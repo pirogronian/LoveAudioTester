@@ -54,7 +54,7 @@ function fps:UpdateMenu()
             openFilepathDialog = true;
         end
         if Slab.MenuItem("Delete selected") then
-            self.fileMan:onDeleteSelectedConfirm();
+            self.fileMan:confirmDeleteSelected();
         end
         if Slab.BeginMenu("Sources") then
             SortMenu(self.srcMan.container);
@@ -63,7 +63,7 @@ function fps:UpdateMenu()
                 self:OpenNewSourceDialog();
             end
             if Slab.MenuItem("Delete selected") then
-                self.srcMan:onDeleteSelectedConfirm();
+                self.srcMan:confirmDeleteSelected();
             end
             Slab.EndMenu();
         end
@@ -83,7 +83,7 @@ end
 
 function fps:OpenNewSourceDialog()
     if self.fileMan.currentItem == nil then return; end
-    print("Opening new source dialog for:", self.fileMan.currentItem);
+--     print("Opening new source dialog for:", self.fileMan.currentItem);
     Slab.OpenDialog("NewSourceDialog");
     self.newSourceDialog = true;
 end
@@ -100,7 +100,7 @@ function fps:UpdateNewSourceDialog()
     if closed then
         self.newSourceDialog = false;
         if id == nil then return; end
-        print("Creating source", id);
+--         print("Creating source", id);
         self.srcMan:createItem(id, self.fileMan.currentItem);
     end
 end

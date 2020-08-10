@@ -3,8 +3,6 @@ local SModule = require('StateModule');
 
 local SContainer = require('SortableContainer')
 
-local DConfirmator = require('DeleteConfirmator');
-
 local IQueue = require('InfoQueue');
 
 local OEMsg = require('ErrorMessage');
@@ -15,17 +13,18 @@ local Utils = require('Utils');
 
 local im = SModule:subclass("ItemsManager");
 
-function im:initialize(id, title, ItemClass, itemWindowFunc)
-    SModule.initialize(self, id, title);
+function im:initialize(id, iname, inames, ItemClass, itemWindowFunc)
+    SModule.initialize(self, id);
+    self.iname = iname;
+    self.inames = inames;
     self.ItemClass = ItemClass;
     self.onWindowUpdate = itemWindowFunc;
-    self.container = SContainer(id, title, ItemClass);
+    self.container = SContainer(id, ItemClass);
     self.currentItem = nil;
     self.selectMode = false;
-    self.deleteConfirmator = DConfirmator(self.container, self.title);
     self.container.itemAdded:connect(self.onAddNewItem, self);
     self.container.itemRemoved:connect(self.onDeleteItem, self);
-    IWManager:registerModule(self:windowsManagerId(), self.title,
+    IWManager:registerModule(self:windowsManagerId(), self.inames,
                          { onWindowUpdate = self.onWindowUpdate, context = self });
 end
 
@@ -57,15 +56,11 @@ function im:onAddNewItem(item)
     self:StateChanged();
 end
 
-function im:onDeleteSelectedConfirm()
-    self.deleteConfirmator.active = true;
-end
-
 function im:onDeleteItem(item)
     if item == self.currentItem then
         self.currentItem = nil;
     end
-    IWManager:delItem(self.id, item, true);
+    IWManager:delItem(self:windowsManagerId(), item, true);
     self:StateChanged();
 end
 
@@ -147,8 +142,48 @@ function im:selectMenu()
     end
 end
 
+function im:contextMenu(item)
+    if Slab.MenuItem("Delete") then
+        self:confirmDelete(item);
+    end
+end
+
+function im:confirmDelete(item)
+    self._confirmDelete = item;
+end
+
+function im:confirmDeleteSelected()
+    self._confirmDeleteSelected = true;
+end
+
+function im:updateConfirmDelete()
+    if self._confirmDeleteSelected then
+        local count = self.container:selectedNumber();
+        if count == 0 then
+            self._confirmDeleteSelected = false;
+            return;
+        end
+        local result = Slab.MessageBox("Are You sure?", "Are You sure to delete "..count.." "..self.inames.."?", { Buttons = { "Yes", "No" } });
+        if result ~= "" then
+            self._confirmDeleteSelected = false;
+            if result == "Yes" then
+                self.container:deleteSelected();
+            end
+        end
+    end
+    if self._confirmDelete then
+        local result = Slab.MessageBox("Are You sure?", "Are You sure to delete "..self.iname.."\n\""..tostring(self._confirmDelete).."\"?", { Buttons = { "Yes", "No" } });
+        if result ~= "" then
+            if result == "Yes" then
+                self.container:deleteItem(self._confirmDelete);
+            end
+            self._confirmDelete = nil;
+        end
+    end
+end
+
 function im:update()
-    self.deleteConfirmator:update();
+    self:updateConfirmDelete();
 end
 
 return im;

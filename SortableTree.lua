@@ -23,6 +23,10 @@ function STree:SortedTreeContent(manager, groupid)
         if Slab.IsControlClicked() then
             self.clicked:emit(item.item);
         end
+        if Slab.BeginContextMenuItem() then
+            manager:contextMenu(item.item);
+            Slab.EndContextMenu();
+        end
         if not isLeaf and ret then
             self:SortedTreeContent(manager.child, item.item);
         end
@@ -33,7 +37,7 @@ function STree:SortedTreeContent(manager, groupid)
 end
 
 function STree:Update()
-    if Slab.BeginTree(self.manager.title) then
+    if Slab.BeginTree(self.manager.inames) then
         self:SortedTreeContent(self.manager);
         Slab.EndTree();
     end

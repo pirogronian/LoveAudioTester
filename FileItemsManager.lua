@@ -16,7 +16,7 @@ local function windowContent(item)
 end
 
 function fim:initialize()
-    IManager.initialize(self, "files", "Files", FItem, windowContent);
+    IManager.initialize(self, "files", "file", "files", FItem, windowContent);
 end
 
 return fim;

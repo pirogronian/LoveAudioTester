@@ -25,7 +25,7 @@ local function windowContent(item)
 end
 
 function fim:initialize()
-    IManager.initialize(self, "filesources", "Sources", SItem, windowContent);
+    IManager.initialize(self, "filesources", "source", "sources", SItem, windowContent);
 end
 
 return fim;
