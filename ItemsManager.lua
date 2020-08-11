@@ -26,6 +26,7 @@ function im:initialize(id, iname, inames, ItemClass, itemWindowFunc)
     self.container.itemRemoved:connect(self.onDeleteItem, self);
     self.container.itemSelected:connect(self.StateChanged, self);
     self.container.itemDeselected:connect(self.StateChanged, self);
+    self.container.itemsSorted:connect(self.StateChanged, self);
     IWManager:registerModule(self:windowsManagerId(), self.inames,
                          { onWindowUpdate = self.onWindowUpdate, context = self });
 end

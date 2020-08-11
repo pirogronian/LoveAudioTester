@@ -18,6 +18,7 @@ function SortableContainer:initialize(id, ItemClass)
     self.itemRemoved = Signal();
     self.itemSelected = Signal();
     self.itemDeselected = Signal();
+    self.itemsSorted = Signal();
     self.creationError = Signal();
     for attrid, attr in pairs(self.ItemClass.attributes) do
         self.indexes[attr.id] = {};
@@ -34,9 +35,13 @@ function SortableContainer:groupId(groupid)
     return groupid;
 end
 
-function SortableContainer:getIndex(attrid, groupid)
+function SortableContainer:getIndex(attrid, groupid, noerror)
     if self.indexes[attrid] == nil then
-        error(self.class.name..": attribute \""..attrid.."\" not found in indexes.");
+        if noerr then
+            print("Warning:", self.class.name..": attribute \""..attrid.."\" not found in indexes.")
+        else
+            error(self.class.name..": attribute \""..attrid.."\" not found in indexes.");
+        end
     end
     groupid = self:groupId(groupid)
     if self.indexes[attrid][groupid] == nil then
@@ -74,6 +79,7 @@ function SortableContainer:addItem(item, groupid)
     end
     item.container = self;
     self.itemCount = self.itemCount + 1;
+    self:sort(self.currentAttribute, self.currentDir);
     self.itemAdded:emit(item);
 end
 
@@ -216,6 +222,8 @@ function SortableContainer:sort(attrid, dir)
         table.sort(index, comp);
     end
     self.currentAttribute = attrid;
+    self.currentDir = dir;
+    self.itemsSorted:emit();
 end
 
 function SortableContainer.dumpIndexArray(array)
@@ -274,6 +282,7 @@ end
 
 function SortableContainer:DumpState()
     local data = {
+            currentDir = self.currentDir,
             currentAttribute = self.currentAttribute,
             items = {}};
     for gid, group in pairs(self.groups) do
@@ -292,7 +301,6 @@ function SortableContainer:LoadState(data)
     if data == nil then return end
     local err = false;
     local parent = nil;
-    self.currentAttribute = data.currentAttribute;
     if data.items == nil then return err; end
     for _, itemdata in pairs(data.items) do
         if itemdata.parent then
@@ -321,6 +329,13 @@ function SortableContainer:LoadState(data)
             end
         end
     end
+    self.currentAttribute = data.currentAttribute;
+    if self:getAttribute(self.currentAttribute, nil, true) == nil then
+        self.currentAttribute = nil;
+        err = true;
+    end
+    self.currentDir = data.currentDir;
+    self:sort(self.currentAttribute, self.currentDir);
     return err;
 end
 
