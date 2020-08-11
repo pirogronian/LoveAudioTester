@@ -36,20 +36,12 @@ fps.tree = STree(fps.fileMan);
 
 fps.playing = 0;
 
-function fps:addPaths(paths)
-    for key, fpath in pairs(paths) do
-        if fpath ~= nil then
-            self.fileMan:createItem(fpath, true);
-        end
-    end
-end
-
 function fps:UpdateMenu()
     if Slab.BeginMenu("Files") then
         SortMenu(self.fileMan.container);
         self.fileMan:selectMenu();
         if Slab.MenuItem("Add") then
-            openFilepathDialog = true;
+            self.fileMan:openFileDialog();
         end
         if Slab.MenuItem("Delete selected") then
             self.fileMan:confirmDeleteSelected();
@@ -69,16 +61,6 @@ function fps:UpdateMenu()
     end
 end
 
-function fps:UpdateOpenFileDialog()
-    if openFilepathDialog then
-        local result = Slab.FileDialog({ Type = "openfile" })
-        if result.Button == "OK" then
-            self:addPaths(result.Files);
-        end
-        if result.Button ~= "" then openFilepathDialog = false; end
-    end
-end
-
 function fps:SourcePostCreation(item)
     item.played:connect(self.onPlayed, self);
     item.paused:connect(self.onPaused, self);
@@ -90,7 +72,6 @@ fps.srcMan.container.itemAdded:connect(fps.SourcePostCreation, fps);
 function fps:UpdateDialogs()
     self.fileMan:update();
     self.srcMan:update();
-    self:UpdateOpenFileDialog();
 end
 
 function fps:UpdateTree()

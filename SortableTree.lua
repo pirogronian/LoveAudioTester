@@ -38,6 +38,10 @@ end
 
 function STree:Update()
     if Slab.BeginTree(self.manager.inames) then
+        if self.manager.contextMenu and Slab.BeginContextMenuItem() then
+            self.manager:contextMenu();
+            Slab.EndContextMenu();
+        end
         self:SortedTreeContent(self.manager);
         Slab.EndTree();
     end

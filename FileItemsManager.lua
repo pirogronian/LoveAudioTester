@@ -26,4 +26,37 @@ function fim:itemContextMenu(item)
     IManager.itemContextMenu(self, item);
 end
 
+function fim:contextMenu()
+    if Slab.MenuItem("Add files") then
+        self:openFileDialog();
+    end
+end
+
+function fim:addFiles(paths)
+    for key, fpath in pairs(paths) do
+        if fpath ~= nil then
+            self:createItem(fpath, true);
+        end
+    end
+end
+
+function fim:updateOpenFileDialog()
+    if self._openFileDialog then
+        local result = Slab.FileDialog({ Type = "openfile" })
+        if result.Button == "OK" then
+            self:addFiles(result.Files);
+        end
+        if result.Button ~= "" then self._openFileDialog = false; end
+    end
+end
+
+function fim:openFileDialog()
+    self._openFileDialog = true;
+end
+
+function fim:update()
+    IManager.update(self);
+    self:updateOpenFileDialog();
+end
+
 return fim;
