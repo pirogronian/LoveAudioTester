@@ -24,7 +24,7 @@ function STree:SortedTreeContent(manager, groupid)
             self.clicked:emit(item.item);
         end
         if Slab.BeginContextMenuItem() then
-            manager:contextMenu(item.item);
+            manager:itemContextMenu(item.item);
             Slab.EndContextMenu();
         end
         if not isLeaf and ret then

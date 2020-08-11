@@ -145,7 +145,7 @@ function im:selectMenu()
     end
 end
 
-function im:contextMenu(item)
+function im:itemContextMenu(item)
     local seltext = "Select";
     if self.container:isSelected(item) then
         seltext = "Deselect";
