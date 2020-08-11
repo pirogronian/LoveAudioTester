@@ -28,6 +28,8 @@ end
 
 function sim:initialize()
     IManager.initialize(self, "filesources", "source", "sources", SItem, windowContent);
+    self.container.itemAdded:connect(self.onNewItem, self);
+    self.playing = 0;
 end
 
 function sim:OpenNewSourceDialog(parent)
@@ -48,8 +50,24 @@ function sim:UpdateNewSourceDialog()
         self.newSourceDialog = false;
         if id == nil then return; end
 --         print("Creating source", id);
-        self:createItem(id, self.newSourceParent);
+        local item = self:createItem(id, self.newSourceParent);
     end
+end
+
+function sim:onNewItem(item)
+    item.played:connect(self.onPlayed, self);
+    item.paused:connect(self.onPaused, self);
+    item.changed:connect(self.StateChanged, self);
+end
+
+function sim:onPlayed()
+    self.playing = self.playing + 1;
+    self:StateChanged();
+end
+
+function sim:onPaused()
+    self.playing = self.playing - 1;
+    self:StateChanged();
 end
 
 function sim:update()

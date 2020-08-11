@@ -61,14 +61,6 @@ function fps:UpdateMenu()
     end
 end
 
-function fps:SourcePostCreation(item)
-    item.played:connect(self.onPlayed, self);
-    item.paused:connect(self.onPaused, self);
-    item.changed:connect(self.StateChanged, self);
-end
-
-fps.srcMan.container.itemAdded:connect(fps.SourcePostCreation, fps);
-
 function fps:UpdateDialogs()
     self.fileMan:update();
     self.srcMan:update();
@@ -86,7 +78,7 @@ function fps:UpdateTree()
         Slab.Text("Click on source item to make it active.");
     end
     self.tree:Update();
-    Slab.Text("Playing now: "..tostring(self.playing));
+    Slab.Text("Playing now: "..tostring(self.srcMan.playing));
 end
 
 function fps:DumpState()
@@ -124,16 +116,6 @@ function fps:itemClicked(item)
             print("Clicked unknown item!", item);
         end
     end
-end
-
-function fps:onPlayed()
-    self.playing = self.playing + 1;
-    self:StateChanged();
-end
-
-function fps:onPaused()
-    self.playing = self.playing - 1;
-    self:StateChanged();
 end
 
 fps.tree.clicked:connect(fps.itemClicked, fps);
