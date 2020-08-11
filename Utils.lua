@@ -82,4 +82,26 @@ function u.DumpStr(var, level, str)
     return ret;
 end
 
+function u.TryValue(val, defval, valtype, onerror)
+    if onerror == nil then
+        onerror = 'default';
+    end
+    if valtype ~= nil then
+        if type(val) ~= valtype then
+            if onerror == 'default' then return defval; end
+            if onerror == 'error' then error("Wrong value type: "..type(val)); end
+            if onerror == 'warning' then print("Warning: Wrong value type: "..type(val).." (should be "..valtype..")"); return defval; end
+            error("Wrong on-error behaviour: "..tostring(onerror));
+        else
+            return val;
+        end
+    else
+        if val == nil then
+            return defval;
+        else
+            return val;
+        end
+    end
+end
+
 return u;
