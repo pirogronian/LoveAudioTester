@@ -5,8 +5,6 @@ local Item = require('Item');
 
 local SModule = require('StateModule');
 
-local dTable = require('DumpTable');
-
 local iwm = SModule:subclass("ItemWindowsManager");
 
 function iwm:initialize(id, name)

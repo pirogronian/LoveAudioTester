@@ -2,14 +2,15 @@
 local Utils = require('Utils');
 
 local function scp(item, name)
+    name = tostring(name);
     changed = false;
-    Slab.BeginLayout(tostring(name).."InfoLayout", { Columns = 2 });
+    Slab.BeginLayout("InfoLayout", { Columns = 2 });
     Slab.SetLayoutColumn(1);
     Slab.Text("Current time:");
     Slab.SetLayoutColumn(2);
     Slab.Text(Utils.TimeFormat(item.source:tell()));
     Slab.EndLayout();
-    Slab.BeginLayout(tostring(name).."ParamsControlLayout", { Columns = 2 });
+    Slab.BeginLayout("ParamsControlLayout", { Columns = 2 });
     Slab.SetLayoutColumn(1);
     Slab.Text("Volume:");
     Slab.SetLayoutColumn(2);
@@ -19,7 +20,7 @@ local function scp(item, name)
         item:setVolume(nv / 100);
     end
     Slab.EndLayout();
-    Slab.BeginLayout(tostring(name).."PlaybackControlLayout", { Columns = 5 });
+    Slab.BeginLayout("PlaybackControlLayout", { Columns = 5 });
     Slab.SetLayoutColumn(1);
     if Slab.Button("[<<") then
         item.source:seek(0);
