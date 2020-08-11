@@ -17,6 +17,7 @@ function SItem:initialize(data, parent)
     if type(data) == 'table' then
         playPos = data.source.playPos;
         volume = data.source.volume;
+        looping = u.TryValue(data.source.looping, false, 'boolean');
     end
     Item.initialize(self, data, parent);
     self.played = Signal();
@@ -27,6 +28,7 @@ function SItem:initialize(data, parent)
     self.source = love.audio.newSource(self.parent.id, "static");
     self.source:seek(playPos);
     self:setVolume(volume);
+    self.source:setLooping(looping);
 end
 
 function SItem:play()
@@ -69,11 +71,17 @@ function SItem:setVolume(v)
     self.changed:emit();
 end
 
+function SItem:toggleLooping()
+    self.source:setLooping(not self.source:isLooping());
+    self.changed:emit();
+end
+
 function SItem:getSerializableData()
     local data = Item.getSerializableData(self);
     local sdata = {};
     sdata.playPos = self.source:tell();
     sdata.volume = self.source:getVolume();
+    sdata.looping = self.source:isLooping();
     data.source = sdata;
     return data;
 end

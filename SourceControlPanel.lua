@@ -12,8 +12,12 @@ local function scp(item, name)
     Slab.EndLayout();
     Slab.BeginLayout("ParamsControlLayout", { Columns = 2 });
     Slab.SetLayoutColumn(1);
+    Slab.Text("Looping:");
     Slab.Text("Volume:");
     Slab.SetLayoutColumn(2);
+    if Slab.CheckBox(item.source:isLooping()) then
+        item:toggleLooping();
+    end
     local ov = item.source:getVolume();
     if Slab.InputNumberSlider("VolumeSlider", math.floor(ov * 100), 0, 100, { NoDrag = false, ReturnOnText = true }) then
         local nv = Slab.GetInputNumber();
