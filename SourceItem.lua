@@ -26,6 +26,7 @@ function SItem:initialize(data, parent)
         self:seek(playPos);
         self:setVolume(volume);
         self.source:setLooping(looping);
+        self._showSpatial = u.TryValue(data.showSpatial, false, 'boolean');
         if self:isMono() then
             local x, y, z = nil;
             local pos = u.TryValue(data.source.position, nil, 'table');
@@ -107,6 +108,17 @@ function SItem:isMono()
     return self.source:getChannelCount() == 1;
 end
 
+function SItem:setShowSpatial(show)
+    if self._showSpatial ~= show then
+        self._showSpatial = show;
+        self.changed:emit();
+    end
+end
+
+function SItem:spatialVisible()
+    return self._showSpatial;
+end
+
 function SItem:getSerializableData()
     local data = Item.getSerializableData(self);
     local sdata = {};
@@ -117,6 +129,7 @@ function SItem:getSerializableData()
         local x, y, z = self.source:getPosition();
         sdata.position = { x = x, y = y, z = z };
     end
+    data.showSpatial = self._showSpatial;
     data.source = sdata;
     return data;
 end

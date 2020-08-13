@@ -2,6 +2,10 @@
 local Utils = require('Utils');
 
 local function spatialOptions(item)
+    if (not item:isMono()) then
+        Slab.Text("Spatial options are unavaliable for multi-channel sources.");
+        return;
+    end
     Slab.BeginLayout("PositionLayout", { Columns = 2 });
     Slab.SetLayoutColumn(1);
     Slab.Text("Position:");
@@ -23,29 +27,35 @@ end
 
 local function scp(item)
     changed = false;
+    if item:spatialVisible() then
+        if Slab.Button("Hide spatial options") then
+            item:setShowSpatial(false);
+        end
+        spatialOptions(item);
+        Slab.Separator();
+    else
+        if Slab.Button("Show spatial options") then
+            item:setShowSpatial(true);
+        end
+    end
     Slab.BeginLayout("InfoLayout", { Columns = 2 });
     Slab.SetLayoutColumn(1);
     Slab.Text("Current time:");
     Slab.SetLayoutColumn(2);
     Slab.Text(Utils.TimeFormat(item.source:tell()));
     Slab.EndLayout();
-    if (item:isMono()) then
-        spatialOptions(item);
-    else
-        Slab.Text("Spatial options are unavaliable for multi-channel sources.");
-    end
-    Slab.BeginLayout("ParamsControlLayout", { Columns = 2 });
+    Slab.BeginLayout("ParamsControlLayout", { Columns = 4 });
     Slab.SetLayoutColumn(1);
-    Slab.Text("Looping:");
     Slab.Text("Volume:");
     Slab.SetLayoutColumn(2);
-    if Slab.CheckBox(item.source:isLooping()) then
-        item:toggleLooping();
-    end
     local ov = item.source:getVolume();
     if Slab.InputNumberSlider("VolumeSlider", math.floor(ov * 100), 0, 100, { NoDrag = false, ReturnOnText = true }) then
         local nv = Slab.GetInputNumber();
         item:setVolume(nv / 100);
+    end
+    Slab.SetLayoutColumn(3);
+    if Slab.CheckBox(item.source:isLooping(), "Looping") then
+        item:toggleLooping();
     end
     Slab.EndLayout();
     Slab.BeginLayout("PlaybackControlLayout", { Columns = 5 });
