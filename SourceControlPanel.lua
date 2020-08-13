@@ -6,36 +6,61 @@ local function spatialOptions(item)
         Slab.Text("Spatial options are unavaliable for multi-channel sources.");
         return;
     end
+
+    Slab.Text("Volume falloff");
+    Slab.BeginLayout("AttenuationLayout", { Columns = 2 });
+    Slab.SetLayoutColumn(1);
+    Slab.Text("Reference distance:");
+    Slab.Text("Maximal distance:");
+    Slab.SetLayoutColumn(2);
+    local ref, max = item.source:getAttenuationDistances();
+    local input = false;
+    if Slab.InputNumberDrag("ReferenceDistance", ref, { Step = 0.1 }) then
+        ref = Slab.GetInputNumber(); input = true;
+    end
+    if Slab.InputNumberDrag("MaximalDistance", max, { Step = 0.1 }) then
+        max = Slab.GetInputNumber(); input = true;
+    end
+    if input then item:setAttenuationDistances(ref, max); end
+    Slab.EndLayout();
+
+    Slab.Text("Position");
     Slab.BeginLayout("PositionLayout", { Columns = 2 });
     Slab.SetLayoutColumn(1);
-    Slab.Text("Position:");
+    Slab.Text("x:");
+    Slab.Text("y:");
+    Slab.Text("z:");
     Slab.SetLayoutColumn(2);
     local x, y, z = item.source:getPosition();
     input = false;
-    if Slab.InputNumberDrag("PositionX", x) then
+    if Slab.InputNumberDrag("PositionX", x, { Step = 0.1 }) then
         x = Slab.GetInputNumber(); input = true;
     end
-    if Slab.InputNumberDrag("PositionY", y) then
+    if Slab.InputNumberDrag("PositionY", y, { Step = 0.1 }) then
         y = Slab.GetInputNumber(); input = true;
     end
-    if Slab.InputNumberDrag("PositionZ", z) then
+    if Slab.InputNumberDrag("PositionZ", z, { Step = 0.1 }) then
         z = Slab.GetInputNumber(); input = true;
     end
     if input then item:setPosition(x, y, z); end
     Slab.EndLayout();
 end
 
+local function advancedOptions(item)
+    spatialOptions(item);
+end
+
 local function scp(item)
     changed = false;
-    if item:spatialVisible() then
-        if Slab.Button("Hide spatial options") then
-            item:setShowSpatial(false);
+    if item:advancedVisible() then
+        if Slab.Button("Hide advanced options") then
+            item:setShowAdvanced(false);
         end
-        spatialOptions(item);
+        advancedOptions(item);
         Slab.Separator();
     else
-        if Slab.Button("Show spatial options") then
-            item:setShowSpatial(true);
+        if Slab.Button("Show advanced options") then
+            item:setShowAdvanced(true);
         end
     end
     Slab.BeginLayout("InfoLayout", { Columns = 2 });

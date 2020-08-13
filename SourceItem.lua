@@ -26,8 +26,11 @@ function SItem:initialize(data, parent)
         self:seek(playPos);
         self:setVolume(volume);
         self.source:setLooping(looping);
-        self._showSpatial = u.TryValue(data.showSpatial, false, 'boolean');
+        self._showAdv = u.TryValue(data.showAdv, false, 'boolean');
         if self:isMono() then
+            local ref = u.TryValue(data.source.refAttDist, 1, 'number');
+            local max = u.TryValue(data.source.maxAttDist, math.huge, 'number');
+            self.source:setAttenuationDistances(ref, max);
             local x, y, z = nil;
             local pos = u.TryValue(data.source.position, nil, 'table');
             if pos ~= nil then
@@ -104,19 +107,27 @@ function SItem:setPosition(x, y, z)
     self.changed:emit();
 end
 
-function SItem:isMono()
-    return self.source:getChannelCount() == 1;
-end
-
-function SItem:setShowSpatial(show)
-    if self._showSpatial ~= show then
-        self._showSpatial = show;
+function SItem:setAttenuationDistances(ref, max)
+    local oref, omax = self.source:getAttenuationDistances();
+    if oref ~= ref or omax ~= max then
+        self.source:setAttenuationDistances(ref, max);
         self.changed:emit();
     end
 end
 
-function SItem:spatialVisible()
-    return self._showSpatial;
+function SItem:isMono()
+    return self.source:getChannelCount() == 1;
+end
+
+function SItem:setShowAdvanced(show)
+    if self._showAdv ~= show then
+        self._showAdv = show;
+        self.changed:emit();
+    end
+end
+
+function SItem:advancedVisible()
+    return self._showAdv;
 end
 
 function SItem:getSerializableData()
@@ -126,10 +137,13 @@ function SItem:getSerializableData()
     sdata.volume = self.source:getVolume();
     sdata.looping = self.source:isLooping();
     if self:isMono() then
+        local ref, max = self.source:getAttenuationDistances();
+        sdata.refAttDist = ref;
+        sdata.maxAttDist = max;
         local x, y, z = self.source:getPosition();
         sdata.position = { x = x, y = y, z = z };
     end
-    data.showSpatial = self._showSpatial;
+    data.showAdv = self._showAdv;
     data.source = sdata;
     return data;
 end
