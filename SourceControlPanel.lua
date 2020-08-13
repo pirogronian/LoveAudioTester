@@ -12,6 +12,7 @@ local function spatialOptions(item)
     Slab.SetLayoutColumn(1);
     Slab.Text("Reference distance:");
     Slab.Text("Maximal distance:");
+    Slab.Text("Air absorbtion:");
     Slab.SetLayoutColumn(2);
     local ref, max = item.source:getAttenuationDistances();
     local input = false;
@@ -22,6 +23,10 @@ local function spatialOptions(item)
         max = Slab.GetInputNumber(); input = true;
     end
     if input then item:setAttenuationDistances(ref, max); end
+    if Slab.InputNumberDrag("AirAbsorbtion", item.source:getAirAbsorption(), { Step = 0.1, MinNumber = 0}) then
+        local aa = Slab.GetInputNumber();
+        item:setAirAbsorption(aa);
+    end
     Slab.EndLayout();
 
     Slab.Text("Position");
