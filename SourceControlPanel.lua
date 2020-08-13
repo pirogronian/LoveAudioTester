@@ -1,8 +1,27 @@
 
 local Utils = require('Utils');
 
-local function scp(item, name)
-    name = tostring(name);
+local function spatialOptions(item)
+    Slab.BeginLayout("PositionLayout", { Columns = 2 });
+    Slab.SetLayoutColumn(1);
+    Slab.Text("Position:");
+    Slab.SetLayoutColumn(2);
+    local x, y, z = item.source:getPosition();
+    input = false;
+    if Slab.InputNumberDrag("PositionX", x) then
+        x = Slab.GetInputNumber(); input = true;
+    end
+    if Slab.InputNumberDrag("PositionY", y) then
+        y = Slab.GetInputNumber(); input = true;
+    end
+    if Slab.InputNumberDrag("PositionZ", z) then
+        z = Slab.GetInputNumber(); input = true;
+    end
+    if input then item:setPosition(x, y, z); end
+    Slab.EndLayout();
+end
+
+local function scp(item)
     changed = false;
     Slab.BeginLayout("InfoLayout", { Columns = 2 });
     Slab.SetLayoutColumn(1);
@@ -10,6 +29,11 @@ local function scp(item, name)
     Slab.SetLayoutColumn(2);
     Slab.Text(Utils.TimeFormat(item.source:tell()));
     Slab.EndLayout();
+    if (item:isMono()) then
+        spatialOptions(item);
+    else
+        Slab.Text("Spatial options are unavaliable for multi-channel sources.");
+    end
     Slab.BeginLayout("ParamsControlLayout", { Columns = 2 });
     Slab.SetLayoutColumn(1);
     Slab.Text("Looping:");

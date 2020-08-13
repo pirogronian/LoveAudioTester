@@ -12,23 +12,31 @@ SItem.static.attributes = {};
 SItem:addAttribute(Item.Attribute("name", "Name"));
 
 function SItem:initialize(data, parent)
-    local playPos = 0;
-    local volume = 1;
-    if type(data) == 'table' then
-        playPos = data.source.playPos;
-        volume = data.source.volume;
-        looping = u.TryValue(data.source.looping, false, 'boolean');
-    end
     Item.initialize(self, data, parent);
+    self.attributes = { name = self.id };
     self.played = Signal();
     self.stopped = Signal();
     self.paused = Signal();
     self.changed = Signal();
-    self.attributes = { name = self.id };
     self.source = love.audio.newSource(self.parent.id, "static");
-    self.source:seek(playPos);
-    self:setVolume(volume);
-    self.source:setLooping(looping);
+    if type(data) == 'table' then
+        playPos = u.TryValue(data.source.playPos, 0, 'number');
+        volume = u.TryValue(data.source.volume, 100, 'number');
+        looping = u.TryValue(data.source.looping, false, 'boolean');
+        self:seek(playPos);
+        self:setVolume(volume);
+        self.source:setLooping(looping);
+        if self:isMono() then
+            local x, y, z = nil;
+            local pos = u.TryValue(data.source.position, nil, 'table');
+            if pos ~= nil then
+                x = u.TryValue(pos.x, 0, 'number');
+                y = u.TryValue(pos.y, 0, 'number');
+                z = u.TryValue(pos.z, 0, 'number');
+                self.source:setPosition(x, y, z);
+            end
+        end
+    end
 end
 
 function SItem:play()
@@ -53,12 +61,17 @@ function SItem:stop()
     end
 end
 
+function SItem:seek(time, units)
+    local dur = self.source:getDuration(units);
+    if time < 0 then time = 0; else if dur >= 0 and time > dur then time = dur; end end
+    self.source:seek(time, units);
+    self.changed:emit();
+end
+
 function SItem:rewindBy(dtime, units)
     local ctime = self.source:tell(units);
-    local dur = self.source:getDuration(units);
     local rtime = ctime + dtime;
-    if rtime < 0 then rtime = 0; else if dur >= 0 and rtime > dur then rtime = dur; end end
-    self.source:seek(rtime, units);
+    self:seek(rtime);
 end
 
 function SItem:setVolume(v)
@@ -76,12 +89,34 @@ function SItem:toggleLooping()
     self.changed:emit();
 end
 
+function SItem:getPosition(x, y, z)
+    if not self:isMono() then return; end
+    return self.source:getPosition();
+end
+
+function SItem:setPosition(x, y, z)
+    if not self:isMono() then
+        print("Warning: trying setPosition on non-mono source!");
+        return;
+    end
+    self.source:setPosition(x, y, z);
+    self.changed:emit();
+end
+
+function SItem:isMono()
+    return self.source:getChannelCount() == 1;
+end
+
 function SItem:getSerializableData()
     local data = Item.getSerializableData(self);
     local sdata = {};
     sdata.playPos = self.source:tell();
     sdata.volume = self.source:getVolume();
     sdata.looping = self.source:isLooping();
+    if self:isMono() then
+        local x, y, z = self.source:getPosition();
+        sdata.position = { x = x, y = y, z = z };
+    end
     data.source = sdata;
     return data;
 end
