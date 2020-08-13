@@ -33,6 +33,8 @@ function SItem:initialize(data, parent)
             self.source:setAttenuationDistances(ref, max);
             local aa = u.TryValue(data.source.airAbs, 0, 'number');
             self.source:setAirAbsorption(aa);
+            local rf = u.TryValue(data.source.rolloff, 0, 'number');
+            self.source:setRolloff(rf);
             local x, y, z = nil;
             local pos = u.TryValue(data.source.position, nil, 'table');
             if pos ~= nil then
@@ -126,6 +128,15 @@ function SItem:setAirAbsorption(val)
     end
 end
 
+function SItem:setRolloff(val)
+    if val < 0 then val = 0; end
+    local rf = self.source:getRolloff();
+    if rf ~= val then
+        self.source:setRolloff(val);
+        self.changed:emit();
+    end
+end
+
 function SItem:isMono()
     return self.source:getChannelCount() == 1;
 end
@@ -152,6 +163,7 @@ function SItem:getSerializableData()
         sdata.refAttDist = ref;
         sdata.maxAttDist = max;
         sdata.airAbs = self.source:getAirAbsorption();
+        sdata.rolloff = self.source:getRolloff();
         local x, y, z = self.source:getPosition();
         sdata.position = { x = x, y = y, z = z };
     end
