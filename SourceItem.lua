@@ -20,12 +20,15 @@ function SItem:initialize(data, parent)
     self.changed = Signal();
     self.source = love.audio.newSource(self.parent.id, "static");
     if type(data) == 'table' then
-        playPos = u.TryValue(data.source.playPos, 0, 'number');
-        volume = u.TryValue(data.source.volume, 100, 'number');
-        looping = u.TryValue(data.source.looping, false, 'boolean');
+        local playPos = u.TryValue(data.source.playPos, 0, 'number');
+        local volume = u.TryValue(data.source.volume, 100, 'number');
+        local looping = u.TryValue(data.source.looping, false, 'boolean');
+        local minv = u.TryValue(data.source.minVol, 0, 'number');
+        local maxv = u.TryValue(data.source.maxVol, 1, 'number');
         self:seek(playPos);
         self:setVolume(volume);
         self.source:setLooping(looping);
+        self.source:setVolumeLimits(minv, maxv);
         self._showAdv = u.TryValue(data.showAdv, false, 'boolean');
         if self:isMono() then
             local ref = u.TryValue(data.source.refAttDist, 1, 'number');
@@ -83,13 +86,22 @@ function SItem:rewindBy(dtime, units)
 end
 
 function SItem:setVolume(v)
-    if type(v) ~= 'number' then
-        v = 1;
-    else
-        if v < 0 or v > 1 then v = 1; end
+    if v < 0 then v = 0 end
+    local ov = self.source:getVolume();
+    if ov ~= v then
+        self.source:setVolume(v);
+        self.changed:emit();
     end
-    self.source:setVolume(v);
-    self.changed:emit();
+end
+
+function SItem:setVolumeLimits(min, max)
+    if min < 0 then min = 0 end
+    if max < 0 then max = 0 end
+    local omin, omax = self.source:getVolumeLimits();
+    if omin ~= min or omax ~= max then
+        self.source:setVolumeLimits(min, max);
+        self.changed:emit();
+    end
 end
 
 function SItem:toggleLooping()
@@ -158,6 +170,9 @@ function SItem:getSerializableData()
     sdata.playPos = self.source:tell();
     sdata.volume = self.source:getVolume();
     sdata.looping = self.source:isLooping();
+    local minv, maxv = self.source:getVolumeLimits();
+    sdata.minVol = minv;
+    sdata.maxVol = maxv;
     if self:isMono() then
         local ref, max = self.source:getAttenuationDistances();
         sdata.refAttDist = ref;

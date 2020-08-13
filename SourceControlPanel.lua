@@ -58,6 +58,23 @@ end
 
 local function advancedOptions(item)
     spatialOptions(item);
+    Slab.Separator();
+    Slab.Text("Volume limits");
+    Slab.BeginLayout("VolumeLimitsLayout", { Columns = 2 });
+    Slab.SetLayoutColumn(1);
+    Slab.Text("Minimal:");
+    Slab.Text("Maximal:");
+    Slab.SetLayoutColumn(2);
+    local minv, maxv = item.source:getVolumeLimits();
+    local changed = false;
+    if Slab.InputNumberSlider("MinVolume", math.floor(minv * 100), 0, 100) then
+        minv = Slab.GetInputNumber() / 100; changed = true;
+    end
+    if Slab.InputNumberSlider("MaxVolume", math.floor(maxv * 100), 0, 100) then
+        maxv = Slab.GetInputNumber() / 100; changed = true;
+    end
+    if changed then item:setVolumeLimits(minv, maxv); end
+    Slab.EndLayout();
 end
 
 local function scp(item)
@@ -84,7 +101,7 @@ local function scp(item)
     Slab.Text("Volume:");
     Slab.SetLayoutColumn(2);
     local ov = item.source:getVolume();
-    if Slab.InputNumberSlider("VolumeSlider", math.floor(ov * 100), 0, 100, { NoDrag = false, ReturnOnText = true }) then
+    if Slab.InputNumberSlider("VolumeSlider", math.floor(ov * 100), 0, 100, { NoDrag = false}) then
         local nv = Slab.GetInputNumber();
         item:setVolume(nv / 100);
     end
