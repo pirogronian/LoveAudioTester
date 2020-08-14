@@ -54,6 +54,27 @@ local function spatialOptions(item)
     end
     if input then item:setPosition(x, y, z); end
     Slab.EndLayout();
+    
+    Slab.Text("Direction");
+    Slab.BeginLayout("DirectionLayout", { Columns = 2 });
+    Slab.SetLayoutColumn(1);
+    Slab.Text("x:");
+    Slab.Text("y:");
+    Slab.Text("z:");
+    Slab.SetLayoutColumn(2);
+    local x, y, z = item.source:getDirection();
+    input = false;
+    if Slab.InputNumberDrag("DirectionX", x, { Step = 0.1 }) then
+        x = Slab.GetInputNumber(); input = true;
+    end
+    if Slab.InputNumberDrag("DirectionY", y, { Step = 0.1 }) then
+        y = Slab.GetInputNumber(); input = true;
+    end
+    if Slab.InputNumberDrag("DirectionZ", z, { Step = 0.1 }) then
+        z = Slab.GetInputNumber(); input = true;
+    end
+    if input then item:setDirection(x, y, z); end
+    Slab.EndLayout();
 end
 
 local function advancedOptions(item)

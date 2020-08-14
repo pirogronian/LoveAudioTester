@@ -46,6 +46,13 @@ function SItem:initialize(data, parent)
                 z = u.TryValue(pos.z, 0, 'number');
                 self.source:setPosition(x, y, z);
             end
+            local dir = u.TryValue(data.source.direction, nil, 'table');
+            if dir ~= nil then
+                x = u.TryValue(dir.x, 0, 'number');
+                y = u.TryValue(dir.y, 0, 'number');
+                z = u.TryValue(dir.z, 0, 'number');
+                self.source:setDirection(x, y, z);
+            end
         end
     end
 end
@@ -109,18 +116,24 @@ function SItem:toggleLooping()
     self.changed:emit();
 end
 
-function SItem:getPosition(x, y, z)
-    if not self:isMono() then return; end
+function SItem:getPosition()
     return self.source:getPosition();
 end
 
 function SItem:setPosition(x, y, z)
-    if not self:isMono() then
-        print("Warning: trying setPosition on non-mono source!");
-        return;
+    local ox, oy, oz = self.source:getPosition();
+    if ox ~= x or oy ~= y or oz ~= z then
+        self.source:setPosition(x, y, z);
+        self.changed:emit();
     end
-    self.source:setPosition(x, y, z);
-    self.changed:emit();
+end
+
+function SItem:setDirection(x, y, z)
+    local ox, oy, oz = self.source:getDirection();
+    if ox ~= x or oy ~= y or oz ~= z then
+        self.source:setDirection(x, y, z);
+        self.changed:emit();
+    end
 end
 
 function SItem:setAttenuationDistances(ref, max)
@@ -181,6 +194,8 @@ function SItem:getSerializableData()
         sdata.rolloff = self.source:getRolloff();
         local x, y, z = self.source:getPosition();
         sdata.position = { x = x, y = y, z = z };
+        x, y, z = self.source:getDirection();
+        sdata.direction = { x = x, y = y, z = z };
     end
     data.showAdv = self._showAdv;
     data.source = sdata;
