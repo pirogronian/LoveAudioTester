@@ -161,9 +161,13 @@ local function advancedOptions(item)
     if Slab.InputNumberSlider("MinVolume", math.floor(minv * 100), 0, 100) then
         minv = Slab.GetInputNumber() / 100; changed = true;
     end
+    Slab.SameLine();
+    Slab.Text("%");
     if Slab.InputNumberSlider("MaxVolume", math.floor(maxv * 100), 0, 100) then
         maxv = Slab.GetInputNumber() / 100; changed = true;
     end
+    Slab.SameLine();
+    Slab.Text("%");
     if changed then item:setVolumeLimits(minv, maxv); end
     local p = item.source:getPitch();
     if Slab.InputNumberDrag("PitchDrag", math.floor(p * 100), { Step = 0.1, Min = 0 }) then
@@ -197,6 +201,8 @@ local function scp(item)
         local nv = Slab.GetInputNumber();
         item:setVolume(nv / 100);
     end
+    Slab.SameLine();
+    Slab.Text("%");
     Slab.SetLayoutColumn(2);
     if Slab.CheckBox(item.source:isLooping(), "Looping") then
         item:toggleLooping();
