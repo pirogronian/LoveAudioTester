@@ -7,14 +7,19 @@ local function spatialOptions(item)
         return;
     end
 
-    Slab.Text("Volume falloff");
     Slab.BeginLayout("AttenuationLayout", { Columns = 2 });
     Slab.SetLayoutColumn(1);
+    Slab.Text("Volume falloff");
     Slab.Text("Reference distance:");
     Slab.Text("Maximal distance:");
     Slab.Text("Air absorbtion:");
     Slab.Text("Rolloff:");
     Slab.SetLayoutColumn(2);
+    if Slab.Button("Reset") then
+        item:setAttenuationDistances(1, math.huge);
+        item:setAirAbsorption(0);
+        item:setRolloff(1);
+    end
     local ref, max = item.source:getAttenuationDistances();
     local input = false;
     if Slab.InputNumberDrag("ReferenceDistance", ref, { Step = 0.1 }) then
@@ -33,14 +38,18 @@ local function spatialOptions(item)
         item:setRolloff(rf);
     end
     Slab.EndLayout();
+    Slab.Separator();
 
-    Slab.Text("Position");
     Slab.BeginLayout("PositionLayout", { Columns = 2 });
     Slab.SetLayoutColumn(1);
+    Slab.Text("Position");
     Slab.Text("x:");
     Slab.Text("y:");
     Slab.Text("z:");
     Slab.SetLayoutColumn(2);
+    if Slab.Button("Reset") then
+        item:setPosition(0, 0, 0);
+    end
     local x, y, z = item.source:getPosition();
     input = false;
     if Slab.InputNumberDrag("PositionX", x, { Step = 0.1 }) then
@@ -54,14 +63,18 @@ local function spatialOptions(item)
     end
     if input then item:setPosition(x, y, z); end
     Slab.EndLayout();
+    Slab.Separator();
 
-    Slab.Text("Velocity");
     Slab.BeginLayout("VelocityLayout", { Columns = 2 });
     Slab.SetLayoutColumn(1);
+    Slab.Text("Velocity");
     Slab.Text("x:");
     Slab.Text("y:");
     Slab.Text("z:");
     Slab.SetLayoutColumn(2);
+    if Slab.Button("Reset") then
+        item:setVelocity(0, 0, 0);
+    end
     x, y, z = item.source:getVelocity();
     input = false;
     if Slab.InputNumberDrag("VelocityX", x, { Step = 0.1 }) then
@@ -75,14 +88,18 @@ local function spatialOptions(item)
     end
     if input then item:setVelocity(x, y, z); end
     Slab.EndLayout();
+    Slab.Separator();
 
-    Slab.Text("Direction");
     Slab.BeginLayout("DirectionLayout", { Columns = 2 });
     Slab.SetLayoutColumn(1);
+    Slab.Text("Direction");
     Slab.Text("x:");
     Slab.Text("y:");
     Slab.Text("z:");
     Slab.SetLayoutColumn(2);
+    if Slab.Button("Reset") then
+        item:setDirection(0, 0, 0);
+    end
     local x, y, z = item.source:getDirection();
     input = false;
     if Slab.InputNumberDrag("DirectionX", x, { Step = 0.1 }) then
@@ -96,14 +113,18 @@ local function spatialOptions(item)
     end
     if input then item:setDirection(x, y, z); end
     Slab.EndLayout();
+    Slab.Separator();
 
-    Slab.Text("Cone");
-    Slab.BeginLayout("DirectionLayout", { Columns = 2 });
+    Slab.BeginLayout("ConeLayout", { Columns = 2 });
     Slab.SetLayoutColumn(1);
+    Slab.Text("Cone");
     Slab.Text("Inner angle:");
     Slab.Text("Outer angle:");
     Slab.Text("Outer volume:");
     Slab.SetLayoutColumn(2);
+    if Slab.Button("Reset") then
+        item:setCone(math.rad(360), math.rad(360), 0);
+    end
     local ia, oa, ov = item.source:getCone();
     local changed = false;
     if Slab.InputNumberSlider("InnerAngleSlider", math.floor(math.deg(ia)), 0, 360, { NoDrag = false}) then
@@ -125,12 +146,15 @@ end
 local function advancedOptions(item)
     spatialOptions(item);
     Slab.Separator();
-    Slab.Text("Volume limits");
     Slab.BeginLayout("VolumeLimitsLayout", { Columns = 2 });
     Slab.SetLayoutColumn(1);
+    Slab.Text("Volume limits");
     Slab.Text("Minimal:");
     Slab.Text("Maximal:");
     Slab.SetLayoutColumn(2);
+    if Slab.Button("Reset") then
+        item:setVolumeLimits(0, 1);
+    end
     local minv, maxv = item.source:getVolumeLimits();
     local changed = false;
     if Slab.InputNumberSlider("MinVolume", math.floor(minv * 100), 0, 100) then
