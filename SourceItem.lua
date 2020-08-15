@@ -53,6 +53,13 @@ function SItem:initialize(data, parent)
                 z = u.TryValue(dir.z, 0, 'number');
                 self.source:setDirection(x, y, z);
             end
+            local cone = u.TryValue(data.source.cone, nil, 'table');
+            if cone ~= nil then
+                ia = u.TryValue(cone.ia, 0, 'number');
+                oa = u.TryValue(cone.oa, 0, 'number');
+                ov = u.TryValue(cone.ov, 0, 'number');
+                self.source:setCone(ia, oa, ov);
+            end
         end
     end
 end
@@ -136,6 +143,14 @@ function SItem:setDirection(x, y, z)
     end
 end
 
+function SItem:setCone(ia, oa, ov)
+    local oia, ooa, oov = self.source:getDirection();
+    if oia ~= ia or ooa ~= oa or oov ~= ov then
+        self.source:setCone(ia, oa, ov);
+        self.changed:emit();
+    end
+end
+
 function SItem:setAttenuationDistances(ref, max)
     local oref, omax = self.source:getAttenuationDistances();
     if oref ~= ref or omax ~= max then
@@ -196,6 +211,8 @@ function SItem:getSerializableData()
         sdata.position = { x = x, y = y, z = z };
         x, y, z = self.source:getDirection();
         sdata.direction = { x = x, y = y, z = z };
+        local ia, oa, ov = self.source:getCone();
+        sdata.cone = { ia = ia, oa = oa, ov = ov };
     end
     data.showAdv = self._showAdv;
     data.source = sdata;

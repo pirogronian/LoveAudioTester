@@ -75,6 +75,30 @@ local function spatialOptions(item)
     end
     if input then item:setDirection(x, y, z); end
     Slab.EndLayout();
+
+    Slab.Text("Cone");
+    Slab.BeginLayout("DirectionLayout", { Columns = 2 });
+    Slab.SetLayoutColumn(1);
+    Slab.Text("Inner angle:");
+    Slab.Text("Outer angle:");
+    Slab.Text("Outer volume:");
+    Slab.SetLayoutColumn(2);
+    local ia, oa, ov = item.source:getCone();
+    local changed = false;
+    if Slab.InputNumberSlider("InnerAngleSlider", math.floor(math.deg(ia)), 0, 360, { NoDrag = false}) then
+        ia = math.rad(Slab.GetInputNumber());
+        changed = true;
+    end
+    if Slab.InputNumberSlider("OuterAngleSlider", math.floor(math.deg(oa)), 0, 360, { NoDrag = false}) then
+        oa = math.rad(Slab.GetInputNumber());
+        changed = true;
+    end
+    if Slab.InputNumberSlider("OuterVolumeSlider", math.floor(ov * 100), 0, 100, { NoDrag = false}) then
+        ov = Slab.GetInputNumber() / 100;
+        changed = true;
+    end
+    if changed then item:setCone(ia, oa, ov); end
+    Slab.EndLayout();
 end
 
 local function advancedOptions(item)
