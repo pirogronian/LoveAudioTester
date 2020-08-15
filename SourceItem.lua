@@ -167,6 +167,8 @@ function SItem:setCone(ia, oa, ov)
 end
 
 function SItem:setAttenuationDistances(ref, max)
+    if ref < 0 then ref = 0; end
+    if max < 0 then max = 0; end
     local oref, omax = self.source:getAttenuationDistances();
     if oref ~= ref or omax ~= max then
         self.source:setAttenuationDistances(ref, max);
