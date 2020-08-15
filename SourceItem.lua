@@ -25,10 +25,12 @@ function SItem:initialize(data, parent)
         local looping = u.TryValue(data.source.looping, false, 'boolean');
         local minv = u.TryValue(data.source.minVol, 0, 'number');
         local maxv = u.TryValue(data.source.maxVol, 1, 'number');
+        local pitch = u.TryValue(data.source.pitch, 1, 'number');
         self:seek(playPos);
         self:setVolume(volume);
         self.source:setLooping(looping);
-        self.source:setVolumeLimits(minv, maxv);
+        self:setVolumeLimits(minv, maxv);
+        self:setPitch(pitch);
         self._showAdv = u.TryValue(data.showAdv, false, 'boolean');
         if self:isMono() then
             local ref = u.TryValue(data.source.refAttDist, 1, 'number');
@@ -117,10 +119,21 @@ end
 
 function SItem:setVolumeLimits(min, max)
     if min < 0 then min = 0 end
+    if min > 1 then min = 1 end
     if max < 0 then max = 0 end
+    if max > 1 then max = 1 end
     local omin, omax = self.source:getVolumeLimits();
     if omin ~= min or omax ~= max then
         self.source:setVolumeLimits(min, max);
+        self.changed:emit();
+    end
+end
+
+function SItem:setPitch(p)
+    if p <= 0 then p = 0.0001; end
+    local op = self.source:getPitch();
+    if p ~= op then
+        self.source:setPitch(p);
         self.changed:emit();
     end
 end
@@ -218,6 +231,7 @@ function SItem:getSerializableData()
     local minv, maxv = self.source:getVolumeLimits();
     sdata.minVol = minv;
     sdata.maxVol = maxv;
+    sdata.pitch = self.source:getPitch();
     if self:isMono() then
         local ref, max = self.source:getAttenuationDistances();
         sdata.refAttDist = ref;

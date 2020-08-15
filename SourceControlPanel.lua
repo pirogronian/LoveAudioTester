@@ -22,14 +22,14 @@ local function spatialOptions(item)
     end
     local ref, max = item.source:getAttenuationDistances();
     local input = false;
-    if Slab.InputNumberDrag("ReferenceDistance", ref, { Step = 0.1 }) then
+    if Slab.InputNumberDrag("ReferenceDistance", ref, { Step = 0.1, Min = 0 }) then
         ref = Slab.GetInputNumber(); input = true;
     end
-    if Slab.InputNumberDrag("MaximalDistance", max, { Step = 0.1 }) then
+    if Slab.InputNumberDrag("MaximalDistance", max, { Step = 0.1, Min = 0 }) then
         max = Slab.GetInputNumber(); input = true;
     end
     if input then item:setAttenuationDistances(ref, max); end
-    if Slab.InputNumberDrag("AirAbsorbtion", item.source:getAirAbsorption(), { Step = 0.1, MinNumber = 0}) then
+    if Slab.InputNumberDrag("AirAbsorbtion", item.source:getAirAbsorption(), { Step = 0.1, Min = 0}) then
         local aa = Slab.GetInputNumber();
         item:setAirAbsorption(aa);
     end
@@ -146,11 +146,12 @@ end
 local function advancedOptions(item)
     spatialOptions(item);
     Slab.Separator();
-    Slab.BeginLayout("VolumeLimitsLayout", { Columns = 2 });
+    Slab.BeginLayout("AdvancedLayout", { Columns = 2 });
     Slab.SetLayoutColumn(1);
     Slab.Text("Volume limits");
     Slab.Text("Minimal:");
     Slab.Text("Maximal:");
+    Slab.Text("Pitch:");
     Slab.SetLayoutColumn(2);
     if Slab.Button("Reset") then
         item:setVolumeLimits(0, 1);
@@ -164,6 +165,13 @@ local function advancedOptions(item)
         maxv = Slab.GetInputNumber() / 100; changed = true;
     end
     if changed then item:setVolumeLimits(minv, maxv); end
+    local p = item.source:getPitch();
+    if Slab.InputNumberDrag("PitchDrag", math.floor(p * 100), { Step = 0.1, Min = 0 }) then
+        p = Slab.GetInputNumber();
+        item:setPitch(p / 100);
+    end
+    Slab.SameLine();
+    Slab.Text("%");
     Slab.EndLayout();
 end
 
