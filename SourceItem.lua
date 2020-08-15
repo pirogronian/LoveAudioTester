@@ -46,6 +46,13 @@ function SItem:initialize(data, parent)
                 z = u.TryValue(pos.z, 0, 'number');
                 self.source:setPosition(x, y, z);
             end
+            local vel = u.TryValue(data.source.velocity, nil, 'table');
+            if vel ~= nil then
+                x = u.TryValue(vel.x, 0, 'number');
+                y = u.TryValue(vel.y, 0, 'number');
+                z = u.TryValue(vel.z, 0, 'number');
+                self.source:setVelocity(x, y, z);
+            end
             local dir = u.TryValue(data.source.direction, nil, 'table');
             if dir ~= nil then
                 x = u.TryValue(dir.x, 0, 'number');
@@ -135,6 +142,14 @@ function SItem:setPosition(x, y, z)
     end
 end
 
+function SItem:setVelocity(x, y, z)
+    local ox, oy, oz = self.source:getVelocity();
+    if ox ~= x or oy ~= y or oz ~= z then
+        self.source:setVelocity(x, y, z);
+        self.changed:emit();
+    end
+end
+
 function SItem:setDirection(x, y, z)
     local ox, oy, oz = self.source:getDirection();
     if ox ~= x or oy ~= y or oz ~= z then
@@ -209,6 +224,8 @@ function SItem:getSerializableData()
         sdata.rolloff = self.source:getRolloff();
         local x, y, z = self.source:getPosition();
         sdata.position = { x = x, y = y, z = z };
+        x, y, z = self.source:getVelocity();
+        sdata.velocity = { x = x, y = y, z = z };
         x, y, z = self.source:getDirection();
         sdata.direction = { x = x, y = y, z = z };
         local ia, oa, ov = self.source:getCone();

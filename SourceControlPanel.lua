@@ -54,7 +54,28 @@ local function spatialOptions(item)
     end
     if input then item:setPosition(x, y, z); end
     Slab.EndLayout();
-    
+
+    Slab.Text("Velocity");
+    Slab.BeginLayout("VelocityLayout", { Columns = 2 });
+    Slab.SetLayoutColumn(1);
+    Slab.Text("x:");
+    Slab.Text("y:");
+    Slab.Text("z:");
+    Slab.SetLayoutColumn(2);
+    x, y, z = item.source:getVelocity();
+    input = false;
+    if Slab.InputNumberDrag("VelocityX", x, { Step = 0.1 }) then
+        x = Slab.GetInputNumber(); input = true;
+    end
+    if Slab.InputNumberDrag("VelocityY", y, { Step = 0.1 }) then
+        y = Slab.GetInputNumber(); input = true;
+    end
+    if Slab.InputNumberDrag("VelocityZ", z, { Step = 0.1 }) then
+        z = Slab.GetInputNumber(); input = true;
+    end
+    if input then item:setVelocity(x, y, z); end
+    Slab.EndLayout();
+
     Slab.Text("Direction");
     Slab.BeginLayout("DirectionLayout", { Columns = 2 });
     Slab.SetLayoutColumn(1);
