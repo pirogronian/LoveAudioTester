@@ -96,17 +96,12 @@ function im:addParent(manager)
 end
 
 function im:getActiveParents()
-    local list = { n = 0 };
+    local list = {};
     for class, manager in pairs(self.parents) do
         if manager.currentItem ~= nil then
-             list[class] = manager;
-             list.n = list.n + 1;
+             table.insert(list, manager.currentItem);
         end
     end
---     print(list.n);
---     for class, manager in pairs(list) do
---         print(class, manager);
---     end
     return list;
 end
 

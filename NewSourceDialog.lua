@@ -24,13 +24,16 @@ local function NewSourceDialog(parent, list)
             Slab.EndLayout();
             Slab.Separator();
         end
-        if list ~= nil and list.n > 0 then
+        if list ~= nil and #list > 0 then
+            if parent == nil then
+                parent = list[1];
+            end
             if Slab.BeginComboBox("ActiveParents", { Selected = itemText(parent) }) then
-                for class, manager in pairs(list) do
+                for _, item in ipairs(list) do
                     if class ~= "n" then
 --                         print(class, manager)
-                        if Slab.TextSelectable(itemText(manager.currentItem)) then
-                            parent = manager.currentItem
+                        if Slab.TextSelectable(itemText(item)) then
+                            parent = item;
                         end
                     end
                 end
