@@ -1,4 +1,6 @@
 
+local IQueue = require('InfoQueue');
+
 local IManager = require('ItemsManager')
 
 local SItem = require('SourceItem');
@@ -37,22 +39,30 @@ end
 function sim:OpenNewSourceDialog(parent)
     self.newSourceParent = parent;
     if self.newSourceParent == nil then
-        self.newSourceParent = self.parent.currentItem;
+        self.newSourceActiveParents = self:getActiveParents();
+        if self.newSourceActiveParents.n == 0 then
+            IQueue:pushMessage("No parent item!", "Cannot create new source without parent item!");
+            return;
+        end
     end
-    if self.newSourceParent == nil then return; end
---     print("Opening new source dialog for:", self.fileMan.currentItem);
     Slab.OpenDialog("NewSourceDialog");
     self.newSourceDialog = true;
 end
 
 function sim:UpdateNewSourceDialog()
     if not self.newSourceDialog then return; end
-    local closed, id = NSDialog(self.newSourceParent);
+    local closed, id, parent = NSDialog(self.newSourceParent, self.newSourceActiveParents);
     if closed then
         self.newSourceDialog = false;
+        self.newSourceParent = nil;
+        self.newSourceActiveParents = nil;
         if id == nil then return; end
 --         print("Creating source", id);
-        local item = self:createItem(id, self.newSourceParent);
+        local item = self:createItem(id, parent);
+        return;
+    end
+    if parent then
+        self.newSourceParent = parent;
     end
 end
 

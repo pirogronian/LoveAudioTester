@@ -37,7 +37,7 @@ function Item:initialize(data, parent)
 end
 
 function Item:getSerializableData()
-    local data = { id = self.id };
+    local data = { id = self.id, classname = self.class.name };
     if self.parent ~= nil then
         data.parent = self.parent:getSerializableData();
     end

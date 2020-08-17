@@ -7,7 +7,11 @@ local Signal = require('Signal');
 
 local SortableContainer = Class("SortableContainer");
 
+SortableContainer.static.instances = {};
+
 function SortableContainer:initialize(id, ItemClass)
+    SortableContainer.static.instances[ItemClass.name] = self;
+--     Utils.Dump(SortableContainer.static.instances, 2);
     self.indexes = {};
     self.groups = {};
     self.selected = {};
@@ -116,7 +120,12 @@ function SortableContainer:getItem(id, parent)
         parent = self:groupId(parent);
     else
         if parent.class == nil then -- serializable data, probably loading phase
-            parent = self.parent:getItem(parent.id, parent.parent);
+            if parent.classname then
+                local parentcon = SortableContainer.static.instances[parent.classname];
+                if parentcon then
+                    parent = parentcon:getItem(parent.id, parent.parent);
+                end
+            end
         end
     end
     local group = self.groups[parent];
@@ -304,10 +313,30 @@ function SortableContainer:LoadState(data)
     if data.items == nil then return err; end
     for _, itemdata in pairs(data.items) do
         if itemdata.parent then
-            parent = self.parent:getItem(itemdata.parent.id, itemdata.parent.parent);
-            if parent == nil then
+            local parentdata = Utils.TryValue(itemdata.parent, nil, 'table', 'warning');
+            if parentdata == nil then
                 print("Warning:", self, "Cannot get parent item:", itemdata.parent.id);
                 err = true; -- need to abort item loading
+            else
+                local parentclass = parentdata.classname;
+                if parentclass == nil then
+                    print("Warning:", self, "Cannot get parent item class.");
+                    err = true; -- need to abort item loading
+                else
+                    local parentcontainer = SortableContainer.static.instances[parentclass];
+                    if parentcontainer == nil then
+                        print("Warning:", self, "Cannot get parent container for class: "..tostring(parentclass));
+                        err = true; -- need to abort item loading
+                    else
+                        parent = parentcontainer:getItem(
+                            Utils.TryValue(parentdata.id, nil, 'string', 'warning'), 
+                            Utils.TryValue(parentdata.parent, nil, 'string', 'warning'));
+                        if parent == nil then
+                            print("Warning:", self, "Cannot get parent item:", itemdata.parent.id);
+                            err = true; -- need to abort item loading
+                        end
+                    end
+                end
             end
         end
         if not err then

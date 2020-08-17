@@ -27,7 +27,7 @@ fps.fileMan = FIManager();
 
 fps.srcMan = SIManager();
 
-fps.srcMan:setParent(fps.fileMan);
+fps.srcMan:addParent(fps.fileMan);
 
 fps:AddSubmodule(fps.fileMan);
 fps.fileMan:AddSubmodule(fps.srcMan);

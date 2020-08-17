@@ -15,6 +15,7 @@ local im = SModule:subclass("ItemsManager");
 
 function im:initialize(id, naming, ItemClass, itemWindowFunc)
     SModule.initialize(self, id);
+    self.parents = {};
     self.naming = naming;
     self.ItemClass = ItemClass;
     self.onWindowUpdate = itemWindowFunc;
@@ -85,24 +86,28 @@ function im:createItem(...)
     return value;
 end
 
-function im:setParent(manager)
-    if manager == nil then
-        if self.container.parent then
-            self.container.parent.child = nil;
-        end
-        if self.parent then
-            self.parent.child = nil;
-        end
-        self.container.parent = nil;
-        return;
-    end
+function im:addParent(manager)
     if not Utils.IsClassOrSubClass(manager.class, im) then
         error(tostring(manager).." is not of class "..self.class.name.."!");
     end
-    self.parent = manager;
-    self.parent.child = self;
-    self.container.parent = manager.container;
+    self.parents[manager.ItemClass.name] = manager;
+    manager.child = self;
     manager.container.child = self.container;
+end
+
+function im:getActiveParents()
+    local list = { n = 0 };
+    for class, manager in pairs(self.parents) do
+        if manager.currentItem ~= nil then
+             list[class] = manager;
+             list.n = list.n + 1;
+        end
+    end
+--     print(list.n);
+--     for class, manager in pairs(list) do
+--         print(class, manager);
+--     end
+    return list;
 end
 
 function im:LoadState(data)
