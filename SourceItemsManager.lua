@@ -27,7 +27,9 @@ local function windowContent(item)
 end
 
 function sim:initialize()
-    IManager.initialize(self, "filesources", "source", "sources", SItem, windowContent);
+    IManager.initialize(self, "filesources",
+                        { name = "source", names = "sources", title = "Source", titles = "Sources" },
+                        SItem, windowContent);
     self.container.itemAdded:connect(self.onNewItem, self);
     self.playing = 0;
 end

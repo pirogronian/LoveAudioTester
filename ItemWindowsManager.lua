@@ -95,7 +95,7 @@ function iwm:UpdateCurrentItemWindow(module, id)
     if id == nil then id = iwm.getCurrentWindowId(module); end
     if Slab.BeginWindow(id,
                         {
-                         Title = module.title,
+                         Title = module.title.." \""..module.options.context.currentItem.id.."\"",
                          IsOpen = module.windowOpen,
                          AutoSizeWindow = false,
                          W = 300,

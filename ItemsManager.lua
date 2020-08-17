@@ -13,10 +13,9 @@ local Utils = require('Utils');
 
 local im = SModule:subclass("ItemsManager");
 
-function im:initialize(id, iname, inames, ItemClass, itemWindowFunc)
+function im:initialize(id, naming, ItemClass, itemWindowFunc)
     SModule.initialize(self, id);
-    self.iname = iname;
-    self.inames = inames;
+    self.naming = naming;
     self.ItemClass = ItemClass;
     self.onWindowUpdate = itemWindowFunc;
     self.container = SContainer(id, ItemClass);
@@ -27,7 +26,7 @@ function im:initialize(id, iname, inames, ItemClass, itemWindowFunc)
     self.container.itemSelected:connect(self.StateChanged, self);
     self.container.itemDeselected:connect(self.StateChanged, self);
     self.container.itemsSorted:connect(self.StateChanged, self);
-    IWManager:registerModule(self:windowsManagerId(), self.inames,
+    IWManager:registerModule(self:windowsManagerId(), self.naming.title,
                          { onWindowUpdate = self.onWindowUpdate, context = self });
 end
 
@@ -173,7 +172,9 @@ function im:updateConfirmDelete()
             self._confirmDeleteSelected = false;
             return;
         end
-        local result = Slab.MessageBox("Are You sure?", "Are You sure to delete "..count.." "..self.inames.."?", { Buttons = { "Yes", "No" } });
+        local name = self.naming.name;
+        if count > 1 then name = self.naming.names; end
+        local result = Slab.MessageBox("Are You sure?", "Are You sure to delete "..count.." "..name.."?", { Buttons = { "Yes", "No" } });
         if result ~= "" then
             self._confirmDeleteSelected = false;
             if result == "Yes" then
@@ -182,7 +183,7 @@ function im:updateConfirmDelete()
         end
     end
     if self._confirmDelete then
-        local result = Slab.MessageBox("Are You sure?", "Are You sure to delete "..self.iname.."\n\""..tostring(self._confirmDelete).."\"?", { Buttons = { "Yes", "No" } });
+        local result = Slab.MessageBox("Are You sure?", "Are You sure to delete "..self.naming.name.."\n\""..tostring(self._confirmDelete).."\"?", { Buttons = { "Yes", "No" } });
         if result ~= "" then
             if result == "Yes" then
                 self.container:deleteItem(self._confirmDelete);

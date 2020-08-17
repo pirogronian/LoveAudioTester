@@ -37,7 +37,7 @@ function STree:SortedTreeContent(manager, groupid)
 end
 
 function STree:Update()
-    if Slab.BeginTree(self.manager.inames) then
+    if Slab.BeginTree(self.manager.naming.titles) then
         if self.manager.contextMenu and Slab.BeginContextMenuItem() then
             self.manager:contextMenu();
             Slab.EndContextMenu();

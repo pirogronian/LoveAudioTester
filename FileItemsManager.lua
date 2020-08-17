@@ -16,7 +16,9 @@ local function windowContent(item)
 end
 
 function fim:initialize()
-    IManager.initialize(self, "files", "file", "files", FItem, windowContent);
+    IManager.initialize(self, "files",
+                        { name = "file", names = "files", title = "File", titles = "Files"},
+                        FItem, windowContent);
 end
 
 function fim:itemContextMenu(item)
