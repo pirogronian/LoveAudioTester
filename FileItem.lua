@@ -10,17 +10,18 @@ fi.static.attributes = {};
 fi:addAttribute(Item.Attribute("path", "Path"));
 
 function fi:initialize(data, isFullPath)
-    local path = data;
+    local localpath = data;
+    local fullpath = data;
     if type(data) == 'table' then
-        path = data.id;
-        isFullPath = data.isFullPath;
-    end
-    local localpath = path;
-    if isFullPath == true then
-        localpath = Utils.getRelativePath(path);
-        if localpath == nil then
-            error("File with path \n\""..path.."\"\nis inaccessable!");
-            return;
+        localpath = data.id;
+        fullpath = data.fullpath;
+    else
+        if isFullPath == true then
+            localpath = Utils.getRelativePath(fullpath);
+            if localpath == nil then
+                error("File with path \n\""..fullpath.."\"\nis inaccessable!");
+                return;
+            end
         end
     end
     Item.initialize(self, localpath);
@@ -30,7 +31,7 @@ function fi:initialize(data, isFullPath)
         error("Cannot get info of file: "..tostring(localpath));
     end
     file.path = localpath;
-    file.fullpath = path;
+    file.fullpath = fullpath;
     self.file = file;
     local status, value = pcall(love.sound.newDecoder, localpath);
     if not status then
@@ -38,6 +39,12 @@ function fi:initialize(data, isFullPath)
         return;
     end
     self.decoder = value;
+end
+
+function fi:getSerializableData()
+    local data = Item.getSerializableData(self);
+    data.fullpath = self.file.fullpath;
+    return data;
 end
 
 return fi;
