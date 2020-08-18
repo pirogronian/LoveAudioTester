@@ -21,6 +21,7 @@ function STree:SortedTreeContent(manager, groupid)
         end
         local ret = Slab.BeginTree(item.item, { IsLeaf = isLeaf, IsSelected = manager.container:isSelected(item.item) });
         if Slab.IsControlClicked() then
+            manager:onClick(item.item);
             self.clicked:emit(item.item);
         end
         if Slab.BeginContextMenuItem() then

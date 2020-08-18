@@ -3,16 +3,6 @@ local SModule = require('StateModule');
 
 local Utils = require('Utils');
 
-local InfoQueue = require('InfoQueue');
-
-local IWManager = require('ItemWindowsManager');
-
-local FileItem = require('FileItem');
-
-local SourceItem = require('SourceItem');
-
-local IManager = require('ItemsManager');
-
 local FIManager = require("FileItemsManager");
 
 local SIManager = require("SourceItemsManager");
@@ -35,28 +25,6 @@ fps.tree = STree(fps.fileMan);
 fps.playing = 0;
 
 function fps:UpdateMenu()
---     if Slab.BeginMenu("Files") then
---         SortMenu(self.fileMan.container);
---         self.fileMan:selectMenu();
---         if Slab.MenuItem("Add") then
---             self.fileMan:openFileDialog();
---         end
---         if Slab.MenuItem("Delete selected") then
---             self.fileMan:confirmDeleteSelected();
---         end
---         if Slab.BeginMenu("Sources") then
---             SortMenu(self.srcMan.container);
---             self.srcMan:selectMenu();
---             if Slab.MenuItem("New") then
---                 self.srcMan:openNewItemDialog();
---             end
---             if Slab.MenuItem("Delete selected") then
---                 self.srcMan:confirmDeleteSelected();
---             end
---             Slab.EndMenu();
---         end
---         Slab.EndMenu();
---     end
     self.fileMan:updateMainMenu();
     self.srcMan:updateMainMenu();
 end
@@ -93,19 +61,5 @@ function fps:LoadState(data)
     self:LoadSubmodulesState(data);
     self:SetLoadPhase(false);
 end
-
-function fps:itemClicked(item)
-    if item.class.name == "FileItem" then
-        self.fileMan:onClick(item)
-    else
-        if item.class.name == "SourceItem" then
-            self.srcMan:onClick(item);
-        else
-            print("Clicked unknown item!", item);
-        end
-    end
-end
-
-fps.tree.clicked:connect(fps.itemClicked, fps);
 
 return fps;
