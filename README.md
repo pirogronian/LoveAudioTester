@@ -13,15 +13,15 @@ A: Due to love.filesystem limitation only file inside source directory or save d
 
 Q: How I can add a source?
 
-A: From file item context menu. Altenratively, be sure desired file is active (showed above items tree) and go to Filepaths -> Sources -> New
+A: From file item context menu. Altenratively, be sure desired file is active (showed above items tree) and go to main menu -> Sources -> New
 
 Q: Why I had to create source separately from loading a file?
 
 A: Because every file can have many sources with different settings.
 
-Q: How to use sources?
+Q: How to show details and controls sources?
 
-A: Click on it and go to Filepaths -> Sources -> Info, or vice versa. Yes, there will be easier way.
+A: Make sure there is selected main menu -> Windows -> Sources and click on it.
 
 Q: What's planned next?
 
