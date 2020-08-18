@@ -9,12 +9,17 @@ local SManager = require('StateManager');
 
 local FPSModule = require('FileSourcesModule');
 
+local SModule = require('SourcesModule');
+
+local FModule = require('FilesModule');
+
 function love.load(args)
     InfoQueue.debug = true;
     Slab.Initialize(args);
     SlabQuit = love.quit;
     love.quit = onquit;
-    SManager:RegisterModule(FPSModule);
+    SManager:RegisterModule(FModule);
+    SManager:RegisterModule(SModule);
     SManager:RegisterModule(IWManager);
     SManager:LoadState();
 end
@@ -36,7 +41,8 @@ function love.update(dt)
             Slab.EndMenu();
         end
         IWManager:UpdateMenu();
-        FPSModule:UpdateMenu();
+        FModule:updateMainMenu();
+        SModule:updateMainMenu();
 
         MMBW, MMBH = Slab.GetControlSize();
         Slab.EndMainMenuBar();
@@ -59,7 +65,8 @@ function love.update(dt)
     Slab.EndWindow();
 
     IWManager:UpdateWindows();
-    FPSModule:UpdateDialogs();
+    FModule:updateDialogs();
+    SModule:updateDialogs();
     InfoQueue:Update();
 
     if quitDialog then
