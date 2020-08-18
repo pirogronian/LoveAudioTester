@@ -7,7 +7,7 @@ local IWManager = require('ItemWindowsManager');
 
 local SManager = require('StateManager');
 
-local ITModule = require('ItemTreeModule');
+local ITModule = require('ItemsTreeModule');
 
 local SModule = require('SourcesModule');
 
