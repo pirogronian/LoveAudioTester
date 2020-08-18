@@ -19,7 +19,7 @@ function STree:SortedTreeContent(manager, groupid)
         else
             isLeaf = true;
         end
-        local ret = Slab.BeginTree(item.item, { IsLeaf = isLeaf, IsSelected = manager.container:isSelected(item.item) });
+        local ret = Slab.BeginTree(item.item, { IsLeaf = isLeaf, IsSelected = manager.selection:has(item.item) });
         if Slab.IsControlClicked() then
             manager:onClick(item.item);
             self.clicked:emit(item.item);

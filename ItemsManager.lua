@@ -1,6 +1,8 @@
 
 local SModule = require('StateModule');
 
+local Set = require('Set');
+
 local SContainer = require('SortableContainer')
 
 local IQueue = require('InfoQueue');
@@ -25,12 +27,13 @@ function im:initialize(id, naming, ItemClass, itemWindowFunc, mandatoryParent)
     self.onWindowUpdate = itemWindowFunc;
     self.isParentMandatory = mandatoryParent;
     self.container = SContainer(id, ItemClass);
+    self.selection = Set();
     self.currentItem = nil;
     self.selectMode = false;
     self.container.itemAdded:connect(self.onAddNewItem, self);
     self.container.itemRemoved:connect(self.onDeleteItem, self);
-    self.container.itemSelected:connect(self.StateChanged, self);
-    self.container.itemDeselected:connect(self.StateChanged, self);
+--     self.container.itemSelected:connect(self.StateChanged, self);
+--     self.container.itemDeselected:connect(self.StateChanged, self);
     self.container.itemsSorted:connect(self.StateChanged, self);
     IWManager:registerModule(self:windowsManagerId(), self.naming.title,
                          { onWindowUpdate = self.onWindowUpdate, context = self });
@@ -45,7 +48,7 @@ function im:onClick(item)
         print(self, "Warning: clicked item is not in container:", item);
     end
     if self.selectMode then
-        self.container:toggleSelection(item);
+        self.selection:toggle(item);
     end
     if self.currentItem ~= item then
         self.currentItem = item;
@@ -68,6 +71,7 @@ function im:onDeleteItem(item)
     if item == self.currentItem then
         self.currentItem = nil;
     end
+    self.selection:remove(item);
     IWManager:delItem(self:windowsManagerId(), item, true);
     if self.child then
         self.child.container:deleteGroup(item);
@@ -122,7 +126,7 @@ function im:LoadState(data)
 --     Utils.Dump(data, -1);
     self:SetLoadPhase(true);
     IWManager:SetLoadPhase(true);
-    self.container:LoadState(data.container, self.ItemClass);
+    self.container:LoadState(data.container, self.selection);
     if data.currentItem then
 --         print("Loading current item:");
 --         Utils.Dump(data.currentItem, -1)
@@ -139,7 +143,7 @@ end
 
 function im:DumpState()
     local data = {
-        container = self.container:DumpState()
+        container = self.container:DumpState(self.selection)
         };
     if self.currentItem then
         data.currentItem = self.currentItem:getSerializableData();
@@ -158,11 +162,11 @@ end
 
 function im:itemContextMenu(item)
     local seltext = "Select";
-    if self.container:isSelected(item) then
+    if self.selection:has(item) then
         seltext = "Deselect";
     end
     if Slab.MenuItem(seltext) then
-        self.container:toggleSelection(item);
+        self.selection:toggle(item);
     end
     if Slab.MenuItem("Delete") then
         self:confirmDelete(item);
@@ -204,7 +208,7 @@ end
 
 function im:updateConfirmDelete()
     if self._confirmDeleteSelected then
-        local count = self.container:selectedNumber();
+        local count = self.selection:size();
         if count == 0 then
             self._confirmDeleteSelected = false;
             return;
@@ -215,7 +219,7 @@ function im:updateConfirmDelete()
         if result ~= "" then
             self._confirmDeleteSelected = false;
             if result == "Yes" then
-                self.container:deleteSelected();
+                self.container:deleteSet(self.selection);
             end
         end
     end

@@ -41,6 +41,14 @@ function s:removeSingle(obj)
     end
 end
 
+function s:toggleSingle(obj)
+    if self:has(obj) then
+        self:removeSingle(obj);
+    else
+        self:addSingle(obj);
+    end
+end
+
 function s:add(...)
     i = 1;
     while i <= select('#', ...) do
@@ -57,6 +65,14 @@ function s:remove(...)
     end
 end
 
+function s:toggle(...)
+    i = 1;
+    while i <= select('#', ...) do
+        self:toggleSingle(select(i, ...));
+        i = i + 1;
+    end
+end
+
 function s:addValues(t)
     for _, obj in pairs(t) do
         self:addSingle(obj);
@@ -69,6 +85,12 @@ function s:removeValues(t)
     end
 end
 
+function s:toggleValues(t)
+    for _, obj in pairs(t) do
+        self:toggleSingle(obj);
+    end
+end
+
 function s:addKeys(t)
     for obj, _ in pairs(t) do
         self:addSingle(obj);
@@ -78,6 +100,12 @@ end
 function s:removeKeys(t)
     for obj, _ in pairs(t) do
         self:removeSingle(obj);
+    end
+end
+
+function s:toggleKeys(t)
+    for obj, _ in pairs(t) do
+        self:toggleSingle(obj);
     end
 end
 

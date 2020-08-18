@@ -14,14 +14,14 @@ function SortableContainer:initialize(id, ItemClass)
 --     Utils.Dump(SortableContainer.static.instances, 2);
     self.indexes = {};
     self.groups = {};
-    self.selected = {};
+--     self.selected = {};
     self.id = id;
     self.ItemClass = ItemClass;
     self.itemCount = 0;
     self.itemAdded = Signal();
     self.itemRemoved = Signal();
-    self.itemSelected = Signal();
-    self.itemDeselected = Signal();
+--     self.itemSelected = Signal();
+--     self.itemDeselected = Signal();
     self.itemsSorted = Signal();
     self.creationError = Signal();
     for attrid, attr in pairs(self.ItemClass.attributes) do
@@ -104,7 +104,7 @@ function SortableContainer:deleteItem(item)
             end
         end
     end
-    self.selected[item] = nil;
+--     self.selected[item] = nil;
     self.groups[groupid].ids[item.id] = nil;
     self.groups[groupid].n = self.groups[groupid].n - 1;
     self.itemCount = self.itemCount - 1;
@@ -161,55 +161,51 @@ function SortableContainer:getItemCount(groupid)
     end
 end
 
-function SortableContainer:deleteSelected()
---     self:dumpSelection();
-    for item, selected in pairs(self.selected) do
-        if selected then
---             print("deleteing selected", item, item.class);
-            self:deleteItem(item);
-        end
+function SortableContainer:deleteSet(set)
+    for item, _ in pairs(set:get()) do
+        self:deleteItem(item);
     end
 end
 
-function SortableContainer:select(item)
-    if self.selected[item] ~= true then
-        self.selected[item] = true;
-        self.lastSelected = item;
-        self.itemSelected:emit();
-    end
-end
-
-function SortableContainer:deselect(item)
-    if self.selected[item] == true then
-        self.selected[item] = nil;
-        if self.lastSelected == item then
-            self.lastSelected = nil;
-        end
-        self.itemDeselected:emit();
-    end
-end
-
-function SortableContainer:isSelected(item)
-    return self.selected[item] == true;
-end
-
-function SortableContainer:toggleSelection(item)
-    if self:isSelected(item) then
-        self:deselect(item);
-    else
-        self:select(item);
-    end
-end
-
-function SortableContainer:selectedNumber()
-    local count = 0;
-    for key, value in pairs(self.selected) do
-        if value == true then
-            count = count + 1;
-        end
-    end
-    return count;
-end
+-- function SortableContainer:select(item)
+--     if self.selected[item] ~= true then
+--         self.selected[item] = true;
+--         self.lastSelected = item;
+--         self.itemSelected:emit();
+--     end
+-- end
+-- 
+-- function SortableContainer:deselect(item)
+--     if self.selected[item] == true then
+--         self.selected[item] = nil;
+--         if self.lastSelected == item then
+--             self.lastSelected = nil;
+--         end
+--         self.itemDeselected:emit();
+--     end
+-- end
+-- 
+-- function SortableContainer:isSelected(item)
+--     return self.selected[item] == true;
+-- end
+-- 
+-- function SortableContainer:toggleSelection(item)
+--     if self:isSelected(item) then
+--         self:deselect(item);
+--     else
+--         self:select(item);
+--     end
+-- end
+-- 
+-- function SortableContainer:selectedNumber()
+--     local count = 0;
+--     for key, value in pairs(self.selected) do
+--         if value == true then
+--             count = count + 1;
+--         end
+--     end
+--     return count;
+-- end
 
 function SortableContainer:deleteGroup(gid)
     local ret = 0;
@@ -271,12 +267,12 @@ function SortableContainer:dumpIndexes(groupid)
     end
 end
 
-function SortableContainer:dumpSelection()
-    print("Selected ("..self:selectedNumber().."):");
-    for item, selected in pairs(self.selected) do
-        print("   ["..tostring(item).."] =>", selected);
-    end
-end
+-- function SortableContainer:dumpSelection()
+--     print("Selected ("..self:selectedNumber().."):");
+--     for item, selected in pairs(self.selected) do
+--         print("   ["..tostring(item).."] =>", selected);
+--     end
+-- end
 
 function SortableContainer:dumpIds(groupid)
     groupid = self:groupId(groupid);
@@ -297,7 +293,7 @@ function SortableContainer:dumpGroups()
     end
 end
 
-function SortableContainer:DumpState()
+function SortableContainer:DumpState(selection)
     local data = {
             currentDir = self.currentDir,
             currentAttribute = self.currentAttribute,
@@ -305,7 +301,10 @@ function SortableContainer:DumpState()
     for gid, group in pairs(self.groups) do
         for id, item in pairs(group.ids) do
             local itemdata = item:getSerializableData();
-            if self:isSelected(item) then
+--             if self:isSelected(item) then
+--                 itemdata.selected = true;
+--             end
+            if selection ~= nil and selection:has(item) then
                 itemdata.selected = true;
             end
             table.insert(data.items, itemdata);
@@ -314,7 +313,7 @@ function SortableContainer:DumpState()
     return data;
 end
 
-function SortableContainer:LoadState(data)
+function SortableContainer:LoadState(data, selection)
     if data == nil then return end
     local err = false;
     local parent = nil;
@@ -354,7 +353,7 @@ function SortableContainer:LoadState(data)
                 if item ~= nil then
                     self:addItem(item, parent);
                     if itemdata.selected then
-                        self:select(item);
+                        selection:addSingle(item);
                     end
                 else
                     print("Warning:", self, "Cannot recreate item:", key);
