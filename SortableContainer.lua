@@ -7,10 +7,7 @@ local Signal = require('Signal');
 
 local SortableContainer = Class("SortableContainer");
 
-SortableContainer.static.instances = {};
-
 function SortableContainer:initialize(id, ItemClass)
-    SortableContainer.static.instances[ItemClass.name] = self;
     self.indexes = {};
     self.groups = {};
     self.id = id;
