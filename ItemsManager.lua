@@ -50,11 +50,12 @@ function im:onClick(item)
     if self.selectMode then
         self.selection:toggle(item);
     end
-    if self.currentItem ~= item then
-        self.currentItem = item;
-    else
-        self.currentItem = nil;
---         IWManager:unsetCurrentModule(self:windowsManagerId());
+    if self.currentMode then
+        if self.currentItem ~= item then
+            self.currentItem = item;
+        else
+            self.currentItem = nil;
+        end
     end
     if self.currentItem ~= nil then
         IWManager:setCurrentModule(self:windowsManagerId());
@@ -133,6 +134,9 @@ function im:LoadState(data)
         self.currentItem = self.container:getItem(data.currentItem.id, data.currentItem.parent);
 --         print(self.currentItem);
     end
+    if data.currentMode == true then
+        self.currentMode = true;
+    end
     if data.selectMode == true then
         self.selectMode = true;
     end
@@ -148,19 +152,35 @@ function im:DumpState()
     if self.currentItem then
         data.currentItem = self.currentItem:getSerializableData();
     end
+    data.currentMode = self.currentMode;
     data.selectMode = self.selectMode;
     data.children = self:DumpSubmodulesState();
 --     Utils.Dump(data, -1);
     return data;
 end
 
-function im:selectMenu()
-    if Slab.MenuItemChecked("Select on click", self.selectMode) then
+function im:modesMenu()
+    if Slab.MenuItemChecked("Make current mode", self.currentMode) then
+        self.currentMode = not self.currentMode;
+    end
+    if Slab.MenuItemChecked("Selection mode", self.selectMode) then
         self.selectMode = not self.selectMode;
     end
 end
 
 function im:itemContextMenu(item)
+    local text = "Set current";
+    if self.currentItem == item then
+        text = "Clear current";
+    end
+    if Slab.MenuItem(text) then
+        if self.currentItem == item then
+            self.currentItem = nil;
+        else
+            self.currentItem = item;
+            IWManager:setCurrentModule(self:windowsManagerId());
+        end
+    end
     local seltext = "Select";
     if self.selection:has(item) then
         seltext = "Deselect";
@@ -241,7 +261,7 @@ end
 
 function im:updateMainMenuContent()
     SortMenu(self.container);
-    self:selectMenu();
+    self:modesMenu();
     if Slab.MenuItem("Add") then
         self:openNewItemDialog();
     end
