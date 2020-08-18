@@ -54,4 +54,15 @@ function sim:update()
     IManager.update(self);
 end
 
+function sim:updateMainMenu()
+    if Slab.BeginMenu(self.naming.titles) then
+        self:updateMainMenuContent();
+        if Slab.MenuItem("Pause all") then
+            love.audio.pause();
+            self.playing = 0;
+        end
+        Slab.EndMenu();
+    end
+end
+
 return sim;
