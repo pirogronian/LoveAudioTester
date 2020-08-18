@@ -9,13 +9,13 @@ local sm = require("SourcesModule");
 
 local STree = require('SortableTree');
 
-local fps = SModule("filesourcesmodule", "File sources");
+local itm = SModule("ItemsTreeModule");
 
-fps.tree = STree(fm);
+itm.tree = STree(fm);
 
-fps.playing = 0;
+itm.playing = 0;
 
-function fps:UpdateTree()
+function itm:UpdateTree()
     if fm.currentItem ~= nil then
         Slab.Text(tostring(fm.currentItem));
     else
@@ -30,17 +30,17 @@ function fps:UpdateTree()
     Slab.Text("Playing now: "..tostring(sm.playing));
 end
 
-function fps:DumpState()
+function itm:DumpState()
     local data = self:DumpSubmodulesState();
 --     Utils.Dump(data.sources, 10);
     return data;
 end
 
-function fps:LoadState(data)
+function itm:LoadState(data)
     if data == nil then return end
     self:SetLoadPhase(true);
     self:LoadSubmodulesState(data);
     self:SetLoadPhase(false);
 end
 
-return fps;
+return itm;

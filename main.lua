@@ -7,7 +7,7 @@ local IWManager = require('ItemWindowsManager');
 
 local SManager = require('StateManager');
 
-local FPSModule = require('FileSourcesModule');
+local ITModule = require('ItemTreeModule');
 
 local SModule = require('SourcesModule');
 
@@ -20,6 +20,7 @@ function love.load(args)
     love.quit = onquit;
     SManager:RegisterModule(FModule);
     SManager:RegisterModule(SModule);
+    SManager:RegisterModule(ITModule);
     SManager:RegisterModule(IWManager);
     SManager:LoadState();
 end
@@ -60,7 +61,7 @@ function love.update(dt)
                           ContentW = windowW,
                           ContentH = windowH - MMBH,
                           NoOutline = true}) then
-        FPSModule:UpdateTree();
+        ITModule:UpdateTree();
     end
     Slab.EndWindow();
 
