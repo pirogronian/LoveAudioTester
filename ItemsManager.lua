@@ -95,7 +95,7 @@ function im:createItem(...)
         IQueue:pushMessage("Item already exists!", "Item "..tostring(value).." already exists!");
         return;
     end
-    self.container:addItem(value, value.parent);
+    self.container:addItem(value);
 --     self.container:dumpGroups();
     return value;
 end
@@ -122,16 +122,64 @@ function im:getActiveParents()
     return list;
 end
 
+function im:loadParentItem(parentdata)
+    if type(parentdata) ~= 'table' then return; end
+    local parentclassname = Utils.TryValue(parentdata.classname, nil, 'string', 'warning');
+    if parentclassname == nil then return; end
+    local parentmanager = self.parents[parentclassname];
+    if parentmanager == nil then
+        print("Warning! No parent manager for class \""..parentclassname.."\"!");
+        return;
+    end
+    local parentparentdata = parentdata.parent;
+    local parentofparent = nil;
+    if parentparentdata then
+        parentofparent = parentmanager:loadParentItem(parentparentdata);
+    end
+    return parentmanager.container:getItem(parentdata.id, parentofparent)
+end
+
+function im:loadItem(itemdata)
+    local parentdata = itemdata.parent;
+    if parentdata ~= nil then
+        parent = self:loadParentItem(parentdata);
+    end
+    local status, value = pcall(self.ItemClass.new, self.ItemClass, itemdata, parent);
+    if status then
+        return value;
+    else
+        print("Error while loading item:", value)
+        return;
+    end
+end
+
+function im:loadItems(items)
+    for _, itemdata in pairs(items) do
+        local item = self:loadItem(itemdata);
+        if item ~= nil then
+            self.container:addItem(item);
+        else
+            print("Warning: Cannot load item!", itemdata.id);
+            self:StateChanged(true);
+        end
+        if itemdata.selected then
+            self.selection:addSingle(item);
+        end
+    end
+end
+
 function im:LoadState(data)
     if data == nil then return; end
 --     Utils.Dump(data, -1);
     self:SetLoadPhase(true);
     IWManager:SetLoadPhase(true);
-    self.container:LoadState(data.container, self.selection);
+    self.container:LoadState(data.container);
+    self:loadItems(data.container.items);
     if data.currentItem then
 --         print("Loading current item:");
 --         Utils.Dump(data.currentItem, -1)
-        self.currentItem = self.container:getItem(data.currentItem.id, data.currentItem.parent);
+        local parent = self:loadParentItem(data.currentItem.parent);
+        self.currentItem = self.container:getItem(data.currentItem.id, parent);
 --         print(self.currentItem);
     end
     if data.currentMode == true then
