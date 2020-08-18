@@ -23,6 +23,10 @@ Q: How to show details and controls sources?
 
 A: Make sure there is selected main menu -> Windows -> Sources and click on it.
 
+Q: What is the recent release version?
+
+A: 0.5, but it's updated quiet frequently.
+
 Q: What's planned next?
 
-A: Possibly everything related to love.audio subsystem + some tweaks around love.filesystem and Slab for better usability. Detailed tasks order is unknown, though.
+A: For version 0.6: listener info/control. For version 0.7: basic audio data info/control. For 0.8 or maybe along with earlier one: basic graphical presentation of spatial sources parameters. Ultimately: possibly everything related to love.audio subsystem + some tweaks around love.filesystem and Slab for better usability. Detailed tasks order is unknown, though.
