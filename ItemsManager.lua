@@ -7,6 +7,8 @@ local IQueue = require('InfoQueue');
 
 local OEMsg = require('ErrorMessage');
 
+local SortMenu = require('SortMenu');
+
 local IWManager = require('ItemWindowsManager');
 
 local Utils = require('Utils');
@@ -224,9 +226,27 @@ function im:updateConfirmDelete()
     end
 end
 
-function im:update()
+function im:updateDialogs()
     self:updateConfirmDelete();
     self:updateNewItemDialog();
+end
+
+function im:updateMainMenuContent()
+    SortMenu(self.container);
+    self:selectMenu();
+    if Slab.MenuItem("Add") then
+        self:openNewItemDialog();
+    end
+    if Slab.MenuItem("Delete selected") then
+        self:confirmDeleteSelected();
+    end
+end
+
+function im:updateMainMenu()
+    if Slab.BeginMenu(self.naming.titles) then
+        self:updateMainMenuContent();
+        Slab.EndMenu();
+    end
 end
 
 return im;

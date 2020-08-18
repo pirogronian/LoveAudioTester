@@ -42,6 +42,10 @@ function fim:addFiles(paths)
     end
 end
 
+function fim:openNewItemDialog()
+    self:openFileDialog();
+end
+
 function fim:updateOpenFileDialog()
     if self._openFileDialog then
         local result = Slab.FileDialog({ Type = "openfile" })
@@ -56,8 +60,8 @@ function fim:openFileDialog()
     self._openFileDialog = true;
 end
 
-function fim:update()
-    IManager.update(self);
+function fim:updateDialogs()
+    IManager.updateDialogs(self);
     self:updateOpenFileDialog();
 end
 

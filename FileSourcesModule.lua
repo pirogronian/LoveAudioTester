@@ -3,8 +3,6 @@ local SModule = require('StateModule');
 
 local Utils = require('Utils');
 
-local SortMenu = require('SortMenu');
-
 local InfoQueue = require('InfoQueue');
 
 local IWManager = require('ItemWindowsManager');
@@ -37,33 +35,35 @@ fps.tree = STree(fps.fileMan);
 fps.playing = 0;
 
 function fps:UpdateMenu()
-    if Slab.BeginMenu("Files") then
-        SortMenu(self.fileMan.container);
-        self.fileMan:selectMenu();
-        if Slab.MenuItem("Add") then
-            self.fileMan:openFileDialog();
-        end
-        if Slab.MenuItem("Delete selected") then
-            self.fileMan:confirmDeleteSelected();
-        end
-        if Slab.BeginMenu("Sources") then
-            SortMenu(self.srcMan.container);
-            self.srcMan:selectMenu();
-            if Slab.MenuItem("New") then
-                self.srcMan:openNewItemDialog();
-            end
-            if Slab.MenuItem("Delete selected") then
-                self.srcMan:confirmDeleteSelected();
-            end
-            Slab.EndMenu();
-        end
-        Slab.EndMenu();
-    end
+--     if Slab.BeginMenu("Files") then
+--         SortMenu(self.fileMan.container);
+--         self.fileMan:selectMenu();
+--         if Slab.MenuItem("Add") then
+--             self.fileMan:openFileDialog();
+--         end
+--         if Slab.MenuItem("Delete selected") then
+--             self.fileMan:confirmDeleteSelected();
+--         end
+--         if Slab.BeginMenu("Sources") then
+--             SortMenu(self.srcMan.container);
+--             self.srcMan:selectMenu();
+--             if Slab.MenuItem("New") then
+--                 self.srcMan:openNewItemDialog();
+--             end
+--             if Slab.MenuItem("Delete selected") then
+--                 self.srcMan:confirmDeleteSelected();
+--             end
+--             Slab.EndMenu();
+--         end
+--         Slab.EndMenu();
+--     end
+    self.fileMan:updateMainMenu();
+    self.srcMan:updateMainMenu();
 end
 
 function fps:UpdateDialogs()
-    self.fileMan:update();
-    self.srcMan:update();
+    self.fileMan:updateDialogs();
+    self.srcMan:updateDialogs();
 end
 
 function fps:UpdateTree()
@@ -91,18 +91,6 @@ function fps:LoadState(data)
     if data == nil then return end
     self:SetLoadPhase(true);
     self:LoadSubmodulesState(data);
---     for groupid, group in pairs(self.srcMan.container.groups) do
---         for key, item in pairs(group.ids) do
---             self:SourcePostCreation(item);
---         end
---     end
---    self.paths:dumpIds();
---    self.paths:dumpAttributes();
---    self.paths:dumpIndexes(true);
---    self.sources:dumpIds();
---     self.sources:dumpGroups();
---     self.sources:dumpAttributes();
---     self.sources:dumpIndexes(true);
     self:SetLoadPhase(false);
 end
 
