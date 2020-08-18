@@ -32,8 +32,6 @@ function im:initialize(id, naming, ItemClass, itemWindowFunc, mandatoryParent)
     self.selectMode = false;
     self.container.itemAdded:connect(self.onAddNewItem, self);
     self.container.itemRemoved:connect(self.onDeleteItem, self);
---     self.container.itemSelected:connect(self.StateChanged, self);
---     self.container.itemDeselected:connect(self.StateChanged, self);
     self.container.itemsSorted:connect(self.StateChanged, self);
     IWManager:registerModule(self:windowsManagerId(), self.naming.title,
                          { onWindowUpdate = self.onWindowUpdate, context = self });
@@ -154,6 +152,7 @@ function im:loadItem(itemdata)
 end
 
 function im:loadItems(items)
+    if type(items) ~= 'table' then return; end
     for _, itemdata in pairs(items) do
         local item = self:loadItem(itemdata);
         if item ~= nil then
@@ -174,13 +173,10 @@ function im:LoadState(data)
     self:SetLoadPhase(true);
     IWManager:SetLoadPhase(true);
     self.container:LoadState(data.container);
-    self:loadItems(data.container.items);
+    self:loadItems(data.items);
     if data.currentItem then
---         print("Loading current item:");
---         Utils.Dump(data.currentItem, -1)
         local parent = self:loadParentItem(data.currentItem.parent);
         self.currentItem = self.container:getItem(data.currentItem.id, parent);
---         print(self.currentItem);
     end
     if data.currentMode == true then
         self.currentMode = true;
@@ -193,17 +189,29 @@ function im:LoadState(data)
     self:LoadSubmodulesState(data.children);
 end
 
+function im:serializeItems()
+    local items = {};
+    for gid, group in pairs(self.container.groups) do
+        for id, item in pairs(group.ids) do
+            local itemdata = item:getSerializableData();
+            if self.selection:has(item) then
+                itemdata.selected = true;
+            end
+            table.insert(items, itemdata);
+        end
+    end
+    return items;
+end
+
 function im:DumpState()
-    local data = {
-        container = self.container:DumpState(self.selection)
-        };
+    local data = { container = self.container:DumpState() };
+    data.items = self:serializeItems();
     if self.currentItem then
         data.currentItem = self.currentItem:getSerializableData();
     end
     data.currentMode = self.currentMode;
     data.selectMode = self.selectMode;
     data.children = self:DumpSubmodulesState();
---     Utils.Dump(data, -1);
     return data;
 end
 

@@ -122,15 +122,6 @@ end
 function SortableContainer:getItem(id, parent)
     if parent == nil then
         parent = self:groupId(nil);
-    else
---         if parent.class == nil then -- serializable data, probably loading phase
---             if parent.classname then
---                 local parentcon = SortableContainer.static.instances[parent.classname];
---                 if parentcon then
---                     parent = parentcon:getItem(parent.id, parent.parent);
---                 end
---             end
---         end
     end
     local group = self.groups[parent];
     if group == nil then return nil; end
@@ -245,72 +236,12 @@ end
 function SortableContainer:DumpState(selection)
     local data = {
             currentDir = self.currentDir,
-            currentAttribute = self.currentAttribute,
-            items = {}};
-    for gid, group in pairs(self.groups) do
-        for id, item in pairs(group.ids) do
-            local itemdata = item:getSerializableData();
-            if selection ~= nil and selection:has(item) then
-                itemdata.selected = true;
-            end
-            table.insert(data.items, itemdata);
-        end
-    end
+            currentAttribute = self.currentAttribute};
     return data;
 end
 
 function SortableContainer:LoadState(data, selection)
     if data == nil then return end
---     local err = false;
---     local parent = nil;
---     if data.items == nil then return err; end
---     for _, itemdata in pairs(data.items) do
---         if itemdata.parent then
---             local parentdata = Utils.TryValue(itemdata.parent, nil, 'table', 'warning');
---             if parentdata == nil then
---                 print("Warning:", self, "Cannot get parent item:", itemdata.parent.id);
---                 err = true; -- need to abort item loading
---             else
---                 local parentclass = parentdata.classname;
---                 if parentclass == nil then
---                     print("Warning:", self, "Cannot get parent item class.");
---                     err = true; -- need to abort item loading
---                 else
---                     local parentcontainer = SortableContainer.static.instances[parentclass];
---                     if parentcontainer == nil then
---                         print("Warning:", self, "Cannot get parent container for class: "..tostring(parentclass));
---                         err = true; -- need to abort item loading
---                     else
---                         parent = parentcontainer:getItem(
---                             Utils.TryValue(parentdata.id, nil, 'string', 'warning'), 
---                             Utils.TryValue(parentdata.parent, nil, 'string', 'warning'));
---                         if parent == nil then
---                             print("Warning:", self, "Cannot get parent item:", itemdata.parent.id);
---                             err = true; -- need to abort item loading
---                         end
---                     end
---                 end
---             end
---         end
---         if not err then
---             local status, value = pcall(self.ItemClass.new, self.ItemClass, itemdata, parent);
---             if status then
---                 local item = value;
---                 if item ~= nil then
---                     self:addItem(item, parent);
---                     if itemdata.selected then
---                         selection:addSingle(item);
---                     end
---                 else
---                     print("Warning:", self, "Cannot recreate item:", key);
---                     err = true;
---                 end
---             else
---                 print("Warning:", self, "Cannot create item:", key, value);
---                 err = true;
---             end
---         end
---     end
     self.currentAttribute = data.currentAttribute;
     if self:getAttribute(self.currentAttribute, nil, true) == nil then
         self.currentAttribute = nil;
