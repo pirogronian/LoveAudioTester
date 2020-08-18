@@ -50,7 +50,7 @@ function fps:UpdateMenu()
             SortMenu(self.srcMan.container);
             self.srcMan:selectMenu();
             if Slab.MenuItem("New") then
-                self.srcMan:OpenNewSourceDialog();
+                self.srcMan:openNewItemDialog();
             end
             if Slab.MenuItem("Delete selected") then
                 self.srcMan:confirmDeleteSelected();

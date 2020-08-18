@@ -11,14 +11,17 @@ local IWManager = require('ItemWindowsManager');
 
 local Utils = require('Utils');
 
+local NIDialog = require('NewItemDialog');
+
 local im = SModule:subclass("ItemsManager");
 
-function im:initialize(id, naming, ItemClass, itemWindowFunc)
+function im:initialize(id, naming, ItemClass, itemWindowFunc, mandatoryParent)
     SModule.initialize(self, id);
     self.parents = {};
     self.naming = naming;
     self.ItemClass = ItemClass;
     self.onWindowUpdate = itemWindowFunc;
+    self.isParentMandatory = mandatoryParent;
     self.container = SContainer(id, ItemClass);
     self.currentItem = nil;
     self.selectMode = false;
@@ -101,6 +104,9 @@ function im:getActiveParents()
         if manager.currentItem ~= nil then
              table.insert(list, manager.currentItem);
         end
+        if not self.isParentMandatory then
+            table.insert(list, "None");
+        end
     end
     return list;
 end
@@ -157,6 +163,31 @@ function im:itemContextMenu(item)
     end
 end
 
+function im:openNewItemDialog(parent)
+    local list = nil;
+    if parent == nil then
+        list = self:getActiveParents();
+    end
+    if self.isParentMandatory and parent == nil and #list == 0 then
+        IQueue:pushMessage("No parent item!", "Cannot create new "..self.naming.name.." without parent item!");
+    else
+        self._newItemDialog = NIDialog(nil, parent, list, "Create new "..self.naming.name);
+    end
+end
+
+function im:updateNewItemDialog()
+    if self._newItemDialog then
+        local dialog = self._newItemDialog;
+        dialog:update();
+        if not dialog.open then
+            if not dialog.canceled then
+                self:createItem(dialog.newItemData.id, dialog.newItemData.parent);
+            end
+            self._newItemDialog = nil;
+        end
+    end
+end
+
 function im:confirmDelete(item)
     self._confirmDelete = item;
 end
@@ -195,6 +226,7 @@ end
 
 function im:update()
     self:updateConfirmDelete();
+    self:updateNewItemDialog();
 end
 
 return im;

@@ -23,7 +23,7 @@ end
 
 function fim:itemContextMenu(item)
     if Slab.MenuItem("New source") then
-        self.child:OpenNewSourceDialog(item);
+        self.child:openNewItemDialog(item);
     end
     IManager.itemContextMenu(self, item);
 end
