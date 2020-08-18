@@ -47,4 +47,8 @@ function fi:getSerializableData()
     return data;
 end
 
+function fi:destroy()
+    self.decoder:release();
+end
+
 return fi;

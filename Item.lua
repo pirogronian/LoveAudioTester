@@ -48,4 +48,7 @@ function Item:__tostring()
     return tostring(self.id);
 end
 
+function Item:destroy()
+end
+
 return Item;

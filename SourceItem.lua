@@ -252,4 +252,9 @@ function SItem:getSerializableData()
     return data;
 end
 
+function SItem:destroy()
+    self:stop();
+    self.source:release();
+end
+
 return SItem;

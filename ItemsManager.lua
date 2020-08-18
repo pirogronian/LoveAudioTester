@@ -69,6 +69,10 @@ function im:onDeleteItem(item)
         self.currentItem = nil;
     end
     IWManager:delItem(self:windowsManagerId(), item, true);
+    if self.child then
+        self.child.container:deleteGroup(item);
+    end
+    item:destroy();
     self:StateChanged();
 end
 

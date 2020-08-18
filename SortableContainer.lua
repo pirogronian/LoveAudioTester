@@ -115,6 +115,14 @@ function SortableContainer:deleteItem(item)
     self.itemRemoved:emit(item);
 end
 
+function SortableContainer:deleteGroup(groupid)
+    local group = self.groups[groupid];
+    if group == nil then return; end
+    for id, item in pairs(group.ids) do
+        self:deleteItem(item);
+    end
+end
+
 function SortableContainer:getItem(id, parent)
     if parent == nil then
         parent = self:groupId(parent);
