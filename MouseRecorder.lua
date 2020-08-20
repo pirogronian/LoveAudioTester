@@ -14,11 +14,13 @@ function mr:initialize(sitem, xmap, ymap)
     ymap = ymap and ymap or "y";
     self._sitem = sitem;
     self._map = { x = xmap, y = ymap };
+    self.positionScale = 0.01;
+    self.velocityScale = 50;
     local x, y, z = sitem.source:getPosition();
-    self._mapped = { x = x, y = y, z = z };
-    self._velgen = vg(5000, x, y, z);
-    self.transform = love.math.newTransform();
-    self.transform:scale(0.01, 0.01)
+    self._mappedPos = { x = x, y = y, z = z };
+    x, y, z = sitem.source:getVelocity();
+    self._mappedVel = { x = x, y = y, z = z };
+    self._velgen = vg(x, y, z);
     self.active = false;
     self.lastUpdateTime = love.timer.getTime();
 end
@@ -40,11 +42,12 @@ function mr:update()
     local x, y = love.mouse.getPosition();
     x = x - w / 2;
     y = y - h / 2;
-    x, y = self.transform:transformPoint(x, y);
-    self._mapped[self._map.x] = x;
-    self._mapped[self._map.y] = y;
-    self._velgen:update(dt, self._mapped.x, self._mapped.y, self._mapped.z);
-    self._sitem:setPosition(self._mapped.x, self._mapped.y, self._mapped.z);
+    self._mappedPos[self._map.x] = x * self.positionScale;
+    self._mappedPos[self._map.y] = y * self.positionScale;
+    self._sitem:setPosition(self._mappedPos.x, self._mappedPos.y, self._mappedPos.z);
+    self._mappedVel[self._map.x] = x * self.velocityScale;
+    self._mappedVel[self._map.y] = y * self.velocityScale;
+    self._velgen:update(dt, self._mappedVel.x, self._mappedVel.y, self._mappedVel.z);
     local xv, yv, zv = self._velgen:velocity();
     self._sitem:setVelocity(xv, yv, zv);
 end

@@ -76,6 +76,13 @@ function SItem:initialize(data, parent)
                 ov = u.TryValue(cone.ov, 0, 'number');
                 self.source:setCone(ia, oa, ov);
             end
+            if self.mouseRecorder then
+                local mr = u.TryValue(data.mouseRecorder, nil, 'table', 'warning');
+                if mr then
+                    self.mouseRecorder.positionScale = mr.positionScale;
+                    self.mouseRecorder.velocityScale = mr.velocityScale;
+                end
+            end
         end
     end
 end
@@ -253,6 +260,12 @@ function SItem:getSerializableData()
         sdata.direction = { x = x, y = y, z = z };
         local ia, oa, ov = self.source:getCone();
         sdata.cone = { ia = ia, oa = oa, ov = ov };
+        if self.mouseRecorder then
+            local mr = {};
+            mr.positionScale = self.mouseRecorder.positionScale;
+            mr.velocityScale = self.mouseRecorder.velocityScale;
+            data.mouseRecorder = mr;
+        end
     end
     data.showAdv = self._showAdv;
     data.source = sdata;
