@@ -94,6 +94,16 @@ function love.draw()
     Slab.Draw();
 end
 
+function love.mousepressed(x, y, button, istouch, pressess)
+--     print("mousepressed:", x, y, button, istouch, pressess);
+    Slab.MousePressed(x, y, button, istouch, pressess);
+end
+
+function love.mousereleased(x, y, button, istouch, pressess)
+--     print("mousereleased:", x, y, button, istouch, pressess);
+    Slab.MouseReleased(x, y, button, istouch, pressess);
+end
+
 function onquit()
     if not SManager:IsStateChanged() then
         quitConfirmed = true;

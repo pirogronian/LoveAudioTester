@@ -20,10 +20,11 @@ function STree:SortedTreeContent(manager, groupid)
             isLeaf = true;
         end
         local ret = Slab.BeginTree(item.item, { IsLeaf = isLeaf, IsSelected = manager.selection:has(item.item) });
-        if Slab.IsControlClicked() then
+        if Slab.WasControlPressed() then
             manager:onClick(item.item);
             self.clicked:emit(item.item);
         end
+--         if Slab.WasControlReleased(1, 2) then print("Double release!") end
         if Slab.BeginContextMenuItem() then
             manager:itemContextMenu(item.item);
             Slab.EndContextMenu();
