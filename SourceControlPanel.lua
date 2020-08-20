@@ -5,15 +5,18 @@ local MRControl = require('MouseRecorderControl');
 
 require('GuiHelper');
 
-local function spatialOptions(item)
-    if (not item:isMono()) then
-        Slab.Text("Spatial options are unavaliable for multi-channel sources.");
-        return;
+local function FalloffOptions(item)
+    if not item:getVisible("falloff") then
+        if Slab.Button("Show falloff options") then
+            item:setVisible("falloff", true);
+        end
+        return
     end
-
     Slab.BeginLayout("AttenuationLayout", { Columns = 2 });
     Slab.SetLayoutColumn(1);
-    Slab.Text("Volume falloff");
+    if Slab.Button("Hide falloff options") then
+        item:setVisible("falloff", true);
+    end
     Slab.Text("Reference distance:");
     Slab.Text("Maximal distance:");
     Slab.Text("Air absorbtion:");
@@ -42,6 +45,14 @@ local function spatialOptions(item)
         item:setRolloff(rf);
     end
     Slab.EndLayout();
+end
+
+local function spatialOptions(item)
+    if (not item:isMono()) then
+        Slab.Text("Spatial options are unavaliable for multi-channel sources.");
+        return;
+    end
+    FalloffOptions(item)
     Slab.Separator();
 
     Slab.BeginLayout("PositionLayout", { Columns = 2 });
@@ -189,15 +200,15 @@ end
 
 local function scp(item)
     changed = false;
-    if item:advancedVisible() then
+    if item:getVisible("advanced") then
         if Slab.Button("Hide advanced options") then
-            item:setShowAdvanced(false);
+            item:setVisible("advanced", false);
         end
         advancedOptions(item);
         Slab.Separator();
     else
         if Slab.Button("Show advanced options") then
-            item:setShowAdvanced(true);
+            item:setVisible("advanced", true);
         end
     end
     Slab.BeginLayout("PlaybackControlLayout", { Columns = 3, AlignX = 'center' });
