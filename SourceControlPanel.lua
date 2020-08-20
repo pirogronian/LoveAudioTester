@@ -1,6 +1,8 @@
 
 local Utils = require('Utils');
 
+local MRControl = require('MouseRecorderControl');
+
 require('GuiHelper');
 
 local function spatialOptions(item)
@@ -90,6 +92,9 @@ local function spatialOptions(item)
     end
     if input then item:setVelocity(x, y, z); end
     Slab.EndLayout();
+    if item.mouseRecorder then
+        MRControl(item);
+    end
     Slab.Separator();
 
     Slab.BeginLayout("DirectionLayout", { Columns = 2 });

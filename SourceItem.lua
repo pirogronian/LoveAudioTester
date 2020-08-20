@@ -1,6 +1,8 @@
 
 local u = require('Utils');
 
+local mr = require('MouseRecorder');
+
 local Item = require('Item');
 
 local Signal = require('Signal');
@@ -19,6 +21,11 @@ function SItem:initialize(data, parent)
     self.paused = Signal();
     self.changed = Signal();
     self.source = love.audio.newSource(self.parent.id, "static");
+    if self.source:getChannelCount() == 1 then
+        self.mouseRecorder = mr(self);
+        self.recordingStarted = Signal();
+        self.recordingStopped = Signal();
+    end
     if type(data) == 'table' then
         local playPos = u.TryValue(data.source.playPos, 0, 'number');
         local volume = u.TryValue(data.source.volume, 100, 'number');

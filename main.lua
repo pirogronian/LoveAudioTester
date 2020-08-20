@@ -68,6 +68,7 @@ function love.update(dt)
     IWManager:UpdateWindows();
     FModule:updateDialogs();
     SModule:updateDialogs();
+    SModule:updateActiveRecorders();
     InfoQueue:Update();
 
     if quitDialog then
