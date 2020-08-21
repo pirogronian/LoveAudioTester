@@ -13,16 +13,13 @@ function iwm:initialize(id, name)
     self._globalCurrent = false;
 end
 
-function iwm:registerModule(id, title, options)
-    self.modules[id] = {
-            id = id,
-            title = title,
-            options = options,
+function iwm:register(manager)
+    self.modules[manager.id] = {
+            manager = manager,
             items = {},
             currentItem = nil,
             currentWindow = false
         };
---     print("Registered module:", id);
 --     self:dumpModules();
 end
 
@@ -47,25 +44,25 @@ function iwm:isGlobalCurrent()
     return self._globalCurrent;
 end
 
-function iwm:setCurrentModule(modid)
+function iwm:setCurrentModule(id)
 --     print("Set current item:", modid, item);
-    local module = self:getModule(modid);
-    if self._currentModuleId ~= modid then
-        self._currentModuleId = modid;
+    local module = self:getModule(id);
+    if self._currentModuleId ~= id then
+        self._currentModuleId = id;
         self:StateChanged();
     end
 end
 
-function iwm:unsetCurrentModule(modid)
-    if self._currentModuleId == modid then
+function iwm:unsetCurrentModule(id)
+    if self._currentModuleId == id then
         self._currentModuleId = nil;
         self:StateChanged();
     end
 end
 
-function iwm:showCurrentItemWindow(modid)
+function iwm:showCurrentItemWindow(id)
 --     self:dumpModules();
-    local module = self:getModule(modid);
+    local module = self:getModule(id);
     module.windowOpen = true;
     self:StateChanged();
 end
@@ -87,23 +84,21 @@ function iwm:delItem(modid, item, current)
 end
 
 function iwm.getCurrentWindowId(module)
-    return module.id.."CurrentItemWindow";
+    return module.manager.id.."CurrentItemWindow";
 end
 
 function iwm:UpdateCurrentItemWindow(module, id)
-    if module.options.context.currentItem == nil or not module.windowOpen then return; end
+    if module.manager.currentItem == nil or not module.windowOpen then return; end
     if id == nil then id = iwm.getCurrentWindowId(module); end
     if Slab.BeginWindow(id,
                         {
-                         Title = module.title.." \""..module.options.context.currentItem.id.."\"",
+                         Title = module.manager.naming.title.." \""..module.manager.currentItem.id.."\"",
                          IsOpen = module.windowOpen,
                          AutoSizeWindow = false,
                          W = 300,
                          H = 200
                          }) then
-        if module.options.onWindowUpdate ~= nil then
-            module.options.onWindowUpdate(module.options.context.currentItem, module.options.context);
-        end
+        module.manager:windowContent(module.manager.currentItem);
     else
         module.windowOpen = false;
         self:StateChanged();
@@ -135,7 +130,7 @@ function iwm:UpdateMenu()
         end
         if Slab.BeginMenu("Active windows") then
             for id, module in pairs(self.modules) do
-                if Slab.MenuItemChecked(module.title, module.windowOpen) then
+                if Slab.MenuItemChecked(module.manager.naming.title, module.windowOpen) then
                     module.windowOpen = not module.windowOpen;
                     self:StateChanged();
                 end
@@ -183,7 +178,7 @@ end
 function iwm:dumpModules()
     print("ItemWindowsManager::dumpModules:");
     for id, module in pairs(self.modules) do
-        print(id, module.currentItem)
+        print(id, module.manager, module.currentItem)
     end
 end
 

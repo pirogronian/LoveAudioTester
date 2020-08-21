@@ -33,12 +33,15 @@ function im:initialize(id, naming, ItemClass, itemWindowFunc, mandatoryParent)
     self.container.itemAdded:connect(self.onAddNewItem, self);
     self.container.itemRemoved:connect(self.onDeleteItem, self);
     self.container.itemsSorted:connect(self.StateChanged, self);
-    IWManager:registerModule(self:windowsManagerId(), self.naming.title,
-                         { onWindowUpdate = self.onWindowUpdate, context = self });
+    IWManager:register(self);
 end
 
-function im:windowsManagerId()
-    return self.id.."Windows";
+function im:windowContent(item)
+    self.onWindowUpdate(item);
+    Slab.Separator();
+    if Slab.Button("Delete") then
+        self:confirmDelete(item);
+    end
 end
 
 function im:generateNewItemId(parent)
@@ -53,7 +56,7 @@ function im:setCurrentItem(item)
     if self.currentItem == item then return; end
     self.currentItem = item;
     if self.currentItem ~= nil then
-        IWManager:setCurrentModule(self:windowsManagerId());
+        IWManager:setCurrentModule(self.id);
     end
     self:StateChanged();
 end
@@ -64,14 +67,14 @@ function im:toggleCurrentItem(item)
     else
         self.currentItem = item;
         if self.currentItem ~= nil then
-            IWManager:setCurrentModule(self:windowsManagerId());
+            IWManager:setCurrentModule(self.id);
         end
     end
     self:StateChanged();
 end
 
 function im:showCurrentItemWindow()
-    IWManager:showCurrentItemWindow(self:windowsManagerId());
+    IWManager:showCurrentItemWindow(self.id);
 end
 
 function im:showItemWindow(item)
@@ -105,7 +108,7 @@ function im:onDeleteItem(item)
         self.currentItem = nil;
     end
     self.selection:remove(item);
-    IWManager:delItem(self:windowsManagerId(), item, true);
+    IWManager:delItem(self.id, item, true);
     if self.child then
         self.child.container:deleteGroup(item);
     end
@@ -267,7 +270,7 @@ function im:itemContextMenu(item)
             self.currentItem = nil;
         else
             self.currentItem = item;
-            IWManager:setCurrentModule(self:windowsManagerId());
+            IWManager:setCurrentModule(self.id);
         end
     end
     local seltext = "Select";
