@@ -5,18 +5,30 @@ local MRControl = require('MouseRecorderControl');
 
 require('GuiHelper');
 
-local function FalloffOptions(item)
-    if not item:getVisible("falloff") then
-        if Slab.Button("Show falloff options") then
-            item:setVisible("falloff", true);
-        end
-        return
+local og = {}; -- options groups
+
+local function hideButton(item, ogr)
+    if Slab.Button("Hide "..ogr.." options") then
+        item:setVisible(ogr, false);
     end
+end
+
+function optionsGroup(item, ogr)
+    if not item:getVisible(ogr) then
+        if Slab.Button("Show "..ogr.." options") then
+            item:setVisible(ogr, true);
+        end
+        return false;
+    else
+        og[ogr](item, ogr);
+        return true;
+    end
+end
+
+function og.falloff(item, ogr)
     Slab.BeginLayout("AttenuationLayout", { Columns = 2 });
     Slab.SetLayoutColumn(1);
-    if Slab.Button("Hide falloff options") then
-        item:setVisible("falloff", true);
-    end
+    hideButton(item, ogr);
     Slab.Text("Reference distance:");
     Slab.Text("Maximal distance:");
     Slab.Text("Air absorbtion:");
@@ -47,17 +59,10 @@ local function FalloffOptions(item)
     Slab.EndLayout();
 end
 
-local function spatialOptions(item)
-    if (not item:isMono()) then
-        Slab.Text("Spatial options are unavaliable for multi-channel sources.");
-        return;
-    end
-    FalloffOptions(item)
-    Slab.Separator();
-
+function og.position(item, ogr)
     Slab.BeginLayout("PositionLayout", { Columns = 2 });
     Slab.SetLayoutColumn(1);
-    Slab.Text("Position");
+    hideButton(item, "position")
     Slab.Text("x:");
     Slab.Text("y:");
     Slab.Text("z:");
@@ -78,11 +83,12 @@ local function spatialOptions(item)
     end
     if input then item:setPosition(x, y, z); end
     Slab.EndLayout();
-    Slab.Separator();
+end
 
+function og.velocity(item, ogr)
     Slab.BeginLayout("VelocityLayout", { Columns = 2 });
     Slab.SetLayoutColumn(1);
-    Slab.Text("Velocity");
+    hideButton(item, ogr)
     Slab.Text("x:");
     Slab.Text("y:");
     Slab.Text("z:");
@@ -103,14 +109,12 @@ local function spatialOptions(item)
     end
     if input then item:setVelocity(x, y, z); end
     Slab.EndLayout();
-    if item.mouseRecorder then
-        MRControl(item);
-    end
-    Slab.Separator();
+end
 
+function og.direction(item, ogr)
     Slab.BeginLayout("DirectionLayout", { Columns = 2 });
     Slab.SetLayoutColumn(1);
-    Slab.Text("Direction");
+    hideButton(item, "direction");
     Slab.Text("x:");
     Slab.Text("y:");
     Slab.Text("z:");
@@ -131,11 +135,12 @@ local function spatialOptions(item)
     end
     if input then item:setDirection(x, y, z); end
     Slab.EndLayout();
-    Slab.Separator();
+end
 
+function og.cone(item, ogr)
     Slab.BeginLayout("ConeLayout", { Columns = 2 });
     Slab.SetLayoutColumn(1);
-    Slab.Text("Cone");
+    hideButton(item, "cone");
     Slab.Text("Inner angle:");
     Slab.Text("Outer angle:");
     Slab.Text("Outer volume:");
@@ -161,14 +166,37 @@ local function spatialOptions(item)
     Slab.EndLayout();
 end
 
-local function advancedOptions(item)
-    spatialOptions(item);
+local function spatialOptions(item)
+    if (not item:isMono()) then
+        Slab.Text("Spatial options are unavaliable for multi-channel sources.");
+        return;
+    end
+    optionsGroup(item, "falloff")
     Slab.Separator();
+
+    optionsGroup(item, "position");
+    Slab.Separator();
+
+    optionsGroup(item, "velocity");
+    Slab.Separator();
+
+    if item.mouseRecorder then
+        MRControl(item);
+        Slab.Separator();
+    end
+
+    optionsGroup(item, "direction");
+    Slab.Separator();
+
+    optionsGroup(item, "cone");
+end
+
+function og.various(item, ogr)
     Slab.BeginLayout("AdvancedLayout", { Columns = 2 });
     Slab.SetLayoutColumn(1);
-    Slab.Text("Volume limits");
-    Slab.Text("Minimal:");
-    Slab.Text("Maximal:");
+    hideButton(item, "various");
+    Slab.Text("Minimal vol:");
+    Slab.Text("Maximal vol:");
     Slab.Text("Pitch:");
     Slab.SetLayoutColumn(2);
     if Slab.Button("Reset") then
@@ -198,19 +226,17 @@ local function advancedOptions(item)
     Slab.EndLayout();
 end
 
+function og.advanced(item, ogr)
+    hideButton(item, ogr);
+    spatialOptions(item);
+    Slab.Separator();
+    optionsGroup(item, "various")
+end
+
 local function scp(item)
     changed = false;
-    if item:getVisible("advanced") then
-        if Slab.Button("Hide advanced options") then
-            item:setVisible("advanced", false);
-        end
-        advancedOptions(item);
-        Slab.Separator();
-    else
-        if Slab.Button("Show advanced options") then
-            item:setVisible("advanced", true);
-        end
-    end
+    optionsGroup(item, "advanced");
+    Slab.Separator();
     Slab.BeginLayout("PlaybackControlLayout", { Columns = 3, AlignX = 'center' });
     Slab.SetLayoutColumn(1);
     Slab.Text("Volume:");
