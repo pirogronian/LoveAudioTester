@@ -56,7 +56,7 @@ end
 
 function Module:StateChanged(force)
 --     print(self, "on loading:", self.loadPhase, force)
-    if self.loadPhase == true and not force then return; end
+    if self._stateChanged or self.loadPhase == true and not force then return; end
     self._stateChanged = true;
     self.stateChanged:emit();
 end
