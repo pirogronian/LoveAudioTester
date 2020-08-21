@@ -7,7 +7,7 @@ local IManager = require('ItemsManager')
 
 local SItem = require('SourceItem');
 
-local ItemInfoPanel = require('ItemInfoPanel');
+local IWidget = require('ItemWidget');
 
 local FileInfoPanel = require('FileInfoPanel');
 
@@ -18,12 +18,12 @@ local SourceControlPanel = require('SourceControlPanel');
 local sim = IManager:subclass("SourceItemsManager");
 
 local function windowContent(item)
-    ItemInfoPanel(item);
+    IWidget.update(item);
     FileInfoPanel(item.parent.file, "FileInfo");
     Slab.Separator();
     DecoderInfoPanel(item.parent.decoder, "DecoderInfo");
     Slab.Separator();
-    SourceControlPanel(item);
+    SourceControlPanel.update(item);
 end
 
 function sim:initialize()

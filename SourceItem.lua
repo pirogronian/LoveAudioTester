@@ -224,17 +224,6 @@ function SItem:isMono()
     return self.source:getChannelCount() == 1;
 end
 
-function SItem:setVisible(option, show)
-    if self.visibility[option] ~= show then
-        self.visibility[option] = show;
-        self.changed:emit();
-    end
-end
-
-function SItem:getVisible(option)
-    return self.visibility[option];
-end
-
 function SItem:getSerializableData()
     local data = Item.getSerializableData(self);
     local sdata = {};

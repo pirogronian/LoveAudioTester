@@ -38,6 +38,17 @@ function Item:initialize(data, parent)
     end
 end
 
+function Item:setVisible(option, show)
+    if self.visibility[option] ~= show then
+        self.visibility[option] = show;
+        self.changed:emit();
+    end
+end
+
+function Item:getVisible(option)
+    return self.visibility[option];
+end
+
 function Item:getSerializableData()
     local data = {
         id = self.id,

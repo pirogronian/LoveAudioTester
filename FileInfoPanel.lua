@@ -1,4 +1,6 @@
 
+-- local IWidget = require('ItemWidget');
+
 local Utils = require('Utils');
 
 local function fip(file)

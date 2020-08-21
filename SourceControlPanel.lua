@@ -5,30 +5,14 @@ local MRControl = require('MouseRecorderControl');
 
 require('GuiHelper');
 
-local og = {}; -- options groups
+local iw = require('ItemWidget');
 
-local function hideButton(item, ogr)
-    if Slab.Button("Hide "..ogr.." options") then
-        item:setVisible(ogr, false);
-    end
-end
+local scp = iw:subclass("SourceControlPanel");
 
-function optionsGroup(item, ogr)
-    if not item:getVisible(ogr) then
-        if Slab.Button("Show "..ogr.." options") then
-            item:setVisible(ogr, true);
-        end
-        return false;
-    else
-        og[ogr](item, ogr);
-        return true;
-    end
-end
-
-function og.falloff(item, ogr)
+function scp.static.og.falloff(item, ogr)
     Slab.BeginLayout("AttenuationLayout", { Columns = 2 });
     Slab.SetLayoutColumn(1);
-    hideButton(item, ogr);
+    scp.hideButton(item, ogr);
     Slab.Text("Reference distance:");
     Slab.Text("Maximal distance:");
     Slab.Text("Air absorbtion:");
@@ -59,10 +43,10 @@ function og.falloff(item, ogr)
     Slab.EndLayout();
 end
 
-function og.position(item, ogr)
+function scp.static.og.position(item, ogr)
     Slab.BeginLayout("PositionLayout", { Columns = 2 });
     Slab.SetLayoutColumn(1);
-    hideButton(item, "position")
+    scp.hideButton(item, "position")
     Slab.Text("x:");
     Slab.Text("y:");
     Slab.Text("z:");
@@ -85,10 +69,10 @@ function og.position(item, ogr)
     Slab.EndLayout();
 end
 
-function og.velocity(item, ogr)
+function scp.static.og.velocity(item, ogr)
     Slab.BeginLayout("VelocityLayout", { Columns = 2 });
     Slab.SetLayoutColumn(1);
-    hideButton(item, ogr)
+    scp.hideButton(item, ogr)
     Slab.Text("x:");
     Slab.Text("y:");
     Slab.Text("z:");
@@ -111,10 +95,10 @@ function og.velocity(item, ogr)
     Slab.EndLayout();
 end
 
-function og.direction(item, ogr)
+function scp.static.og.direction(item, ogr)
     Slab.BeginLayout("DirectionLayout", { Columns = 2 });
     Slab.SetLayoutColumn(1);
-    hideButton(item, "direction");
+    scp.hideButton(item, "direction");
     Slab.Text("x:");
     Slab.Text("y:");
     Slab.Text("z:");
@@ -137,10 +121,10 @@ function og.direction(item, ogr)
     Slab.EndLayout();
 end
 
-function og.cone(item, ogr)
+function scp.static.og.cone(item, ogr)
     Slab.BeginLayout("ConeLayout", { Columns = 2 });
     Slab.SetLayoutColumn(1);
-    hideButton(item, "cone");
+    scp.hideButton(item, "cone");
     Slab.Text("Inner angle:");
     Slab.Text("Outer angle:");
     Slab.Text("Outer volume:");
@@ -166,18 +150,18 @@ function og.cone(item, ogr)
     Slab.EndLayout();
 end
 
-local function spatialOptions(item)
+function scp.static.spatialOptions(item)
     if (not item:isMono()) then
         Slab.Text("Spatial options are unavaliable for multi-channel sources.");
         return;
     end
-    optionsGroup(item, "falloff")
+    scp.optionsGroup(item, "falloff")
     Slab.Separator();
 
-    optionsGroup(item, "position");
+    scp.optionsGroup(item, "position");
     Slab.Separator();
 
-    optionsGroup(item, "velocity");
+    scp.optionsGroup(item, "velocity");
     Slab.Separator();
 
     if item.mouseRecorder then
@@ -185,16 +169,16 @@ local function spatialOptions(item)
         Slab.Separator();
     end
 
-    optionsGroup(item, "direction");
+    scp.optionsGroup(item, "direction");
     Slab.Separator();
 
-    optionsGroup(item, "cone");
+    scp.optionsGroup(item, "cone");
 end
 
-function og.various(item, ogr)
+function scp.static.og.various(item, ogr)
     Slab.BeginLayout("AdvancedLayout", { Columns = 2 });
     Slab.SetLayoutColumn(1);
-    hideButton(item, "various");
+    scp.hideButton(item, "various");
     Slab.Text("Minimal vol:");
     Slab.Text("Maximal vol:");
     Slab.Text("Pitch:");
@@ -226,16 +210,16 @@ function og.various(item, ogr)
     Slab.EndLayout();
 end
 
-function og.advanced(item, ogr)
-    hideButton(item, ogr);
-    spatialOptions(item);
+function scp.static.og.advanced(item, ogr)
+    scp.hideButton(item, ogr);
+    scp.spatialOptions(item);
     Slab.Separator();
-    optionsGroup(item, "various")
+    scp.optionsGroup(item, "various")
 end
 
-local function scp(item)
+function scp.static.update(item)
     changed = false;
-    optionsGroup(item, "advanced");
+    scp.optionsGroup(item, "advanced");
     Slab.Separator();
     Slab.BeginLayout("PlaybackControlLayout", { Columns = 3, AlignX = 'center' });
     Slab.SetLayoutColumn(1);

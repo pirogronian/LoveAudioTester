@@ -97,7 +97,6 @@ function im:onDoubleClick(item)
 end
 
 function im:onAddNewItem(item)
---     print("New item:", item)
     self:StateChanged();
 end
 
@@ -204,7 +203,6 @@ end
 
 function im:LoadState(data)
     if data == nil then return; end
---     Utils.Dump(data, -1);
     self:SetLoadPhase(true);
     IWManager:SetLoadPhase(true);
     self.container:LoadState(data.container);
@@ -302,7 +300,6 @@ function im:updateNewItemDialog()
         dialog:update();
         if not dialog.open then
             if not dialog.canceled then
---                 print("New item data:", dialog.newItemData.id, dialog.newItemData.parent);
                 self:createItem(dialog.newItemData.id, dialog.newItemData.parent);
             end
             self._newItemDialog = nil;
