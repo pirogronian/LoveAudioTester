@@ -24,7 +24,9 @@ function STree:SortedTreeContent(manager, groupid)
             manager:onClick(item.item);
             self.clicked:emit(item.item);
         end
---         if Slab.WasControlReleased(1, 2) then print("Double release!") end
+        if Slab.WasControlReleased(1, 2) then
+            manager:onDoubleClick(item.item);
+        end
         if Slab.BeginContextMenuItem() then
             manager:itemContextMenu(item.item);
             Slab.EndContextMenu();

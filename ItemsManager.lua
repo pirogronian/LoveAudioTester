@@ -41,6 +41,36 @@ function im:windowsManagerId()
     return self.id.."Windows";
 end
 
+function im:setCurrentItem(item)
+    if self.currentItem == item then return; end
+    self.currentItem = item;
+    if self.currentItem ~= nil then
+        IWManager:setCurrentModule(self:windowsManagerId());
+    end
+    self:StateChanged();
+end
+
+function im:toggleCurrentItem(item)
+    if self.currentItem == item then
+        self.currentItem = nil;
+    else
+        self.currentItem = item;
+        if self.currentItem ~= nil then
+            IWManager:setCurrentModule(self:windowsManagerId());
+        end
+    end
+    self:StateChanged();
+end
+
+function im:showCurrentItemWindow()
+    IWManager:showCurrentItemWindow(self:windowsManagerId());
+end
+
+function im:showItemWindow(item)
+    self:setCurrentItem(item);
+    self:showCurrentItemWindow();
+end
+
 function im:onClick(item)
     if not self.container:hasItem(item) then
         print(self, "Warning: clicked item is not in container:", item);
@@ -49,16 +79,13 @@ function im:onClick(item)
         self.selection:toggle(item);
     end
     if self.currentMode then
-        if self.currentItem ~= item then
-            self.currentItem = item;
-        else
-            self.currentItem = nil;
-        end
-    end
-    if self.currentItem ~= nil then
-        IWManager:setCurrentModule(self:windowsManagerId());
+        self:toggleCurrentItem(item);
     end
     self:StateChanged();
+end
+
+function im:onDoubleClick(item)
+    self:showItemWindow(item);
 end
 
 function im:onAddNewItem(item)
