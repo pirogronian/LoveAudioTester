@@ -20,7 +20,6 @@ function SItem:initialize(data, parent)
     self.stopped = Signal();
     self.paused = Signal();
     self.changed = Signal();
-    self.visibility = {};
     self.source = love.audio.newSource(self.parent.id, "static");
     if self.source:getChannelCount() == 1 then
         self.mouseRecorder = mr(self);
@@ -39,7 +38,6 @@ function SItem:initialize(data, parent)
         self.source:setLooping(looping);
         self:setVolumeLimits(minv, maxv);
         self:setPitch(pitch);
-        self.visibility = u.TryValue(data.visibility, {}, 'table', 'warning');
         if self:isMono() then
             local ref = u.TryValue(data.source.refAttDist, 1, 'number');
             local max = u.TryValue(data.source.maxAttDist, math.huge, 'number');
@@ -268,7 +266,6 @@ function SItem:getSerializableData()
             data.mouseRecorder = mr;
         end
     end
-    data.visibility = self.visibility;
     data.source = sdata;
     return data;
 end

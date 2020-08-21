@@ -22,8 +22,10 @@ function Item.static:deleteAttribute(id)
 end
 
 function Item:initialize(data, parent)
+    self.visibility = {};
     if type(data) == 'table' then
         self.id = data.id;
+        self.visibility = u.TryValue(data.visibility, {}, 'table', 'warning');
     else
         self.id = data;
     end
@@ -37,7 +39,10 @@ function Item:initialize(data, parent)
 end
 
 function Item:getSerializableData()
-    local data = { id = self.id, classname = self.class.name };
+    local data = {
+        id = self.id,
+        classname = self.class.name,
+        visibility = self.visibility };
     if self.parent ~= nil then
         data.parent = self.parent:getSerializableData();
     end
