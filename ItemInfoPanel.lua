@@ -1,5 +1,5 @@
 
-local function iip(item, name)
+local function iip(item)
     Slab.BeginLayout(tostring(name).."ItemInfoLayout", { Columns = 2 });
     Slab.SetLayoutColumn(1);
     Slab.Text("Item class:");

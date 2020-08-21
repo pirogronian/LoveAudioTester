@@ -70,8 +70,9 @@ function nid:idInput()
     Slab.SetLayoutColumn(1);
     Slab.Text("Name:");
     Slab.SetLayoutColumn(2);
-    Slab.Input("SourceId", { ReturnOnText = false });
-    self.newItemData.id = Slab.GetInputText();
+    if Slab.Input("SourceId", { Text = self.newItemData.id, ReturnOnText = true }) then
+        self.newItemData.id = Slab.GetInputText();
+    end
     Slab.EndLayout();
 end
 

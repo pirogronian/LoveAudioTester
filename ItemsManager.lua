@@ -41,6 +41,14 @@ function im:windowsManagerId()
     return self.id.."Windows";
 end
 
+function im:generateNewItemId(parent)
+    local i = 1;
+    while self.container:hasItemId(self.naming.title.." #"..tostring(i), parent) do
+        i = i + 1;
+    end
+    return self.naming.title.." #"..tostring(i)
+end
+
 function im:setCurrentItem(item)
     if self.currentItem == item then return; end
     self.currentItem = item;
@@ -284,7 +292,7 @@ function im:openNewItemDialog(parent)
     if self.isParentMandatory and parent == nil and #list == 0 then
         IQueue:pushMessage("No parent item!", "Cannot create new "..self.naming.name.." without parent item!");
     else
-        self._newItemDialog = NIDialog(nil, parent, list, "Create new "..self.naming.name);
+        self._newItemDialog = NIDialog(self:generateNewItemId(parent), parent, list, "Create new "..self.naming.name);
     end
 end
 
@@ -294,6 +302,7 @@ function im:updateNewItemDialog()
         dialog:update();
         if not dialog.open then
             if not dialog.canceled then
+--                 print("New item data:", dialog.newItemData.id, dialog.newItemData.parent);
                 self:createItem(dialog.newItemData.id, dialog.newItemData.parent);
             end
             self._newItemDialog = nil;
