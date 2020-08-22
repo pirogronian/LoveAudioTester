@@ -29,4 +29,4 @@ A: 0.5, but it's updated quiet frequently.
 
 Q: What's planned next?
 
-A: For version 0.6: listener info/control. For version 0.7: basic audio data info/control. For 0.8 or maybe along with earlier one: basic graphical presentation of spatial sources parameters. Ultimately: possibly everything related to love.audio subsystem + some tweaks around love.filesystem and Slab for better usability. Detailed tasks order is unknown, though.
+A: Planned, but not quaranteed: for version 0.7: listener info/control. For version 0.8: basic audio data info/control. For 0.8 or maybe along with earlier one: basic graphical presentation of spatial sources parameters. Ultimately: possibly everything related to love.audio subsystem + some tweaks around love.filesystem and Slab for better usability. Detailed tasks order is unknown, though.
