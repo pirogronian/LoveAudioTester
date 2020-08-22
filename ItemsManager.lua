@@ -303,7 +303,8 @@ function im:updateNewItemDialog()
         dialog:update();
         if not dialog.open then
             if not dialog.canceled then
-                self:createItem(dialog.newItemData.id, dialog.newItemData.parent);
+                local item = self:createItem(dialog.newItemData.id, dialog.newItemData.parent);
+                self:showItemWindow(item);
             end
             self._newItemDialog = nil;
         end
