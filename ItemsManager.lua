@@ -39,9 +39,20 @@ end
 function im:windowContent(item)
     self.onWindowUpdate(item);
     Slab.Separator();
+    local cols = 1;
+    if self.child then cols = 2; end
+    Slab.BeginLayout("GeneralItemWindowButtons", { Columns = cols });
+    Slab.SetLayoutColumn(1);
     if Slab.Button("Delete") then
         self:confirmDelete(item);
     end
+    if self.child then
+        Slab.SetLayoutColumn(2);
+        if Slab.Button("New "..self.child.naming.name) then
+            self.child:openNewItemDialog(item);
+        end
+    end
+    Slab.EndLayout();
 end
 
 function im:generateNewItemId(parent)
