@@ -41,7 +41,7 @@ function im:windowContent(item)
     Slab.Separator();
     local cols = 1;
     if self.child then cols = 2; end
-    Slab.BeginLayout("GeneralItemWindowButtons", { Columns = cols });
+    Slab.BeginLayout("GeneralItemWindowButtons", { Columns = cols, AlignX = 'center' });
     Slab.SetLayoutColumn(1);
     if Slab.Button("Delete") then
         self:confirmDelete(item);
