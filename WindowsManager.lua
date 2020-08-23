@@ -69,7 +69,7 @@ function iwm.getCurrentWindowId(module)
     return module.manager.id.."Window";
 end
 
-function iwm:UpdateCurrentItemWindow(module, id)
+function iwm:UpdateModuleWindow(module, id)
     if not module.windowOpen then return; end
     if id == nil then id = iwm.getCurrentWindowId(module); end
     if Slab.BeginWindow(id,
@@ -95,11 +95,11 @@ function iwm:UpdateWindows()
             print("Warning: no such module:", self._currentModuleId);
             self._currentModuleId = nil;
         else
-            self:UpdateCurrentItemWindow(module, "GlobalWindow");
+            self:UpdateModuleWindow(module, "GlobalWindow");
         end
     else
         for id, module in pairs(self.modules) do
-            self:UpdateCurrentItemWindow(module);
+            self:UpdateModuleWindow(module);
         end
     end
 end
