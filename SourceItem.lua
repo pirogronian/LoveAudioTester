@@ -125,15 +125,6 @@ function SItem:rewindBy(dtime, units)
     self:seek(rtime);
 end
 
-function SItem:setVolume(v)
-    if v < 0 then v = 0 end
-    local ov = self.source:getVolume();
-    if ov ~= v then
-        self.source:setVolume(v);
-        self.changed:emit();
-    end
-end
-
 function SItem:setVolumeLimits(min, max)
     if min < 0 then min = 0 end
     if min > 1 then min = 1 end

@@ -91,7 +91,7 @@ function im:toggleCurrentItem(item)
 end
 
 function im:showCurrentItemWindow()
-    WManager:showCurrentItemWindow(self.id);
+    WManager:showModuleWindow(self.id);
 end
 
 function im:showItemWindow(item)

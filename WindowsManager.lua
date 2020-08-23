@@ -58,7 +58,7 @@ function iwm:unsetCurrentModule(id)
     end
 end
 
-function iwm:showCurrentItemWindow(id)
+function iwm:showModuleWindow(id)
 --     self:dumpModules();
     local module = self:getModule(id);
     module.windowOpen = true;
@@ -112,7 +112,7 @@ function iwm:UpdateMenu()
         end
         if Slab.BeginMenu("Active windows") then
             for id, module in pairs(self.modules) do
-                if Slab.MenuItemChecked(module.manager.naming.title, module.windowOpen) then
+                if Slab.MenuItemChecked(module.manager:windowTitle(), module.windowOpen) then
                     module.windowOpen = not module.windowOpen;
                     self:StateChanged();
                 end

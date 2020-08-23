@@ -13,11 +13,12 @@ local lscc = require('ListenerSourceCommonControls');
 
 local scp = iw:subclass("SourceControlPanel");
 
-scp.static.cg = cg();
+local cgi = cg();
 
-scp.static.cg.og.position = lscc.position;
+cgi.og.position = lscc.position;
+cgi.og.velocity = lscc.velocity;
 
-function scp.static.cg.og.falloff(item, ogr)
+function cgi.og.falloff(item, ogr)
     Slab.BeginLayout("AttenuationLayout", { Columns = 2 });
     Slab.SetLayoutColumn(1);
     scp.cg.hideButton(item, ogr);
@@ -51,33 +52,7 @@ function scp.static.cg.og.falloff(item, ogr)
     Slab.EndLayout();
 end
 
-function scp.static.cg.og.velocity(item, ogr)
-    Slab.BeginLayout("VelocityLayout", { Columns = 2 });
-    Slab.SetLayoutColumn(1);
-    scp.cg.hideButton(item, ogr)
-    Slab.Text("x:");
-    Slab.Text("y:");
-    Slab.Text("z:");
-    Slab.SetLayoutColumn(2);
-    if Slab.Button("Reset") then
-        item:setVelocity(0, 0, 0);
-    end
-    x, y, z = item:getVelocity();
-    input = false;
-    if Slab.ActiveDrag("VelocityX", x, { Step = 0.1 }) then
-        x = Slab.GetInputNumber(); input = true;
-    end
-    if Slab.ActiveDrag("VelocityY", y, { Step = 0.1 }) then
-        y = Slab.GetInputNumber(); input = true;
-    end
-    if Slab.ActiveDrag("VelocityZ", z, { Step = 0.1 }) then
-        z = Slab.GetInputNumber(); input = true;
-    end
-    if input then item:setVelocity(x, y, z); end
-    Slab.EndLayout();
-end
-
-function scp.static.cg.og.direction(item, ogr)
+function cgi.og.direction(item, ogr)
     Slab.BeginLayout("DirectionLayout", { Columns = 2 });
     Slab.SetLayoutColumn(1);
     scp.cg.hideButton(item, "direction");
@@ -103,7 +78,7 @@ function scp.static.cg.og.direction(item, ogr)
     Slab.EndLayout();
 end
 
-function scp.static.cg.og.cone(item, ogr)
+function cgi.og.cone(item, ogr)
     Slab.BeginLayout("ConeLayout", { Columns = 2 });
     Slab.SetLayoutColumn(1);
     scp.cg.hideButton(item, "cone");
@@ -157,7 +132,7 @@ function scp.static:spatialOptions(item)
     self.cg:optionsGroup(item, "cone");
 end
 
-function scp.static.cg.og.various(item, ogr)
+function cgi.og.various(item, ogr)
     Slab.BeginLayout("AdvancedLayout", { Columns = 2 });
     Slab.SetLayoutColumn(1);
     scp.cg.hideButton(item, "various");
@@ -192,12 +167,14 @@ function scp.static.cg.og.various(item, ogr)
     Slab.EndLayout();
 end
 
-function scp.static.cg.og.advanced(item, ogr)
+function cgi.og.advanced(item, ogr)
     scp.cg.hideButton(item, ogr);
     scp:spatialOptions(item);
     Slab.Separator();
     scp.cg:optionsGroup(item, "various")
 end
+
+scp.static.cg = cgi;
 
 function scp.static.update(item)
     changed = false;
@@ -207,7 +184,7 @@ function scp.static.update(item)
     Slab.SetLayoutColumn(1);
     Slab.Text("Volume:");
     Slab.SameLine();
-    local ov = item.source:getVolume();
+    local ov = item:getVolume();
     if Slab.ActiveSlider("VolumeSlider", math.floor(ov * 100), 0, 100) then
         local nv = Slab.GetInputNumber();
         item:setVolume(nv / 100);

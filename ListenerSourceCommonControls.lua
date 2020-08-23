@@ -29,4 +29,30 @@ function lscc.position(item, ogr)
     Slab.EndLayout();
 end
 
+function lscc.velocity(item, ogr)
+    Slab.BeginLayout("VelocityLayout", { Columns = 2 });
+    Slab.SetLayoutColumn(1);
+    cg.hideButton(item, ogr)
+    Slab.Text("x:");
+    Slab.Text("y:");
+    Slab.Text("z:");
+    Slab.SetLayoutColumn(2);
+    if Slab.Button("Reset") then
+        item:setVelocity(0, 0, 0);
+    end
+    x, y, z = item:getVelocity();
+    input = false;
+    if Slab.ActiveDrag("VelocityX", x, { Step = 0.1 }) then
+        x = Slab.GetInputNumber(); input = true;
+    end
+    if Slab.ActiveDrag("VelocityY", y, { Step = 0.1 }) then
+        y = Slab.GetInputNumber(); input = true;
+    end
+    if Slab.ActiveDrag("VelocityZ", z, { Step = 0.1 }) then
+        z = Slab.GetInputNumber(); input = true;
+    end
+    if input then item:setVelocity(x, y, z); end
+    Slab.EndLayout();
+end
+
 return lscc;
