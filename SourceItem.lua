@@ -7,11 +7,15 @@ local Item = require('Item');
 
 local Signal = require('Signal');
 
+local LSCommons = require('ListenerSourceCommons');
+
 local SItem = Item:subclass("SourceItem");
 
 SItem.static.attributes = {};
 
 SItem:addAttribute(Item.Attribute("name", "Name"));
+
+SItem:include(LSCommons);
 
 function SItem:initialize(data, parent)
     Item.initialize(self, data, parent);
@@ -154,26 +158,6 @@ end
 function SItem:toggleLooping()
     self.source:setLooping(not self.source:isLooping());
     self.changed:emit();
-end
-
-function SItem:getPosition()
-    return self.source:getPosition();
-end
-
-function SItem:setPosition(x, y, z)
-    local ox, oy, oz = self.source:getPosition();
-    if ox ~= x or oy ~= y or oz ~= z then
-        self.source:setPosition(x, y, z);
-        self.changed:emit();
-    end
-end
-
-function SItem:setVelocity(x, y, z)
-    local ox, oy, oz = self.source:getVelocity();
-    if ox ~= x or oy ~= y or oz ~= z then
-        self.source:setVelocity(x, y, z);
-        self.changed:emit();
-    end
 end
 
 function SItem:setDirection(x, y, z)

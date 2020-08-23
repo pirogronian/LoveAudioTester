@@ -54,7 +54,7 @@ function scp.static.og.position(item, ogr)
     if Slab.Button("Reset") then
         item:setPosition(0, 0, 0);
     end
-    local x, y, z = item.source:getPosition();
+    local x, y, z = item:getPosition();
     input = false;
     if Slab.ActiveDrag("PositionX", x, { Step = 0.1 }) then
         x = Slab.GetInputNumber(); input = true;
@@ -80,7 +80,7 @@ function scp.static.og.velocity(item, ogr)
     if Slab.Button("Reset") then
         item:setVelocity(0, 0, 0);
     end
-    x, y, z = item.source:getVelocity();
+    x, y, z = item:getVelocity();
     input = false;
     if Slab.ActiveDrag("VelocityX", x, { Step = 0.1 }) then
         x = Slab.GetInputNumber(); input = true;
