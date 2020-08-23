@@ -5,7 +5,7 @@ local Item = require('Item');
 
 local SModule = require('StateModule');
 
-local iwm = SModule:subclass("ItemWindowsManager");
+local iwm = SModule:subclass("WindowsManager");
 
 function iwm:initialize(id, name)
     SModule.initialize(self, id, name);
@@ -16,9 +16,7 @@ end
 function iwm:register(manager)
     self.modules[manager.id] = {
             manager = manager,
-            items = {},
-            currentItem = nil,
-            currentWindow = false
+            windowOpen = false
         };
 --     self:dumpModules();
 end
@@ -67,38 +65,22 @@ function iwm:showCurrentItemWindow(id)
     self:StateChanged();
 end
 
-function iwm:addItem(modid, item)
-    local module = self:getModule(modid);
-    if module.items[item] == nil then
-        module.items[item] = item;
-        self:StateChanged();
-    end
-end
-
-function iwm:delItem(modid, item, current)
-    local module = self:getModule(modid);
-    if module.items[item] ~= nil then
-        module.items[item] = nil;
-        self:StateChanged();
-    end
-end
-
 function iwm.getCurrentWindowId(module)
-    return module.manager.id.."CurrentItemWindow";
+    return module.manager.id.."Window";
 end
 
 function iwm:UpdateCurrentItemWindow(module, id)
-    if module.manager.currentItem == nil or not module.windowOpen then return; end
+    if not module.windowOpen then return; end
     if id == nil then id = iwm.getCurrentWindowId(module); end
     if Slab.BeginWindow(id,
                         {
-                         Title = module.manager.naming.title.." \""..module.manager.currentItem.id.."\"",
+                         Title = module.manager:windowTitle(),
                          IsOpen = module.windowOpen,
                          AutoSizeWindow = false,
                          W = 300,
                          H = 200
                          }) then
-        module.manager:windowContent(module.manager.currentItem);
+        module.manager:windowContent();
     else
         module.windowOpen = false;
         self:StateChanged();
@@ -113,7 +95,7 @@ function iwm:UpdateWindows()
             print("Warning: no such module:", self._currentModuleId);
             self._currentModuleId = nil;
         else
-            self:UpdateCurrentItemWindow(module, "GlobalItemWindow");
+            self:UpdateCurrentItemWindow(module, "GlobalWindow");
         end
     else
         for id, module in pairs(self.modules) do

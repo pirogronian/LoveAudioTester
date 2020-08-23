@@ -3,7 +3,7 @@ Slab = require('thirdparty/Slab');
 
 local InfoQueue = require('InfoQueue');
 
-local IWManager = require('ItemWindowsManager');
+local WManager = require('WindowsManager');
 
 local SManager = require('StateManager');
 
@@ -21,7 +21,7 @@ function love.load(args)
     SManager:RegisterModule(FModule);
     SManager:RegisterModule(SModule);
     SManager:RegisterModule(ITModule);
-    SManager:RegisterModule(IWManager);
+    SManager:RegisterModule(WManager);
     SManager:LoadState();
 end
 
@@ -41,7 +41,7 @@ function love.update(dt)
             end
             Slab.EndMenu();
         end
-        IWManager:UpdateMenu();
+        WManager:UpdateMenu();
         FModule:updateMainMenu();
         SModule:updateMainMenu();
 
@@ -65,7 +65,7 @@ function love.update(dt)
     end
     Slab.EndWindow();
 
-    IWManager:UpdateWindows();
+    WManager:UpdateWindows();
     FModule:updateDialogs();
     SModule:updateDialogs();
     SModule:updateActiveRecorders();

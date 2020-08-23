@@ -11,7 +11,7 @@ local OEMsg = require('ErrorMessage');
 
 local SortMenu = require('SortMenu');
 
-local IWManager = require('ItemWindowsManager');
+local WManager = require('WindowsManager');
 
 local Utils = require('Utils');
 
@@ -33,10 +33,16 @@ function im:initialize(id, naming, ItemClass, itemWindowFunc, mandatoryParent)
     self.container.itemAdded:connect(self.onAddNewItem, self);
     self.container.itemRemoved:connect(self.onDeleteItem, self);
     self.container.itemsSorted:connect(self.StateChanged, self);
-    IWManager:register(self);
+    WManager:register(self);
 end
 
-function im:windowContent(item)
+function im:windowTitle()
+    return self.naming.title
+end
+
+function im:windowContent()
+    if self.currentItem == nil then return end
+    local item = self.currentItem;
     self.onWindowUpdate(item);
     Slab.Separator();
     local cols = 1;
@@ -67,7 +73,7 @@ function im:setCurrentItem(item)
     if self.currentItem == item then return; end
     self.currentItem = item;
     if self.currentItem ~= nil then
-        IWManager:setCurrentModule(self.id);
+        WManager:setCurrentModule(self.id);
     end
     self:StateChanged();
 end
@@ -78,14 +84,14 @@ function im:toggleCurrentItem(item)
     else
         self.currentItem = item;
         if self.currentItem ~= nil then
-            IWManager:setCurrentModule(self.id);
+            WManager:setCurrentModule(self.id);
         end
     end
     self:StateChanged();
 end
 
 function im:showCurrentItemWindow()
-    IWManager:showCurrentItemWindow(self.id);
+    WManager:showCurrentItemWindow(self.id);
 end
 
 function im:showItemWindow(item)
@@ -119,7 +125,7 @@ function im:onDeleteItem(item)
         self.currentItem = nil;
     end
     self.selection:remove(item);
-    IWManager:delItem(self.id, item, true);
+    WManager:delItem(self.id, item, true);
     if self.child then
         self.child.container:deleteGroup(item);
     end
@@ -218,7 +224,7 @@ end
 function im:LoadState(data)
     if data == nil then return; end
     self:SetLoadPhase(true);
-    IWManager:SetLoadPhase(true);
+    WManager:SetLoadPhase(true);
     self.container:LoadState(data.container);
     self:loadItems(data.items);
     if data.currentItem then
@@ -231,7 +237,7 @@ function im:LoadState(data)
     if data.selectMode == true then
         self.selectMode = true;
     end
-    IWManager:SetLoadPhase(false);
+    WManager:SetLoadPhase(false);
     self:SetLoadPhase(false);
     self:LoadSubmodulesState(data.children);
 end
@@ -281,7 +287,7 @@ function im:itemContextMenu(item)
             self.currentItem = nil;
         else
             self.currentItem = item;
-            IWManager:setCurrentModule(self.id);
+            WManager:setCurrentModule(self.id);
         end
     end
     local seltext = "Select";
