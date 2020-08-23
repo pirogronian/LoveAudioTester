@@ -1,7 +1,7 @@
 
 v0.6 [22.08.2020]
 Features:
-    * Option for recording source position and velocity from ouse movement.
+    * Option for recording source position and velocity from mouse movement.
     * Organize source options in collapsable groups.
     * Open item window on double-click.
     * Auto-generate default item id in new item dialog.
