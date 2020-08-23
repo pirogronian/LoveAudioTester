@@ -7,12 +7,20 @@ require('GuiHelper');
 
 local iw = require('ItemWidget');
 
+local cg = require('ControlsGroups');
+
+local lscc = require('ListenerSourceCommonControls');
+
 local scp = iw:subclass("SourceControlPanel");
 
-function scp.static.og.falloff(item, ogr)
+scp.static.cg = cg();
+
+scp.static.cg.og.position = lscc.position;
+
+function scp.static.cg.og.falloff(item, ogr)
     Slab.BeginLayout("AttenuationLayout", { Columns = 2 });
     Slab.SetLayoutColumn(1);
-    scp.hideButton(item, ogr);
+    scp.cg.hideButton(item, ogr);
     Slab.Text("Reference distance:");
     Slab.Text("Maximal distance:");
     Slab.Text("Air absorbtion:");
@@ -43,36 +51,10 @@ function scp.static.og.falloff(item, ogr)
     Slab.EndLayout();
 end
 
-function scp.static.og.position(item, ogr)
-    Slab.BeginLayout("PositionLayout", { Columns = 2 });
-    Slab.SetLayoutColumn(1);
-    scp.hideButton(item, "position")
-    Slab.Text("x:");
-    Slab.Text("y:");
-    Slab.Text("z:");
-    Slab.SetLayoutColumn(2);
-    if Slab.Button("Reset") then
-        item:setPosition(0, 0, 0);
-    end
-    local x, y, z = item:getPosition();
-    input = false;
-    if Slab.ActiveDrag("PositionX", x, { Step = 0.1 }) then
-        x = Slab.GetInputNumber(); input = true;
-    end
-    if Slab.ActiveDrag("PositionY", y, { Step = 0.1 }) then
-        y = Slab.GetInputNumber(); input = true;
-    end
-    if Slab.ActiveDrag("PositionZ", z, { Step = 0.1 }) then
-        z = Slab.GetInputNumber(); input = true;
-    end
-    if input then item:setPosition(x, y, z); end
-    Slab.EndLayout();
-end
-
-function scp.static.og.velocity(item, ogr)
+function scp.static.cg.og.velocity(item, ogr)
     Slab.BeginLayout("VelocityLayout", { Columns = 2 });
     Slab.SetLayoutColumn(1);
-    scp.hideButton(item, ogr)
+    scp.cg.hideButton(item, ogr)
     Slab.Text("x:");
     Slab.Text("y:");
     Slab.Text("z:");
@@ -95,10 +77,10 @@ function scp.static.og.velocity(item, ogr)
     Slab.EndLayout();
 end
 
-function scp.static.og.direction(item, ogr)
+function scp.static.cg.og.direction(item, ogr)
     Slab.BeginLayout("DirectionLayout", { Columns = 2 });
     Slab.SetLayoutColumn(1);
-    scp.hideButton(item, "direction");
+    scp.cg.hideButton(item, "direction");
     Slab.Text("x:");
     Slab.Text("y:");
     Slab.Text("z:");
@@ -121,10 +103,10 @@ function scp.static.og.direction(item, ogr)
     Slab.EndLayout();
 end
 
-function scp.static.og.cone(item, ogr)
+function scp.static.cg.og.cone(item, ogr)
     Slab.BeginLayout("ConeLayout", { Columns = 2 });
     Slab.SetLayoutColumn(1);
-    scp.hideButton(item, "cone");
+    scp.cg.hideButton(item, "cone");
     Slab.Text("Inner angle:");
     Slab.Text("Outer angle:");
     Slab.Text("Outer volume:");
@@ -150,18 +132,18 @@ function scp.static.og.cone(item, ogr)
     Slab.EndLayout();
 end
 
-function scp.static.spatialOptions(item)
+function scp.static:spatialOptions(item)
     if (not item:isMono()) then
         Slab.Text("Spatial options are unavaliable for multi-channel sources.");
         return;
     end
-    scp.optionsGroup(item, "falloff")
+    self.cg:optionsGroup(item, "falloff")
     Slab.Separator();
 
-    scp.optionsGroup(item, "position");
+    self.cg:optionsGroup(item, "position");
     Slab.Separator();
 
-    scp.optionsGroup(item, "velocity");
+    self.cg:optionsGroup(item, "velocity");
     Slab.Separator();
 
     if item.mouseRecorder then
@@ -169,16 +151,16 @@ function scp.static.spatialOptions(item)
         Slab.Separator();
     end
 
-    scp.optionsGroup(item, "direction");
+    self.cg:optionsGroup(item, "direction");
     Slab.Separator();
 
-    scp.optionsGroup(item, "cone");
+    self.cg:optionsGroup(item, "cone");
 end
 
-function scp.static.og.various(item, ogr)
+function scp.static.cg.og.various(item, ogr)
     Slab.BeginLayout("AdvancedLayout", { Columns = 2 });
     Slab.SetLayoutColumn(1);
-    scp.hideButton(item, "various");
+    scp.cg.hideButton(item, "various");
     Slab.Text("Minimal vol:");
     Slab.Text("Maximal vol:");
     Slab.Text("Pitch:");
@@ -210,16 +192,16 @@ function scp.static.og.various(item, ogr)
     Slab.EndLayout();
 end
 
-function scp.static.og.advanced(item, ogr)
-    scp.hideButton(item, ogr);
-    scp.spatialOptions(item);
+function scp.static.cg.og.advanced(item, ogr)
+    scp.cg.hideButton(item, ogr);
+    scp:spatialOptions(item);
     Slab.Separator();
-    scp.optionsGroup(item, "various")
+    scp.cg:optionsGroup(item, "various")
 end
 
 function scp.static.update(item)
     changed = false;
-    scp.optionsGroup(item, "advanced");
+    scp.cg:optionsGroup(item, "advanced");
     Slab.Separator();
     Slab.BeginLayout("PlaybackControlLayout", { Columns = 3, AlignX = 'center' });
     Slab.SetLayoutColumn(1);
