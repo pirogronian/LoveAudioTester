@@ -1,4 +1,6 @@
 
+local u = require('Utils');
+
 local SModule = require('StateModule');
 
 local l = SModule:subclass("Listener");
@@ -25,6 +27,7 @@ function l:initialize(id)
     self.id = id;
     self.visibility = {};
     self.changed = Signal();
+    self.changed:connect(self.StateChanged, self);
     WManager:register(self);
 end
 
@@ -59,9 +62,35 @@ function l:mainMenu()
 end
 
 function l:LoadState(data)
+    if type(data) ~= 'table' then return; end
+    self:SetLoadPhase(true);
+    self.visibility = data.visibility;
+    local pos = u.TryValue(data.position, nil, 'table');
+    if pos then
+        local x = u.TryValue(pos.x, 0, 'number');
+        local y = u.TryValue(pos.y, 0, 'number');
+        local z = u.TryValue(pos.z, 0, 'number');
+        self:setPosition(x, y, z);
+    end
+    local vel = u.TryValue(data.velocity, nil, 'table');
+    if pos then
+        local x = u.TryValue(vel.x, 0, 'number');
+        local y = u.TryValue(vel.y, 0, 'number');
+        local z = u.TryValue(vel.z, 0, 'number');
+        self:setVelocity(x, y, z);
+    end
+    self:SetLoadPhase(false);
 end
 
 function l:DumpState()
+    local data = {};
+    data.visibility = self.visibility;
+    local x, y, z = self:getPosition();
+    data.position = { x = x, y = y, z = z };
+    x, y, z = self:getVelocity();
+    data.velocity = { x = x, y = y, z = z };
+
+    return data;
 end
 
 return l("Listener");
