@@ -189,8 +189,6 @@ function scp.static.update(item)
     if nv then
         item:setVolume(nv);
     end
-    Slab.SameLine();
-    Slab.Text("%");
     Slab.SetLayoutColumn(2);
     if Slab.CheckBox(item.source:isLooping(), "Looping") then
         item:toggleLooping();
