@@ -48,6 +48,10 @@ function ss:UnregisterModule(id)
     end
 end
 
+function ss:IsRegisteredId(modid)
+    return self._modules[modid] ~= nil;
+end
+
 function ss:SetPath(path)
     self._filepath = path;
 end
@@ -79,6 +83,12 @@ function ss:LoadState()
     end
 --     print("Dump loaded state:");
 --     utils.Dump(self._state, 10, "", "userdata")
+    for key, moddata in pairs(self._state.modules) do
+        if not self:IsRegisteredId(key) then
+            print("No registered module for:", key);
+            self._state.modules[key] = nil;
+        end
+    end
 end
 
 function ss:SaveState(force)
