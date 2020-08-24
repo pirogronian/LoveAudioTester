@@ -91,19 +91,25 @@ function cgi.og.cone(item, ogr)
     end
     local ia, oa, ov = item.source:getCone();
     local changed = false;
-    if Slab.ActiveSlider("InnerAngleSlider", math.floor(math.deg(ia)), 0, 360) then
-        ia = math.rad(Slab.GetInputNumber());
+    local nia = Slab.DegreeSlider("InnerAngleSlider", ia);
+    if nia ~= nil then
         changed = true;
+    else
+        nia = ia;
     end
-    if Slab.ActiveSlider("OuterAngleSlider", math.floor(math.deg(oa)), 0, 360) then
-        oa = math.rad(Slab.GetInputNumber());
+    local noa = Slab.DegreeSlider("OuterAngleSlider", oa);
+    if noa ~= nil then
         changed = true;
+    else
+        noa = oa;
     end
-    if Slab.ActiveSlider("OuterVolumeSlider", math.floor(ov * 100), 0, 100) then
-        ov = Slab.GetInputNumber() / 100;
+    local nov = Slab.PercentageSlider("OuterVolumeSlider", ov)
+    if nov ~= nil then
         changed = true;
+    else
+        nov = ov;
     end
-    if changed then item:setCone(ia, oa, ov); end
+    if changed then item:setCone(nia, noa, nov); end
     Slab.EndLayout();
 end
 

@@ -30,3 +30,14 @@ function Slab.PercentageDrag(name, value, min, max, options)
         return nv / 100;
     end
 end
+
+function Slab.DegreeSlider(name, value, min, max, options)
+    min = min or 0;
+    max = max or 360;
+    local ret = Slab.ActiveSlider(name, math.floor(math.deg(value)), min, max, options);
+    Slab.SameLine();
+    Slab.Text("°");
+    if ret then
+        return math.rad(Slab.GetInputNumber());
+    end
+end
