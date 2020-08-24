@@ -146,17 +146,19 @@ function cgi.og.various(item, ogr)
     end
     local minv, maxv = item.source:getVolumeLimits();
     local changed = false;
-    if Slab.ActiveSlider("MinVolume", math.floor(minv * 100), 0, 100) then
-        minv = Slab.GetInputNumber() / 100; changed = true;
+    local nminv = Slab.PercentageSlider("MinVolume", minv)
+    if nminv ~= nil then
+        changed = true;
+    else
+        nminv = minv;
     end
-    Slab.SameLine();
-    Slab.Text("%");
-    if Slab.ActiveSlider("MaxVolume", math.floor(maxv * 100), 0, 100) then
-        maxv = Slab.GetInputNumber() / 100; changed = true;
+    local nmaxv = Slab.PercentageSlider("MaxVolume", maxv)
+    if nmaxv ~= nil then
+        changed = true;
+    else
+        nmaxv = maxv;
     end
-    Slab.SameLine();
-    Slab.Text("%");
-    if changed then item:setVolumeLimits(minv, maxv); end
+    if changed then item:setVolumeLimits(nminv, nmaxv); end
     local p = item.source:getPitch();
     if Slab.ActiveDrag("PitchDrag", math.floor(p * 100), { Step = 0.1, Min = 0 }) then
         p = Slab.GetInputNumber();
@@ -185,9 +187,9 @@ function scp.static.update(item)
     Slab.Text("Volume:");
     Slab.SameLine();
     local ov = item:getVolume();
-    if Slab.ActiveSlider("VolumeSlider", math.floor(ov * 100), 0, 100) then
-        local nv = Slab.GetInputNumber();
-        item:setVolume(nv / 100);
+    local nv = Slab.PercentageSlider("VolumeSlider", ov);
+    if nv then
+        item:setVolume(nv);
     end
     Slab.SameLine();
     Slab.Text("%");

@@ -54,13 +54,11 @@ function l:windowContent()
     gci:optionsGroup(self, "position");
     gci:optionsGroup(self, "velocity");
     local ov = self:getVolume();
-    if Slab.ActiveSlider("VolumeSlider", math.floor(ov * 100), 0, 100) then
-        local nv = Slab.GetInputNumber();
-        self.Volume = nv / 100;
+    local nv = Slab.PercentageSlider("VolumeSlider", ov);
+    if nv then
+        self.Volume = nv;
 --         print(self.Volume);
     end
-    Slab.SameLine();
-    Slab.Text("%");
 end
 
 function l:mainMenu()
