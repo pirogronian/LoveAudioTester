@@ -30,6 +30,8 @@ end
 
 
 function love.update(dt)
+    SModule:updateActiveRecorders();
+    if not love.window.isVisible() then return end
     windowW, windowH = love.window.getMode();
 
     Slab.Update(dt);
@@ -57,26 +59,9 @@ function love.update(dt)
         Slab.EndMainMenuBar();
     end
 
---     if Slab.BeginWindow("MainWindow", 
---                         { AutoSizeWindow = false,
---                           AllowMove = false,
---                           AllowResize = false,
---                           AllowFocus = false,
---                           NoSavedSettings = true,
---                           X = 0, Y = MMBH,
---                           W = windowW,
---                           H = windowH - MMBH,
---                           ContentW = windowW,
---                           ContentH = windowH - MMBH,
---                           NoOutline = true}) then
---         ITModule:UpdateTree();
---     end
---     Slab.EndWindow();
-
     WManager:UpdateWindows();
     FModule:updateDialogs();
     SModule:updateDialogs();
-    SModule:updateActiveRecorders();
     InfoQueue:Update();
 
     if quitDialog then
@@ -100,6 +85,7 @@ function love.update(dt)
 end
 
 function love.draw()
+    if not love.window.isVisible() then return end
     Slab.Draw();
 end
 
