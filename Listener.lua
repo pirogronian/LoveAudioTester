@@ -5,6 +5,8 @@ local SModule = require('StateModule');
 
 local l = SModule:subclass("Listener");
 
+local p = require('Properties');
+
 local gc = require('ControlsGroups');
 
 local lsc = require('ListenerSourceCommons')
@@ -19,6 +21,8 @@ local gci = gc();
 
 gci.og.position = lscc.position;
 gci.og.velocity = lscc.velocity;
+
+l:include(p);
 
 l:include(lsc);
 
@@ -49,6 +53,14 @@ end
 function l:windowContent()
     gci:optionsGroup(self, "position");
     gci:optionsGroup(self, "velocity");
+    local ov = self:getVolume();
+    if Slab.ActiveSlider("VolumeSlider", math.floor(ov * 100), 0, 100) then
+        local nv = Slab.GetInputNumber();
+        self.Volume = nv / 100;
+--         print(self.Volume);
+    end
+    Slab.SameLine();
+    Slab.Text("%");
 end
 
 function l:mainMenu()
