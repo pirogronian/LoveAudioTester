@@ -3,7 +3,7 @@ local u = require('Utils');
 
 local SModule = require('StateModule');
 
-local l = SModule:subclass("Listener");
+local l = SModule:subclass("Scene");
 
 local p = require('Properties');
 
@@ -47,7 +47,7 @@ function l:getVisible(option)
 end
 
 function l:windowTitle()
-    return "Listener";
+    return "Scene";
 end
 
 function l:windowContent()
@@ -69,7 +69,7 @@ function l:windowContent()
 end
 
 function l:mainMenu()
-    if Slab.BeginMenu("Listener") then
+    if Slab.BeginMenu("Scene") then
         if Slab.MenuItem("Properties") then
             WManager:setCurrentModule(self.id);
             WManager:showModuleWindow(self.id);
@@ -112,4 +112,4 @@ function l:DumpState()
     return data;
 end
 
-return l("Listener");
+return l("Scene");

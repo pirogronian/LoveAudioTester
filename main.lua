@@ -13,7 +13,7 @@ local SModule = require('SourcesModule');
 
 local FModule = require('FilesModule');
 
-local Listener = require('Listener');
+local Scene = require('Scene');
 
 function love.load(args)
     InfoQueue.debug = true;
@@ -23,7 +23,7 @@ function love.load(args)
     SManager:RegisterModule(FModule);
     SManager:RegisterModule(SModule);
     SManager:RegisterModule(ITModule);
-    SManager:RegisterModule(Listener);
+    SManager:RegisterModule(Scene);
     SManager:RegisterModule(WManager);
     SManager:LoadState();
 end
@@ -47,7 +47,7 @@ function love.update(dt)
         WManager:UpdateMenu();
         FModule:updateMainMenu();
         SModule:updateMainMenu();
-        Listener:mainMenu();
+        Scene:mainMenu();
 
         MMBW, MMBH = Slab.GetControlSize();
         Slab.EndMainMenuBar();
