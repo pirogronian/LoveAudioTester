@@ -70,7 +70,7 @@ function im:generateNewItemId(parent)
 end
 
 function im:setCurrentItem(item)
-    if self.currentItem == item then return; end
+--     if self.currentItem == item then return; end
     self.currentItem = item;
     if self.currentItem ~= nil then
         WManager:setCurrentModule(self.id);
