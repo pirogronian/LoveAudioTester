@@ -7,15 +7,23 @@ local fm = require("FilesModule");
 
 local sm = require("SourcesModule");
 
+local WManager = require('WindowsManager');
+
 local STree = require('SortableTree');
 
-local itm = SModule("ItemsTreeModule");
+local itm = SModule:subclass("ItemsTree");
 
 itm.tree = STree(fm);
 
 itm.playing = 0;
 
-function itm:UpdateTree()
+function itm:initialize(id)
+    SModule.initialize(self);
+    self.id = id;
+    WManager:register(self);
+end
+
+function itm:windowContent()
     if fm.currentItem ~= nil then
         Slab.Text(tostring(fm.currentItem));
     else
@@ -28,6 +36,10 @@ function itm:UpdateTree()
     end
     self.tree:Update();
     Slab.Text("Playing now: "..tostring(sm.playing));
+end
+
+function itm:windowTitle()
+    return "Items tree";
 end
 
 function itm:DumpState()
@@ -43,4 +55,4 @@ function itm:LoadState(data)
     self:SetLoadPhase(false);
 end
 
-return itm;
+return itm("ItemsTree");

@@ -39,6 +39,10 @@ function love.update(dt)
             if Slab.MenuItem("Save state") then
                 SManager:SaveState();
             end
+            if Slab.MenuItem("Items tree") then
+                WManager:setCurrentModule(ITModule.id);
+                WManager:showModuleWindow(ITModule.id);
+            end
             if Slab.MenuItem("Quit") then
                 love.event.quit();
             end
@@ -53,21 +57,21 @@ function love.update(dt)
         Slab.EndMainMenuBar();
     end
 
-    if Slab.BeginWindow("MainWindow", 
-                        { AutoSizeWindow = false,
-                          AllowMove = false,
-                          AllowResize = false,
-                          AllowFocus = false,
-                          NoSavedSettings = true,
-                          X = 0, Y = MMBH,
-                          W = windowW,
-                          H = windowH - MMBH,
-                          ContentW = windowW,
-                          ContentH = windowH - MMBH,
-                          NoOutline = true}) then
-        ITModule:UpdateTree();
-    end
-    Slab.EndWindow();
+--     if Slab.BeginWindow("MainWindow", 
+--                         { AutoSizeWindow = false,
+--                           AllowMove = false,
+--                           AllowResize = false,
+--                           AllowFocus = false,
+--                           NoSavedSettings = true,
+--                           X = 0, Y = MMBH,
+--                           W = windowW,
+--                           H = windowH - MMBH,
+--                           ContentW = windowW,
+--                           ContentH = windowH - MMBH,
+--                           NoOutline = true}) then
+--         ITModule:UpdateTree();
+--     end
+--     Slab.EndWindow();
 
     WManager:UpdateWindows();
     FModule:updateDialogs();
