@@ -19,3 +19,14 @@ function Slab.PercentageSlider(name, value, min, max, options)
         return nv / 100;
     end
 end
+
+function Slab.PercentageDrag(name, value, min, max, options)
+    local ret = Slab.ActiveDrag(name, math.floor(value * 100), min, max, options);
+    Slab.SameLine();
+    Slab.Text("%");
+    if ret then
+        local nv = Slab.GetInputNumber();
+--         print("Input number:", nv);
+        return nv / 100;
+    end
+end

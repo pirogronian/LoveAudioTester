@@ -75,6 +75,7 @@ function l:LoadState(data)
     if type(data) ~= 'table' then return; end
     self:SetLoadPhase(true);
     self.visibility = data.visibility;
+    love.audio.setVolume(u.TryValue(data.volume, 1, 'number'));
     local pos = u.TryValue(data.position, nil, 'table');
     if pos then
         local x = u.TryValue(pos.x, 0, 'number');
@@ -95,6 +96,7 @@ end
 function l:DumpState()
     local data = {};
     data.visibility = self.visibility;
+    data.volume = love.audio.getVolume();
     local x, y, z = self:getPosition();
     data.position = { x = x, y = y, z = z };
     x, y, z = self:getVelocity();

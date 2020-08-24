@@ -160,12 +160,10 @@ function cgi.og.various(item, ogr)
     end
     if changed then item:setVolumeLimits(nminv, nmaxv); end
     local p = item.source:getPitch();
-    if Slab.ActiveDrag("PitchDrag", math.floor(p * 100), { Step = 0.1, Min = 0 }) then
-        p = Slab.GetInputNumber();
-        item:setPitch(p / 100);
+    p = Slab.PercentageDrag("PitchDrag", p, 0);
+    if p then
+        item:setPitch(p);
     end
-    Slab.SameLine();
-    Slab.Text("%");
     Slab.EndLayout();
 end
 
