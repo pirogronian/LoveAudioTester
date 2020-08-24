@@ -51,13 +51,20 @@ function l:windowTitle()
 end
 
 function l:windowContent()
+    Slab.BeginLayout("Limits", { Columns = 2 });
+    Slab.SetLayoutColumn(1);
+    Slab.Text("Max effects per scene:");
+    Slab.Text("Max effects per source:");
+    Slab.SetLayoutColumn(2);
+    Slab.Text(love.audio.getMaxSceneEffects());
+    Slab.Text(love.audio.getMaxSourceEffects());
+    Slab.EndLayout();
     gci:optionsGroup(self, "position");
     gci:optionsGroup(self, "velocity");
     local ov = self:getVolume();
     local nv = Slab.PercentageSlider("VolumeSlider", ov);
     if nv then
         self.Volume = nv;
---         print(self.Volume);
     end
 end
 
