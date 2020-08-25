@@ -29,14 +29,23 @@ function d:hasSourceItem(sitem)
     return self._sitems:has(sitem);
 end
 
+function d:drawAxes()
+    local w, h = love.window.getMode();
+    w = w / 2;
+    h = h / 2;
+    love.graphics.line(-w, 0, w, 0);
+    love.graphics.line(0, -h, 0, h);
+end
+
 function d:drawSourceItem(sourceitem)
     local x, y, z = sourceitem:getPosition();
     x, y = self._axisMap:map(x, y, z);
     x, y = self._transform:transformPoint(x, y);
     love.graphics.push();
     love.graphics.translate(x, y);
-    love.graphics.circle("fill", 0, 0, 5)
-    love.graphics.print(sourceitem.id);
+    local font = love.graphics.getFont();
+    love.graphics.circle("fill", 0, 0, 3)
+    love.graphics.print(sourceitem.id, 5);
     love.graphics.pop();
 end
 
@@ -44,6 +53,7 @@ function d:draw()
     love.graphics.push();
     local w, h = love.window.getMode();
     love.graphics.translate(w / 2, h / 2);
+    self:drawAxes();
     for key, item in pairs(self._sitems:get()) do
         self:drawSourceItem(item);
     end
