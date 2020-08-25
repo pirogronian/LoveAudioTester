@@ -15,11 +15,16 @@ local FModule = require('FilesModule');
 
 local Scene = require('Scene');
 
+local Diagram = require('Diagram');
+
+local Diag = Diagram();
+
 function love.load(args)
     InfoQueue.debug = true;
     Slab.Initialize(args);
     SlabQuit = love.quit;
     love.quit = onquit;
+    SModule.container.itemAdded:connect(Diag.addSourceItem, Diag);
     SManager:RegisterModule(FModule);
     SManager:RegisterModule(SModule);
     SManager:RegisterModule(ITModule);
@@ -86,6 +91,7 @@ end
 
 function love.draw()
     if not love.window.isVisible() then return end
+    Diag:draw();
     Slab.Draw();
 end
 
