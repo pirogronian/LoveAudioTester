@@ -12,7 +12,7 @@ function d:initialize(container)
     self._axisMap = Mapper(1, 2);
     self._transform = love.math.newTransform();
     self._sitems = Set();
-    self._transform:scale(10);
+    self._transform:scale(100);
     self._dirScale = 10;
     self._velScale = 10;
     self._srcColor = { 1, 1, 1, 1 };
@@ -75,7 +75,7 @@ function d:drawSourceItem(sourceitem)
     love.graphics.polygon("fill", 0, 0, 5, 10, -5, 10);
     love.graphics.pop();
     love.graphics.setColor(unpack(self._srcColor));
-    love.graphics.print(sourceitem.id .. "(" .. tostring(sin) .. ", " .. tostring(cos) .. ")", 5);
+    love.graphics.print(sourceitem.id, 5);
     love.graphics.pop();
 end
 
