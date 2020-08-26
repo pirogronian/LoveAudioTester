@@ -63,8 +63,19 @@ function d:drawSourceItem(sourceitem)
     y = y * self._velScale;
     love.graphics.setColor(unpack(self._velColor));
     love.graphics.line(0, 0, x, y);
+    local sin = x / (x^2 + y^2)^0.5;
+    local cos = y / (x^2 + y^2)^0.5;
+    local angle = math.asin(sin);
+    if cos > 0 then
+        angle = math.pi - angle;
+    end
+    love.graphics.push();
+    love.graphics.translate(x, y);
+    love.graphics.rotate(angle);
+    love.graphics.polygon("fill", 0, 0, 5, 10, -5, 10);
+    love.graphics.pop();
     love.graphics.setColor(unpack(self._srcColor));
-    love.graphics.print(sourceitem.id, 5);
+    love.graphics.print(sourceitem.id .. "(" .. tostring(sin) .. ", " .. tostring(cos) .. ")", 5);
     love.graphics.pop();
 end
 
