@@ -114,6 +114,9 @@ function iwm:UpdateMenu()
             for id, module in pairs(self.modules) do
                 if Slab.MenuItemChecked(module.manager:windowTitle(), module.windowOpen) then
                     module.windowOpen = not module.windowOpen;
+                    if self._globalCurrent and module.windowOpen then
+                        self:setCurrentModule(id);
+                    end
                     self:StateChanged();
                 end
             end
