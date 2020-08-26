@@ -13,6 +13,11 @@ function d:initialize(container)
     self._transform = love.math.newTransform();
     self._sitems = Set();
     self._transform:scale(10);
+    self._dirScale = 10;
+    self._velScale = 10;
+    self._srcColor = { 1, 1, 1, 1 };
+    self._dirColor = { 0.9, 0.9, 1 };
+    self._velColor = { 0.5, 0.5, 1, 1 }
 end
 
 function d:addSourceItem(sitem)
@@ -44,7 +49,21 @@ function d:drawSourceItem(sourceitem)
     love.graphics.push();
     love.graphics.translate(x, y);
     local font = love.graphics.getFont();
+    love.graphics.setColor(unpack(self._srcColor));
     love.graphics.circle("fill", 0, 0, 3)
+    x, y, z = sourceitem:getDirection();
+    x, y = self._axisMap:map(x, y, z);
+    x = x * self._dirScale;
+    y = y * self._dirScale;
+    love.graphics.setColor(unpack(self._dirColor));
+    love.graphics.line(0, 0, x, y);
+    x, y, z = sourceitem:getVelocity();
+    x, y = self._axisMap:map(x, y, z);
+    x = x * self._velScale;
+    y = y * self._velScale;
+    love.graphics.setColor(unpack(self._velColor));
+    love.graphics.line(0, 0, x, y);
+    love.graphics.setColor(unpack(self._srcColor));
     love.graphics.print(sourceitem.id, 5);
     love.graphics.pop();
 end

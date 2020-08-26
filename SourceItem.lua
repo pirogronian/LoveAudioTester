@@ -151,6 +151,10 @@ function SItem:toggleLooping()
     self.changed:emit();
 end
 
+function SItem:getDirection()
+    return self.source:getDirection();
+end
+
 function SItem:setDirection(x, y, z)
     local ox, oy, oz = self.source:getDirection();
     if ox ~= x or oy ~= y or oz ~= z then
