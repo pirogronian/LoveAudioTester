@@ -12,3 +12,16 @@ Internal:
     * Add and use event-driven mouse handling (modifies Slab fork).
     * StateModule: Do not emit stateChanged if state is already changed.
     * Simplify windows manager <-> items manager communication.
+
+v0.7 [26.08.2020]
+Features:
+    * Basic scene/listener properties window.
+    * Basic graphical diagram representing spatial sources and listener properties (position, velocity, direction).
+    * Make item tree window behaving like other windows (to make diagram visible).
+Internal:
+    * Generalize WindowsManager.
+    * PercentageDrag, PercentageSlider and DegreeSlider GUI helpers.
+    * Basic properties support.
+Bugfixes:
+    * Better windows handling.
+    * Better current item handling.
