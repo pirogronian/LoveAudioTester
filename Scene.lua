@@ -9,6 +9,10 @@ local p = require('Properties');
 
 local gc = require('ControlsGroups');
 
+local mr = require('MouseRecorder');
+
+local mrc = require('MouseRecorderControl');
+
 local lsc = require('ListenerSourceCommons')
 
 local lscc = require('ListenerSourceCommonControls');
@@ -31,6 +35,9 @@ function l:initialize(id)
     self.id = id;
     self.visibility = {};
     self.changed = Signal();
+    self.recordingStarted = Signal();
+    self.recordingStopped = Signal();
+    self.mouseRecorder = mr(self);
     self.changed:connect(self.StateChanged, self);
     WManager:register(self);
 end
@@ -63,8 +70,10 @@ function l:windowContent()
     Slab.Text(love.audio.getMaxSceneEffects());
     Slab.Text(love.audio.getMaxSourceEffects());
     Slab.EndLayout();
+    Slab.Text("Listener");
     gci:optionsGroup(self, "position");
     gci:optionsGroup(self, "velocity");
+    mrc(self);
     local ov = self:getVolume();
     local nv = Slab.PercentageSlider("VolumeSlider", ov);
     if nv then

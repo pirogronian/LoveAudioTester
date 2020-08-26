@@ -30,7 +30,6 @@ function sim:initialize()
     IManager.initialize(self, "filesources",
                         { name = "source", names = "sources", title = "Source", titles = "Sources" },
                         SItem, windowContent, true);
-    self.activeRecorders = Set();
     self.container.itemAdded:connect(self.onNewItem, self);
     self.playing = 0;
 end
@@ -39,10 +38,6 @@ function sim:onNewItem(item)
     item.played:connect(self.onPlayed, self);
     item.paused:connect(self.onPaused, self);
     item.changed:connect(self.StateChanged, self);
-    if item.mouseRecorder then
-        item.recordingStarted:connect(self.onRecordingStarted, self);
-        item.recordingStopped:connect(self.onRecordingStopped, self);
-    end
 end
 
 function sim:onPlayed()
@@ -53,20 +48,6 @@ end
 function sim:onPaused()
     self.playing = self.playing - 1;
     self:StateChanged();
-end
-
-function sim:onRecordingStarted(recorder)
-    self.activeRecorders:addSingle(recorder);
-end
-
-function sim:onRecordingStopped(recorder)
-    self.activeRecorders:removeSingle(recorder);
-end
-
-function sim:updateActiveRecorders()
-    for _, r in pairs(self.activeRecorders:get()) do
-        r:update();
-    end
 end
 
 function sim:updateMainMenu()

@@ -25,16 +25,14 @@ local function mrc(item)
     Slab.SameLine();
     Slab.Text("%");
     Slab.EndLayout();
-    if item.mouseRecorder.active then
+    if item.mouseRecorder:isActive() then
         Slab.Text("Click anywhere to stop")
         if Slab.WasMousePressed() then
-            item.mouseRecorder.active = false;
-            item.recordingStopped:emit(item.mouseRecorder);
+            item.mouseRecorder:setActive(false);
         end
     else
         if Slab.Button("Start") then
-            item.mouseRecorder.active = true;
-            item.recordingStarted:emit(item.mouseRecorder);
+            item.mouseRecorder:setActive(true);
         end
     end
 end

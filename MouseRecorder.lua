@@ -5,9 +5,20 @@ local u = require('Utils');
 
 -- local SIClass = require('SourceItem');
 
+local Set = require('Set');
+
 local vg = require('VelocityGenerator')
 
 local mr = class("MouseRecorder")
+
+mr.static._activeRecorders = Set();
+
+function mr.static:updateActiveRecorders()
+    for _, r in pairs(self._activeRecorders:get()) do
+--         print("update recorder:", r)
+        r:update();
+    end
+end
 
 function mr:initialize(sitem, xmap, ymap)
     xmap = xmap and xmap or "x";
@@ -16,13 +27,26 @@ function mr:initialize(sitem, xmap, ymap)
     self._map = { x = xmap, y = ymap };
     self.positionScale = 0.01;
     self.velocityScale = 50;
-    local x, y, z = sitem.source:getPosition();
+    local x, y, z = sitem:getPosition();
     self._mappedPos = { x = x, y = y, z = z };
-    x, y, z = sitem.source:getVelocity();
+    x, y, z = sitem:getVelocity();
     self._mappedVel = { x = x, y = y, z = z };
     self._velgen = vg(x, y, z);
     self.active = false;
     self.lastUpdateTime = love.timer.getTime();
+end
+
+function mr:setActive(active)
+    if active then
+        self.class.static._activeRecorders:addSingle(self);
+    else
+        self.class.static._activeRecorders:removeSingle(self);
+    end
+end
+
+
+function mr:isActive()
+    return self.class.static._activeRecorders:has(self);
 end
 
 function mr:setXMap(axis)
@@ -37,7 +61,7 @@ function mr:update()
 --     print("MR update for:", self._sitem);
     local time = love.timer.getTime();
     local dt = time - self.lastUpdateTime;
-    if self.active ~= true then return end
+--     if self.active ~= true then return end
     local w, h = love.window.getMode();
     local x, y = love.mouse.getPosition();
     x = x - w / 2;

@@ -19,6 +19,8 @@ local Diagram = require('Diagram');
 
 local Diag = Diagram();
 
+local MouseRecorder = require('MouseRecorder');
+
 function love.load(args)
     InfoQueue.debug = true;
     Slab.Initialize(args);
@@ -36,7 +38,7 @@ end
 
 
 function love.update(dt)
-    SModule:updateActiveRecorders();
+    MouseRecorder:updateActiveRecorders();
     if not love.window.isVisible() then return end
     windowW, windowH = love.window.getMode();
 
