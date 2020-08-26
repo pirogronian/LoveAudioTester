@@ -46,6 +46,10 @@ function iwm:setCurrentModule(id)
 --     print("Set current item:", modid, item);
     local module = self:getModule(id);
     if self._currentModuleId ~= id then
+        if self._globalCurrent then
+            local module = self:getModule(self._currentModuleId);
+            if module then module.windowOpen = false; end
+        end
         self._currentModuleId = id;
         self:StateChanged();
     end
