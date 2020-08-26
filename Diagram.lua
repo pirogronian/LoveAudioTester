@@ -1,14 +1,14 @@
 
-local class = require('thirdparty/middleclass/middleclass');
+local SModule = require('StateModule');
 
 local Set = require('Set');
 
 local Mapper = require('Mapper');
 
-local d = class("Diagram");
+local d = SModule:subclass("Diagram");
 
-function d:initialize(container)
-    self._cont = container;
+function d:initialize()
+    SModule.initialize(self);
     self._axisMap = Mapper(1, 2);
     self._transform = love.math.newTransform();
     self._sitems = Set();
@@ -18,6 +18,13 @@ function d:initialize(container)
     self._srcColor = { 1, 1, 1, 1 };
     self._dirColor = { 0.9, 0.9, 1 };
     self._velColor = { 0.5, 0.5, 1, 1 }
+end
+
+function d:setScene(s)
+    if self._scene ~= s then
+        self:StateChanged();
+    end
+    self._scene = s;
 end
 
 function d:addSourceItem(sitem)
@@ -79,11 +86,51 @@ function d:drawSourceItem(sourceitem)
     love.graphics.pop();
 end
 
+function d:drawListener(l)
+    local x, y, z = l:getPosition();
+    x, y = self._axisMap:map(x, y, z);
+    x, y = self._transform:transformPoint(x, y);
+    love.graphics.push();
+    love.graphics.translate(x, y);
+    local font = love.graphics.getFont();
+    love.graphics.setColor(unpack(self._srcColor));
+    love.graphics.circle("fill", 0, 0, 3)
+    x, y, z = l:getOrientation();
+    x, y = self._axisMap:map(x, y, z);
+    x = x * self._dirScale;
+    y = y * self._dirScale;
+    love.graphics.setColor(unpack(self._dirColor));
+    love.graphics.line(0, 0, x, y);
+    x, y, z = l:getVelocity();
+    x, y = self._axisMap:map(x, y, z);
+    x = x * self._velScale;
+    y = y * self._velScale;
+    love.graphics.setColor(unpack(self._velColor));
+    love.graphics.line(0, 0, x, y);
+    local sin = x / (x^2 + y^2)^0.5;
+    local cos = y / (x^2 + y^2)^0.5;
+    local angle = math.asin(sin);
+    if cos > 0 then
+        angle = math.pi - angle;
+    end
+    love.graphics.push();
+    love.graphics.translate(x, y);
+    love.graphics.rotate(angle);
+    love.graphics.polygon("fill", 0, 0, 5, 10, -5, 10);
+    love.graphics.pop();
+    love.graphics.setColor(unpack(self._srcColor));
+    love.graphics.print("Listener", 5);
+    love.graphics.pop();
+end
+
 function d:draw()
     love.graphics.push();
     local w, h = love.window.getMode();
     love.graphics.translate(w / 2, h / 2);
     self:drawAxes();
+    if self._scene then
+        self:drawListener(self._scene)
+    end
     for key, item in pairs(self._sitems:get()) do
         self:drawSourceItem(item);
     end

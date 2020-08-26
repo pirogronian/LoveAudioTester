@@ -24,6 +24,7 @@ function love.load(args)
     Slab.Initialize(args);
     SlabQuit = love.quit;
     love.quit = onquit;
+    Diag:setScene(Scene);
     SModule.container.itemAdded:connect(Diag.addSourceItem, Diag);
     SManager:RegisterModule(FModule);
     SManager:RegisterModule(SModule);

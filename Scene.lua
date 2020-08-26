@@ -46,6 +46,10 @@ function l:getVisible(option)
     return self.visibility[option];
 end
 
+function l:getOrientation()
+    return love.audio.getOrientation();
+end
+
 function l:windowTitle()
     return "Scene";
 end
