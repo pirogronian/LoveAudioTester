@@ -48,4 +48,8 @@ function am:getSingleMap(pos)
     return self._map[pos];
 end
 
+function am:setSingleMap(pos, val)
+    self._map[pos] = val;
+end
+
 return am;
