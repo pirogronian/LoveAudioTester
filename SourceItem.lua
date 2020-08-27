@@ -78,12 +78,7 @@ function SItem:initialize(data, parent)
                 self.source:setCone(ia, oa, ov);
             end
             if self.mouseRecorder then
-                local mr = u.TryValue(data.mouseRecorder, nil, 'table', 'warning');
-                if mr then
-                    self.mouseRecorder._mapper:setMapArray(u.TryValue(mr.map, {}, 'table'));
-                    self.mouseRecorder.positionScale = u.TryValue(mr.positionScale, 0.01, 'number');
-                    self.mouseRecorder.velocityScale = u.TryValue(mr.velocityScale, 500, 'number');
-                end
+                self.mouseRecorder:load(data.mouseRecorder);
             end
         end
     end
@@ -227,10 +222,7 @@ function SItem:getSerializableData()
         local ia, oa, ov = self.source:getCone();
         sdata.cone = { ia = ia, oa = oa, ov = ov };
         if self.mouseRecorder then
-            local mr = {};
-            mr.positionScale = self.mouseRecorder.positionScale;
-            mr.velocityScale = self.mouseRecorder.velocityScale;
-            data.mouseRecorder = mr;
+            data.mouseRecorder = self.mouseRecorder:getSerializableData();
         end
     end
     data.source = sdata;

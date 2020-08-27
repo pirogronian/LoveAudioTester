@@ -110,6 +110,7 @@ function l:LoadState(data)
         local z = u.TryValue(vel.z, 0, 'number');
         self:setVelocity(x, y, z);
     end
+    self.mouseRecorder:load(data.mouseRecorder);
     self:SetLoadPhase(false);
 end
 
@@ -121,6 +122,7 @@ function l:DumpState()
     data.position = { x = x, y = y, z = z };
     x, y, z = self:getVelocity();
     data.velocity = { x = x, y = y, z = z };
+    data.mouseRecorder = self.mouseRecorder:getSerializableData();
 
     return data;
 end

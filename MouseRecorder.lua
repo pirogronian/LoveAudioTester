@@ -83,4 +83,21 @@ function mr:update()
     self._init = false;
 end
 
+function mr:load(data)
+    local mr = u.TryValue(data, nil, 'table', 'warning');
+    if mr then
+        self._mapper:setMapArray(u.TryValue(mr.map, { 1, 2 }, 'table'));
+        self.positionScale = u.TryValue(mr.positionScale, 0.01, 'number');
+        self.velocityScale = u.TryValue(mr.velocityScale, 500, 'number');
+    end
+end
+
+function mr:getSerializableData()
+    local data = {};
+    data.map = self._mapper:getMapArray();
+    data.positionScale = self.positionScale;
+    data.velocityScale = self.velocityScale;
+    return data;
+end
+
 return mr;
