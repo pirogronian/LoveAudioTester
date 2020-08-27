@@ -5,6 +5,8 @@ local Set = require('Set');
 
 local Mapper = require('Mapper');
 
+local u = require('Utils');
+
 local d = SModule:subclass("Diagram");
 
 function d:initialize()
@@ -70,12 +72,7 @@ function d:drawSourceItem(sourceitem)
     y = y * self._velScale;
     love.graphics.setColor(unpack(self._velColor));
     love.graphics.line(0, 0, x, y);
-    local sin = x / (x^2 + y^2)^0.5;
-    local cos = y / (x^2 + y^2)^0.5;
-    local angle = math.asin(sin);
-    if cos > 0 then
-        angle = math.pi - angle;
-    end
+    local angle = u.VectorAngle(x, y);
     love.graphics.push();
     love.graphics.translate(x, y);
     love.graphics.rotate(angle);

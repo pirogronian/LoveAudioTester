@@ -104,4 +104,14 @@ function u.TryValue(val, defval, valtype, onerror)
     end
 end
 
+function u.VectorAngle(x, y)
+    local sin = x / (x^2 + y^2)^0.5;
+    local cos = y / (x^2 + y^2)^0.5;
+    local angle = math.asin(sin);
+    if cos > 0 then
+        angle = math.pi - angle;
+    end
+    return angle;
+end
+
 return u;
