@@ -25,7 +25,7 @@ function SItem:initialize(data, parent)
     self.paused = Signal();
     self.changed = Signal();
     self.source = love.audio.newSource(self.parent.id, "static");
-    if self.source:getChannelCount() == 1 then
+    if self:isMono() then
         self.mouseRecorder = mr(self);
     end
     if type(data) == 'table' then

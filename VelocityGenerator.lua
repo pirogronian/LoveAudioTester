@@ -34,4 +34,8 @@ function vg:velocity()
     return self._vel.x, self._vel.y, self._vel.z;
 end
 
+function vg:velocityArray()
+    return { self._vel.x, self._vel.y, self._vel.z }
+end
+
 return vg;

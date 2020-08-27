@@ -44,4 +44,8 @@ function am:mapArray(...)
     return ret;
 end
 
+function am:getSingleMap(pos)
+    return self._map[pos];
+end
+
 return am;
