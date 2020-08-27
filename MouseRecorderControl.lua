@@ -38,14 +38,14 @@ local function mrc(item)
         end
         Slab.EndComboBox();
     end
-    if Slab.ActiveDrag("MRPScale", item.mouseRecorder.positionScale * 100) then
-        item.mouseRecorder.positionScale = Slab.GetInputNumber() / 100;
+    local scale = Slab.PercentageDrag("MRPScale", item.mouseRecorder.positionScale);
+    if scale ~= nil then
+        item.mouseRecorder.positionScale = scale;
         item.changed:emit();
     end
-    Slab.SameLine();
-    Slab.Text("%");
-    if Slab.ActiveDrag("MRVScale", item.mouseRecorder.velocityScale * 100) then
-        item.mouseRecorder.velocityScale = Slab.GetInputNumber() / 100;
+    scale = Slab.PercentageDrag("MRVScale", item.mouseRecorder.velocityScale);
+    if scale ~= nil then
+        item.mouseRecorder.velocityScale = scale;
         item.changed:emit();
     end
     Slab.SameLine();
