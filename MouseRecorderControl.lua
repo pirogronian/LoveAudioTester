@@ -48,8 +48,6 @@ local function mrc(item)
         item.mouseRecorder.velocityScale = scale;
         item.changed:emit();
     end
-    Slab.SameLine();
-    Slab.Text("%");
     Slab.EndLayout();
     if item.mouseRecorder:isActive() then
         Slab.Text("Click anywhere to stop")
