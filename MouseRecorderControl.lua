@@ -13,6 +13,7 @@ local function mrc(item)
     Slab.Text("Velocity scale:");
     Slab.SetLayoutColumn(2);
     if Slab.Button("Reset") then
+        item.mouseRecorder._mapper:setMap(1, 2);
         item.mouseRecorder.positionScale = 0.01;
         item.mouseRecorder.velocityScale = 500;
     end
