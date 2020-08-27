@@ -80,8 +80,9 @@ function SItem:initialize(data, parent)
             if self.mouseRecorder then
                 local mr = u.TryValue(data.mouseRecorder, nil, 'table', 'warning');
                 if mr then
-                    self.mouseRecorder.positionScale = mr.positionScale;
-                    self.mouseRecorder.velocityScale = mr.velocityScale;
+                    self.mouseRecorder._mapper:setMapArray(u.TryValue(mr.map, {}, 'table'));
+                    self.mouseRecorder.positionScale = u.TryValue(mr.positionScale, 0.01, 'number');
+                    self.mouseRecorder.velocityScale = u.TryValue(mr.velocityScale, 500, 'number');
                 end
             end
         end

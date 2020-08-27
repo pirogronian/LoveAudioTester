@@ -26,7 +26,7 @@ function mr:initialize(sitem)
     self._sitem = sitem;
     self._mapper = Mapper(1, 2);
     self.positionScale = 0.01;
-    self.velocityScale = 5000;
+    self.velocityScale = 500;
     self._mPos = { 0, 0 };
 end
 

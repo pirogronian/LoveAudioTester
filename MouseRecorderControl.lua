@@ -14,7 +14,7 @@ local function mrc(item)
     Slab.SetLayoutColumn(2);
     if Slab.Button("Reset") then
         item.mouseRecorder.positionScale = 0.01;
-        item.mouseRecorder.velocityScale = 50;
+        item.mouseRecorder.velocityScale = 500;
     end
     local maxis = item.mouseRecorder._mapper:getSingleMap(1);
     if Slab.BeginComboBox("MapX", { Selected = axes[maxis] }) then
