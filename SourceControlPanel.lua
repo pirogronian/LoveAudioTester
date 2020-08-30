@@ -1,7 +1,7 @@
 
 local Utils = require('common/Utils');
 
-local MRControl = require('MouseRecorderControl');
+local MRControl = require('common/MouseRecorderControl');
 
 require('GuiHelper');
 

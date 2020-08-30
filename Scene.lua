@@ -11,7 +11,7 @@ local gc = require('common/ControlsGroups');
 
 local mr = require('common/MouseRecorder');
 
-local mrc = require('MouseRecorderControl');
+local mrc = require('common/MouseRecorderControl');
 
 local lsc = require('common/ListenerSourceCommons')
 
