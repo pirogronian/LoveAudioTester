@@ -3,7 +3,7 @@ local Utils = require('common/Utils');
 
 local Class = require('thirdparty/middleclass/middleclass');
 
-local Signal = require('Signal');
+local Signal = require('common/Signal');
 
 local SortableContainer = Class("SortableContainer");
 

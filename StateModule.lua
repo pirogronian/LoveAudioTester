@@ -1,7 +1,7 @@
 
 local Class = require('thirdparty/middleclass/middleclass');
 
-local Signal = require('Signal');
+local Signal = require('common/Signal');
 
 local Utils = require('common/Utils');
 

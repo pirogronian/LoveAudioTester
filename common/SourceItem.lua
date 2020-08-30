@@ -5,7 +5,7 @@ local mr = require('MouseRecorder');
 
 local Item = require('common/Item');
 
-local Signal = require('Signal');
+local Signal = require('common/Signal');
 
 local LSCommons = require('ListenerSourceCommons');
 

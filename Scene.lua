@@ -19,7 +19,7 @@ local lscc = require('ListenerSourceCommonControls');
 
 local WManager = require('WindowsManager');
 
-local Signal = require('Signal');
+local Signal = require('common/Signal');
 
 local gci = gc();
 
