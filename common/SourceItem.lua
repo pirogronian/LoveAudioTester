@@ -7,7 +7,7 @@ local Item = require('common/Item');
 
 local Signal = require('common/Signal');
 
-local LSCommons = require('ListenerSourceCommons');
+local LSCommons = require('common/ListenerSourceCommons');
 
 local SItem = Item:subclass("SourceItem");
 

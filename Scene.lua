@@ -13,7 +13,7 @@ local mr = require('MouseRecorder');
 
 local mrc = require('MouseRecorderControl');
 
-local lsc = require('ListenerSourceCommons')
+local lsc = require('common/ListenerSourceCommons')
 
 local lscc = require('common/ListenerSourceCommonControls');
 
