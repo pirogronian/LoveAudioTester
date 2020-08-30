@@ -19,7 +19,7 @@ local Diagram = require('Diagram');
 
 local Diag = Diagram("Diagram");
 
-local MouseRecorder = require('MouseRecorder');
+local MouseRecorder = require('common/MouseRecorder');
 
 function love.load(args)
     InfoQueue.debug = true;

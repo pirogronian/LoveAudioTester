@@ -9,7 +9,7 @@ local p = require('Properties');
 
 local gc = require('common/ControlsGroups');
 
-local mr = require('MouseRecorder');
+local mr = require('common/MouseRecorder');
 
 local mrc = require('MouseRecorderControl');
 

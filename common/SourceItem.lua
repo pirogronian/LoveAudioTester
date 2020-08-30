@@ -1,7 +1,7 @@
 
 local u = require('common/Utils');
 
-local mr = require('MouseRecorder');
+local mr = require('common/MouseRecorder');
 
 local Item = require('common/Item');
 
