@@ -5,7 +5,7 @@ local IQueue = require('InfoQueue');
 
 local IManager = require('ItemsManager')
 
-local SItem = require('SourceItem');
+local SItem = require('common/SourceItem');
 
 local IWidget = require('ItemWidget');
 

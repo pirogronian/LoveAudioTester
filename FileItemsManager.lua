@@ -1,7 +1,7 @@
 
 local IManager = require('ItemsManager')
 
-local FItem = require('FileItem');
+local FItem = require('common/FileItem');
 
 local FileInfoPanel = require('FileInfoPanel');
 
