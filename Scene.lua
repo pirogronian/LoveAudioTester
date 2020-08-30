@@ -5,7 +5,7 @@ local SModule = require('StateModule');
 
 local l = SModule:subclass("Scene");
 
-local p = require('Properties');
+local p = require('common/Properties');
 
 local gc = require('common/ControlsGroups');
 
