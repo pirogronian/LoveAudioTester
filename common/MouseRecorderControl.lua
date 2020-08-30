@@ -1,5 +1,5 @@
 
-require('GuiHelper')
+require('common/GuiHelper')
 
 local axes = { "x", "y", "z" };
 

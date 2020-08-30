@@ -3,7 +3,7 @@ local Utils = require('common/Utils');
 
 local MRControl = require('common/MouseRecorderControl');
 
-require('GuiHelper');
+require('common/GuiHelper');
 
 local iw = require('common/ItemWidget');
 
