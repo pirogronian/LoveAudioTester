@@ -1,5 +1,5 @@
 
-local u = require('Utils')
+local u = require('common/Utils')
 
 local class = require('thirdparty/middleclass/middleclass');
 

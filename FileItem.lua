@@ -1,7 +1,7 @@
 
-local Utils = require('Utils');
+local Utils = require('common/Utils');
 
-local Item = require('Item');
+local Item = require('common/Item');
 
 local fi = Item:subclass("FileItem");
 

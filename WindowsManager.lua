@@ -1,7 +1,5 @@
 
-local utils = require('Utils');
-
-local Item = require('Item');
+local utils = require('common/Utils');
 
 local SModule = require('StateModule');
 

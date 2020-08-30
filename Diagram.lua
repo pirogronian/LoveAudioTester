@@ -5,7 +5,7 @@ local Set = require('Set');
 
 local Mapper = require('Mapper');
 
-local u = require('Utils');
+local u = require('common/Utils');
 
 local WManager = require('WindowsManager');
 

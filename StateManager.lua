@@ -3,7 +3,7 @@ bitser = require('thirdparty/bitser/bitser');
 
 local SModule = require('StateModule');
 
-local utils = require('Utils');
+local utils = require('common/Utils');
 
 local function defaultFpath()
     return "state.dat"

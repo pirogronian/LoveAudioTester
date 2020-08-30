@@ -13,7 +13,7 @@ local SortMenu = require('SortMenu');
 
 local WManager = require('WindowsManager');
 
-local Utils = require('Utils');
+local Utils = require('common/Utils');
 
 local NIDialog = require('NewItemDialog');
 

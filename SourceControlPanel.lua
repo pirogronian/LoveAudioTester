@@ -1,5 +1,5 @@
 
-local Utils = require('Utils');
+local Utils = require('common/Utils');
 
 local MRControl = require('MouseRecorderControl');
 

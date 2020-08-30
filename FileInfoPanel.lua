@@ -1,7 +1,7 @@
 
 -- local IWidget = require('ItemWidget');
 
-local Utils = require('Utils');
+local Utils = require('common/Utils');
 
 local function fip(file)
     Slab.BeginLayout("FileInfoLayout", { Columns = 2 });

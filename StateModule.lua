@@ -3,7 +3,7 @@ local Class = require('thirdparty/middleclass/middleclass');
 
 local Signal = require('Signal');
 
-local Utils = require('Utils');
+local Utils = require('common/Utils');
 
 local Module = Class("StateModule");
 
