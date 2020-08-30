@@ -9,7 +9,7 @@ local sm = require("SourcesModule");
 
 local WManager = require('WindowsManager');
 
-local STree = require('SortableTree');
+local STree = require('common/SortableTree');
 
 local itm = SModule:subclass("ItemsTree");
 
