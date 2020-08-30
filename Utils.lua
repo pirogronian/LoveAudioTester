@@ -114,4 +114,16 @@ function u.VectorAngle(x, y)
     return angle;
 end
 
+function u.Unpack(t, i)
+    if i == nil then
+        i = 1;
+    end
+    if t.max == nil then
+        if t[i] == nil then return; end
+    else
+        if i > t.max then return; end
+    end
+    return t[i], u.Unpack(t, i + 1);
+end
+
 return u;
