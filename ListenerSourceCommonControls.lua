@@ -1,5 +1,5 @@
 
-local cg = require('ControlsGroups');
+local cg = require('common/ControlsGroups');
 
 local lscc = {};
 

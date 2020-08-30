@@ -7,7 +7,7 @@ require('GuiHelper');
 
 local iw = require('ItemWidget');
 
-local cg = require('ControlsGroups');
+local cg = require('common/ControlsGroups');
 
 local lscc = require('ListenerSourceCommonControls');
 

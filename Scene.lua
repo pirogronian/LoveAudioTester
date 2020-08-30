@@ -7,7 +7,7 @@ local l = SModule:subclass("Scene");
 
 local p = require('Properties');
 
-local gc = require('ControlsGroups');
+local gc = require('common/ControlsGroups');
 
 local mr = require('MouseRecorder');
 
