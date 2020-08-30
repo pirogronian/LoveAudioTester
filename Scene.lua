@@ -15,7 +15,7 @@ local mrc = require('MouseRecorderControl');
 
 local lsc = require('ListenerSourceCommons')
 
-local lscc = require('ListenerSourceCommonControls');
+local lscc = require('common/ListenerSourceCommonControls');
 
 local WManager = require('WindowsManager');
 

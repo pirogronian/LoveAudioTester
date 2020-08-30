@@ -9,7 +9,7 @@ local iw = require('common/ItemWidget');
 
 local cg = require('common/ControlsGroups');
 
-local lscc = require('ListenerSourceCommonControls');
+local lscc = require('common/ListenerSourceCommonControls');
 
 local scp = iw:subclass("SourceControlPanel");
 
