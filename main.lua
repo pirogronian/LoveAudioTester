@@ -17,7 +17,7 @@ local Scene = require('Scene');
 
 local Diagram = require('Diagram');
 
-local Diag = Diagram();
+local Diag = Diagram("Diagram");
 
 local MouseRecorder = require('MouseRecorder');
 

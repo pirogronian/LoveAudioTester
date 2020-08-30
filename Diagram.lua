@@ -7,10 +7,14 @@ local Mapper = require('Mapper');
 
 local u = require('Utils');
 
+local WManager = require('WindowsManager');
+
 local d = SModule:subclass("Diagram");
 
-function d:initialize()
-    SModule.initialize(self);
+local axes = { "x", "y", "z" };
+
+function d:initialize(id)
+    SModule.initialize(self, id);
     self._axisMap = Mapper(1, 2);
     self._transform = love.math.newTransform();
     self._sitems = Set();
@@ -20,6 +24,7 @@ function d:initialize()
     self._srcColor = { 1, 1, 1, 1 };
     self._dirColor = { 0.9, 0.9, 1 };
     self._velColor = { 0.5, 0.5, 1, 1 }
+    WManager:register(self);
 end
 
 function d:setScene(s)
@@ -132,6 +137,62 @@ function d:draw()
         self:drawSourceItem(item);
     end
     love.graphics.pop();
+end
+
+function d:windowTitle()
+    return "Diagram";
+end
+
+function d:windowContent()
+    Slab.BeginLayout("DiagramLayout", { Columns = 2 });
+    Slab.SetLayoutColumn(1);
+    Slab.Text("Diagram");
+    Slab.Text("Map x:");
+    Slab.Text("Map y:");
+    Slab.Text("Direction scale:");
+    Slab.Text("Velocity scale:");
+    Slab.SetLayoutColumn(2);
+    if Slab.Button("Reset") then
+        self._axisMap:setMap(1, 2);
+--         item.mouseRecorder.positionScale = 0.01;
+--         item.mouseRecorder.velocityScale = 500;
+    end
+    local maxis = self._axisMap:getSingleReverse(1);
+    if Slab.BeginComboBox("MapDiagramX", { Selected = axes[maxis] }) then
+        for key, val in ipairs(axes) do
+            if key ~= maxis then
+                if Slab.TextSelectable(val) then
+                    self._axisMap:setSingle(key, 1);
+                    self:StateChanged();
+                end
+            end
+        end
+        Slab.EndComboBox();
+    end
+    maxis = self._axisMap:getSingleReverse(2);
+    if Slab.BeginComboBox("MapDiagramY", { Selected = axes[maxis] }) then
+        for key, val in ipairs(axes) do
+            if key ~= maxis then
+                if Slab.TextSelectable(val) then
+                    self._axisMap:setSingle(key, 2);
+                    self:StateChanged();
+                end
+            end
+        end
+        Slab.EndComboBox();
+    end
+    local scale = Slab.PercentageDrag("DirScale", self._dirScale);
+    if scale ~= nil then
+        self._dirScale = scale;
+        self:StateChanged();
+    end
+    local scale = Slab.PercentageDrag("VelScale", self._velScale);
+    if scale ~= nil then
+        self._velScale = scale;
+        self:StateChanged();
+    end
+    Slab.EndLayout();
+
 end
 
 return d;

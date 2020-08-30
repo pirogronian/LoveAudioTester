@@ -70,23 +70,30 @@ function mr:update()
     local x, y = love.mouse.getPosition();
     x = (x - w / 2) * self.positionScale;
     y = (y - h / 2) * self.positionScale;
-    self._mPos[1] = x;
-    self._mPos[2] = y;
-    self._mappedPos[self._mapper:getSingleMap(1)] = self._mPos[1];
-    self._mappedPos[self._mapper:getSingleMap(2)] = self._mPos[2];
+    local xp = self._mapper:getSingleReverse(1);
+    local yp = self._mapper:getSingleReverse(2)
+    if xp ~= nil then
+        self._mappedPos[xp] = x;
+    end
+    if yp ~= nil then
+        self._mappedPos[yp] = y;
+    end
     self._sitem:setPosition(self._mappedPos[1], self._mappedPos[2], self._mappedPos[3]);
     self._velgen:update(dt, self._mappedPos[1], self._mappedPos[2], self._mappedPos[3]);
     local v = self._velgen:velocityArray();
-    self._mappedVel[self._mapper:getSingleMap(1)] = v[self._mapper:getSingleMap(1)] * self.velocityScale;
-    self._mappedVel[self._mapper:getSingleMap(2)] = v[self._mapper:getSingleMap(2)] * self.velocityScale;
+    if xp ~= nil then
+        self._mappedVel[xp] = v[xp] * self.velocityScale;
+    end
+    if yp ~= nil then
+        self._mappedVel[yp] = v[yp] * self.velocityScale;
+    end
     self._sitem:setVelocity(self._mappedVel[1], self._mappedVel[2], self._mappedVel[3]);
-    self._init = false;
 end
 
 function mr:load(data)
     local mr = u.TryValue(data, nil, 'table', 'warning');
     if mr then
-        self._mapper:setMapArray(u.TryValue(mr.map, { 1, 2 }, 'table'));
+        self._mapper:setArray(u.TryValue(mr.map, { 1, 2 }, 'table'));
         self.positionScale = u.TryValue(mr.positionScale, 0.01, 'number');
         self.velocityScale = u.TryValue(mr.velocityScale, 500, 'number');
     end
@@ -94,7 +101,7 @@ end
 
 function mr:getSerializableData()
     local data = {};
-    data.map = self._mapper:getMapArray();
+    data.map = self._mapper:getArray();
     data.positionScale = self.positionScale;
     data.velocityScale = self.velocityScale;
     return data;

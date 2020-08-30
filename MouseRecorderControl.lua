@@ -17,23 +17,23 @@ local function mrc(item)
         item.mouseRecorder.positionScale = 0.01;
         item.mouseRecorder.velocityScale = 500;
     end
-    local maxis = item.mouseRecorder._mapper:getSingleMap(1);
-    if Slab.BeginComboBox("MapX", { Selected = axes[maxis] }) then
+    local maxis = item.mouseRecorder._mapper:getSingleReverse(1);
+    if Slab.BeginComboBox("MapMouseX", { Selected = axes[maxis] }) then
         for key, val in ipairs(axes) do
             if key ~= maxis then
                 if Slab.TextSelectable(val) then
-                    item.mouseRecorder._mapper:setSingleMap(1, key);
+                    item.mouseRecorder._mapper:setSingle(key, 1);
                 end
             end
         end
         Slab.EndComboBox();
     end
-    maxis = item.mouseRecorder._mapper:getSingleMap(2);
-    if Slab.BeginComboBox("MapY", { Selected = axes[maxis] }) then
+    maxis = item.mouseRecorder._mapper:getSingleReverse(2);
+    if Slab.BeginComboBox("MapMouseY", { Selected = axes[maxis] }) then
         for key, val in ipairs(axes) do
             if key ~= maxis then
                 if Slab.TextSelectable(val) then
-                    item.mouseRecorder._mapper:setSingleMap(2, key);
+                    item.mouseRecorder._mapper:setSingle(key, 2);
                 end
             end
         end
