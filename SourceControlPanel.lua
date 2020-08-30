@@ -5,7 +5,7 @@ local MRControl = require('MouseRecorderControl');
 
 require('GuiHelper');
 
-local iw = require('ItemWidget');
+local iw = require('common/ItemWidget');
 
 local cg = require('common/ControlsGroups');
 

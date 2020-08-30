@@ -7,7 +7,7 @@ local IManager = require('ItemsManager')
 
 local SItem = require('common/SourceItem');
 
-local IWidget = require('ItemWidget');
+local IWidget = require('common/ItemWidget');
 
 local FileInfoPanel = require('FileInfoPanel');
 
