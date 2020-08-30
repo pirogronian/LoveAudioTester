@@ -9,7 +9,7 @@ local IQueue = require('InfoQueue');
 
 local OEMsg = require('ErrorMessage');
 
-local SortMenu = require('SortMenu');
+local SortMenu = require('common/SortMenu');
 
 local WManager = require('WindowsManager');
 
