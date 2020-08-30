@@ -3,7 +3,7 @@ local SModule = require('StateModule');
 
 local Set = require('common/Set');
 
-local Mapper = require('Mapper');
+local Mapper = require('common/Mapper');
 
 local u = require('common/Utils');
 
