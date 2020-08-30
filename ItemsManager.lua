@@ -3,7 +3,7 @@ local SModule = require('StateModule');
 
 local Set = require('common/Set');
 
-local SContainer = require('SortableContainer')
+local SContainer = require('common/SortableContainer')
 
 local IQueue = require('InfoQueue');
 
