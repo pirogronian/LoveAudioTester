@@ -56,22 +56,32 @@ function d:drawAxes()
     love.graphics.line(0, -h, 0, h);
 end
 
-function d:drawSourceItem(sourceitem)
-    local x, y, z = sourceitem:getPosition();
+function d:drawSourceItem(si)
+    local x, y, z = si:getPosition();
+    local vol = si:getVolume();
     x, y = self._axisMap:map(x, y, z);
     x, y = self._transform:transformPoint(x, y);
     love.graphics.push();
     love.graphics.translate(x, y);
-    local font = love.graphics.getFont();
-    love.graphics.setColor(unpack(self._srcColor));
-    love.graphics.circle("fill", 0, 0, 3)
-    x, y, z = sourceitem:getDirection();
+--     local font = love.graphics.getFont();
+    x, y, z = si:getDirection();
     x, y = self._axisMap:map(x, y, z);
     x = x * self._dirScale;
     y = y * self._dirScale;
+    local dirAngle = u.VectorAngle(x, y);
+    local iangle, oangle, ovol = si:getCone();
+    love.graphics.setColor(0.5, 0.5, 0.5, 0.5);
+    love.graphics.circle("fill", 0, 0, ovol * 100);
+    love.graphics.setColor(0.7, 0.7, 0.7, 1);
+--     love.graphics.arc("fill", 0, 0, (ovol + vol) / 2, dirAngle + oangle / 2, dirAngle - oangle / 2);
+    love.graphics.arc("fill", 0, 0, (ovol + vol) * 50, dirAngle - oangle / 2 - math.pi / 2, dirAngle + oangle / 2 - math.pi / 2);
+    love.graphics.setColor(1, 1, 1, 1);
+    love.graphics.arc("fill", 0, 0, vol * 100, dirAngle - iangle / 2 - math.pi / 2, dirAngle + iangle / 2 - math.pi / 2);
+    love.graphics.setColor(unpack(self._srcColor));
+    love.graphics.circle("fill", 0, 0, 3)
     love.graphics.setColor(unpack(self._dirColor));
     love.graphics.line(0, 0, x, y);
-    x, y, z = sourceitem:getVelocity();
+    x, y, z = si:getVelocity();
     x, y = self._axisMap:map(x, y, z);
     x = x * self._velScale;
     y = y * self._velScale;
@@ -84,7 +94,7 @@ function d:drawSourceItem(sourceitem)
     love.graphics.polygon("fill", 0, 0, 5, 10, -5, 10);
     love.graphics.pop();
     love.graphics.setColor(unpack(self._srcColor));
-    love.graphics.print(sourceitem.id, 5);
+    love.graphics.print(si.id, 5);
     love.graphics.pop();
 end
 
@@ -94,7 +104,7 @@ function d:drawListener(l)
     x, y = self._transform:transformPoint(x, y);
     love.graphics.push();
     love.graphics.translate(x, y);
-    local font = love.graphics.getFont();
+--     local font = love.graphics.getFont();
     love.graphics.setColor(unpack(self._srcColor));
     love.graphics.circle("fill", 0, 0, 3)
     x, y, z = l:getOrientation();

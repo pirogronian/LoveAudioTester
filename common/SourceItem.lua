@@ -157,6 +157,10 @@ function SItem:setDirection(x, y, z)
     end
 end
 
+function SItem:getCone()
+    return self.source:getCone();
+end
+
 function SItem:setCone(ia, oa, ov)
     local oia, ooa, oov = self.source:getDirection();
     if oia ~= ia or ooa ~= oa or oov ~= ov then
