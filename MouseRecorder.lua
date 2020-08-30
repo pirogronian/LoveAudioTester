@@ -5,7 +5,7 @@ local u = require('common/Utils');
 
 -- local SIClass = require('SourceItem');
 
-local Set = require('Set');
+local Set = require('common/Set');
 
 local Mapper = require('Mapper');
 

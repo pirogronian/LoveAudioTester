@@ -1,7 +1,7 @@
 
 local SModule = require('StateModule');
 
-local Set = require('Set');
+local Set = require('common/Set');
 
 local Mapper = require('Mapper');
 

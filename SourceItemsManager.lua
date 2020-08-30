@@ -1,5 +1,5 @@
 
-local Set = require('Set');
+local Set = require('common/Set');
 
 local IQueue = require('InfoQueue');
 
