@@ -9,7 +9,7 @@ local Set = require('common/Set');
 
 local Mapper = require('common/Mapper');
 
-local vg = require('VelocityGenerator')
+local vg = require('common/VelocityGenerator')
 
 local mr = class("MouseRecorder")
 
