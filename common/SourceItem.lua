@@ -24,7 +24,14 @@ function SItem:initialize(data, parent)
     self.stopped = Signal();
     self.paused = Signal();
     self.changed = Signal();
-    self.source = love.audio.newSource(self.parent.id, "static");
+    local t = 'stream';
+    if type(data) == 'table' then
+        t = u.TryValue(data.type, 'stream', 'string');
+        if t ~= 'static' and t ~= 'stream' then
+            t = 'stream';
+        end
+    end
+    self.source = love.audio.newSource(self.parent.id, t);
     if self:isMono() then
         self.mouseRecorder = mr(self);
     end
