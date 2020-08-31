@@ -163,7 +163,7 @@ function d:windowContent()
     Slab.Text("Velocity scale:");
     Slab.SetLayoutColumn(2);
     if Slab.Button("Reset") then
-        self._axisMap:setMap(1, 2);
+        self._axisMap:set(1, 2);
 --         item.mouseRecorder.positionScale = 0.01;
 --         item.mouseRecorder.velocityScale = 500;
     end
