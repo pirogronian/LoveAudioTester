@@ -88,6 +88,7 @@ function mr:update()
         self._mappedVel[yp] = v[yp] * self.velocityScale;
     end
     self._sitem:setVelocity(self._mappedVel[1], self._mappedVel[2], self._mappedVel[3]);
+    self.lastUpdateTime = time;
 end
 
 function mr:load(data)
