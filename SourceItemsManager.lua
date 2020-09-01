@@ -17,9 +17,12 @@ local SourceControlPanel = require('SourceControlPanel');
 
 local sim = IManager:subclass("SourceItemsManager");
 
-local function windowContent(item)
+local function windowContent(item, manager)
     IWidget.update(item);
     FileInfoPanel(item.parent.file, "FileInfo");
+    if Slab.Button("Change id") then
+        manager:openModItemDialog(item)
+    end
     Slab.Separator();
     DecoderInfoPanel(item.parent.decoder, "DecoderInfo");
     Slab.Separator();

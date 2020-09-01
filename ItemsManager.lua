@@ -43,7 +43,7 @@ end
 function im:windowContent()
     if self.currentItem == nil then return end
     local item = self.currentItem;
-    self.onWindowUpdate(item);
+    self.onWindowUpdate(item, self);
     Slab.Separator();
     local cols = 1;
     if self.child then cols = 2; end
@@ -137,19 +137,40 @@ function im:onItemLoad(id, parent)
     return self.container:getItem(id, parent);
 end
 
+function im:checkIdExists(id, parent)
+    if self.container:hasItemId(id, parent) then
+        IQueue:pushMessage("Item already exists!", "Item "..tostring(id).." already exists!");
+        return true;
+    end
+    return false;
+end
+
 function im:createItem(...)
     local status, value = OEMsg(
         "Cannot create item!",
         "An error occured while creating item of class "..tostring(self.ItemClass),
         self.ItemClass.new, self.ItemClass, ...);
     if not status then return; end
-    if self.container:hasItem(value) then
-        IQueue:pushMessage("Item already exists!", "Item "..tostring(value).." already exists!");
+    if self:checkIdExists(value.id, value.parent) then
         return;
     end
     self.container:addItem(value);
 --     self.container:dumpGroups();
     return value;
+end
+
+function im:reCreateItem(item)
+    local data = item:getSerializableData();
+    local parent = item.parent;
+    self.container:deleteItem(item);
+    self:createItem(data, parent);
+end
+
+function im:setItemId(item, id)
+    if not self:checkIdExists(id, item.parent) then
+        item.id = id;
+        self:StateChanged();
+    end
 end
 
 function im:addParent(manager)
@@ -314,6 +335,11 @@ function im:openNewItemDialog(parent)
     end
 end
 
+function im:openModItemDialog(item)
+    self._modItem = item;
+    self._modItemDialog = NIDialog(item.id, parent, nil, "Set new id for "..self.naming.name);
+end
+
 function im:updateNewItemDialog()
     if self._newItemDialog then
         local dialog = self._newItemDialog;
@@ -324,6 +350,20 @@ function im:updateNewItemDialog()
                 self:showItemWindow(item);
             end
             self._newItemDialog = nil;
+        end
+    end
+end
+
+function im:updateModItemDialog()
+    if self._modItemDialog then
+        local dialog = self._modItemDialog;
+        dialog:update();
+        if not dialog.open then
+            if not dialog.canceled then
+                self:setItemId(self._modItem, dialog.newItemData.id);
+            end
+            self._modItemDialog = nil;
+            self._modItem = nil;
         end
     end
 end
@@ -367,6 +407,7 @@ end
 function im:updateDialogs()
     self:updateConfirmDelete();
     self:updateNewItemDialog();
+    self:updateModItemDialog();
 end
 
 function im:updateMainMenuContent()
